@@ -4,6 +4,11 @@ const HANGUL = /[가-힣]/;
 
 export const hasHangul = (s) => typeof s === 'string' && HANGUL.test(s);
 
+const HAN = /\p{Script=Han}/u;
+
+/** A Han (Chinese) character anywhere in the string: what tells a name the readers can read from one that is only Latin or Korean. */
+export const hasHan = (s) => typeof s === 'string' && HAN.test(s);
+
 /**
  * The stored Chinese translation of a Korean string, or null (not Korean, no translation yet, or the
  * "translation" is empty / identical). Never throws, so a missing translation can never block the UI.

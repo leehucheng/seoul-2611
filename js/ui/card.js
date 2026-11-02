@@ -3,22 +3,32 @@
 // through textContent (see dom.js).
 //
 // openCard(place, ctx) / closeCard()
-// ctx = { person, purchases, config, translations, starred, toggleStar(placeId) -> boolean, onClose?, now?, platform?, navigate? }
+// ctx = { person, purchases, config, translations, starred, toggleStar(placeId) -> boolean, onClose?, now?, platform?, navigate?,
+//         strip?, here?, openStop? }
 // (`platform` and `navigate(url)` exist so tests can pick the iOS path and observe a page change without leaving the page)
+//   strip     {index, total, time, prev, next} when the place is one of my stops today (prev / next: {name, time, placeId}): the
+//             前一站 / 今天第 N 站 / 下一站 strip. openStop(placeId) opens a neighbour (its card, or the 今天 page when it has no pin).
+//   here()    my position {lat, lng} or null: the 距離 line only shows when there is one.
+//
+// The look is the ginkgo fold-out: a cream drawer with a curved top edge (drawn in ink), the name large with the Korean name under it,
+// the facts on a white paper menu taped to the drawer (hours with 營業中 / 再 N 打烊, distance), then 分類 / 誰想去, and the Naver
+// (yellow, an arrow in an ink circle) and Google (outlined) capsules. The tab bar stays on top of the drawer's bottom edge.
 import { holdBack } from '../back-stack.js';
 import { createFallbackGuard } from '../fallback-guard.js';
 import { hasHangul, zhOf } from '../i18n.js';
 import { lightsplitShareUrl } from '../links.js';
-import { personOf } from '../people.js';
+import { distanceMeters, walkMinutes } from '../geo.js';
+import { PEOPLE } from '../people.js';
 import {
-  categoryOf, detectPlatform, googleUrl, hasCoords, hoursView, nameBlock, naverTarget, parseAmount, personalFor,
-  safeHttpsUrl, signatureView, whoNames,
+  categoryOf, detectPlatform, googleUrl, hasCoords, hoursCard, nameBlock, naverTarget, parseAmount, personalFor,
+  safeHttpsUrl, signatureView, toCoord, whoNames,
 } from '../place-view.js';
-import { h, icon, tile } from './dom.js';
+import { famDot, h, icon, leaf, sheetEdge } from './dom.js';
 
 const HINT = '走路導航用 Naver；Google 在韓國通常只有大眾運輸路線';
-const MAX_SHEET = 0.9; // of the viewport height
-const MAX_PEEK = 0.6;
+const TAB_GAP = 12; // px between the navigation buttons and the tab bar (app.css .nav-block's sticky offset uses the same 12)
+const MAX_SHEET = 0.92; // of the viewport height
+const MAX_PEEK = 0.76;
 const SNAP_MS = 320;
 const IOS_FALLBACK_MS = 1500;
 const clean = (v) => String(v ?? '').trim();
@@ -64,13 +74,12 @@ function inlineWithZh(tr, parts) {
 }
 
 const badge = (tone, label) => h('span', { class: `badge badge--${tone}` }, label);
-const fact = (label, ...kids) => h('div', { class: 'fact' }, h('span', { class: 'fact-k' }, label), h('div', { class: 'fact-v' }, kids));
 const section = (cls, title, ...kids) => h('section', { class: cls }, title ? h('h3', { class: 'sec-title' }, title) : null, kids);
 
 function buildHeader(place, ctx) {
   const { title, sub } = nameBlock(place, ctx.translations);
   const titles = h('div', { class: 'card-titles' });
-  titles.append(h('h2', { ...koreanAttrs(title.text, 'card-title') }, title.text));
+  titles.append(h('h2', { ...koreanAttrs(title.text, `card-title${Array.from(title.text).length > 14 ? ' is-long' : ''}`) }, title.text));
   if (title.zh) titles.append(h('p', { class: 'card-sub' }, title.zh)); // Korean title (no Chinese name): its Chinese line
   if (sub.length) {
     // Korean (and English) name under the Chinese title, smaller; each Korean string keeps its own Chinese line below
@@ -83,28 +92,36 @@ function buildHeader(place, ctx) {
     for (const s of sub) if (s.zh) titles.append(h('p', { class: 'card-sub card-sub--zh' }, s.zh));
   }
 
-  const starBtn = h('button', { class: 'icon-btn star-btn', type: 'button', 'aria-pressed': String(Boolean(ctx.starred)), 'aria-label': '標星（只存在這支手機）' }, icon('i-star'));
+  // 收藏 is a ginkgo leaf, filled when on, an outline when off (only on this phone)
+  const starBtn = h('button', { class: 'round star-btn', type: 'button', 'aria-pressed': String(Boolean(ctx.starred)), 'aria-label': '收藏（銀杏葉，只存在這支手機）' }, leaf(ctx.starred ? '' : 'off'));
   starBtn.addEventListener('click', () => {
     const on = ctx.toggleStar ? Boolean(ctx.toggleStar(place.id)) : false;
     ctx.starred = on;
     starBtn.setAttribute('aria-pressed', String(on));
+    starBtn.replaceChildren(leaf(on ? '' : 'off'));
   });
-  const closeBtn = h('button', { class: 'icon-btn', type: 'button', 'aria-label': '關閉', onclick: () => closeCard() }, icon('i-close'));
-  return h('div', { class: 'card-head sheet-drag' }, tile(categoryOf(place.category), 'tile--lg'), titles, h('div', { class: 'card-actions' }, starBtn, closeBtn));
+  const closeBtn = h('button', { class: 'round', type: 'button', 'aria-label': '關閉', onclick: () => closeCard() }, icon('i-close'));
+  return h('div', { class: 'card-head sheet-drag' }, titles, h('div', { class: 'sheet-acts' }, starBtn, closeBtn));
 }
 
-function buildMeta(place, ctx) {
-  const tr = ctx.translations;
-  const cat = categoryOf(place.category);
-  const catTag = h('span', { class: 'tag tag--cat' }, icon(cat.icon), cat.label);
-  catTag.style.setProperty('--c', cat.color);
-  catTag.style.setProperty('--t', cat.tint);
-  catTag.style.setProperty('--k', cat.ink);
-  const area = clean(place.area);
-  const tags = [catTag, area ? h('span', { class: 'tag' }, icon('i-pin'), textWithZh(area, tr)) : null];
-  if (place.source === 'recommend') tags.push(h('span', { class: 'tag tag--rec' }, '推薦'));
-  if (place.source === 'app') tags.push(h('span', { class: 'tag tag--added' }, tagWithName(tr, '由 ', clean(place.added_by) || '朋友', ' 新增')));
-  return h('div', { class: 'meta' }, tags);
+/** 前一站 · 今天第 N 站 · 下一站: where this place sits in my stops today (only for a place that is one of them). */
+function buildStrip(place, ctx) {
+  const s = ctx.strip;
+  if (!s) return null;
+  const side = (kind, stop) => {
+    if (!stop) return h('span', { class: `adj-side ${kind} is-empty`, 'aria-hidden': 'true' });
+    const label = kind === 'prev' ? '前一站' : '下一站';
+    const time = stop.time ? h('span', { class: 'num' }, ` ${stop.time}`) : null;
+    const lead = kind === 'prev'
+      ? [icon('i-chevron-left'), label, time]
+      : [label, time, icon('i-chevron-right')];
+    return h('button', { class: `adj-side ${kind}`, type: 'button', 'aria-label': `${label}${stop.time ? ` ${stop.time}` : ''} ${stop.name}`, onclick: () => ctx.openStop?.(stop.placeId) },
+      h('i', null, lead), h('b', null, stop.name));
+  };
+  const mid = h('div', { class: 'adj-mid' },
+    h('b', null, s.time || '今天'),
+    h('i', null, s.time ? `今天第 ${s.index + 1} 站` : `第 ${s.index + 1} 站`));
+  return h('div', { class: 'adj', role: 'group', 'aria-label': `今天行程的前後站，這是第 ${s.index + 1} 站，共 ${s.total} 站` }, side('prev', s.prev), mid, side('next', s.next));
 }
 
 /** "由 X 新增" / "幫 X 帶": X may be Korean, then the whole phrase gets a Chinese line with X translated. */
@@ -113,28 +130,76 @@ function tagWithName(tr, before, name, after) {
   return h('span', { class: 'tx' }, before, h('span', koreanAttrs(name), name), after, zh ? h('span', { class: 'zh' }, `${before}${zh}${after}`) : null);
 }
 
-function buildFacts(place, ctx) {
-  const tr = ctx.translations;
-  const rows = [];
+const num = (n) => h('span', { class: 'num' }, String(n));
 
-  const hv = hoursView(place, ctx.now ?? new Date());
-  if (hv) {
-    rows.push(fact('營業時間', hv.badge ? badge(hv.tone, hv.badge) : null, hv.text ? textWithZh(hv.text, tr) : null));
+/** 「再 6 小時 50 分打烊」 as nodes: the numbers in the numeral face. */
+function leftNodes(min) {
+  const hrs = Math.floor(min / 60);
+  const mins = min % 60;
+  return ['再 ', hrs ? [num(hrs), ' 小時 '] : null, mins ? [num(mins), ' 分'] : null, '打烊'];
+}
+
+/** 「2 小時後開」 / 「45 分後開」 as nodes. */
+const opensNodes = (min) => (min >= 60 ? [num(Math.round(min / 60)), ' 小時後開'] : [num(min), ' 分後開']);
+
+/** The mock's price line: label ........ value. `big` false: a text value that may wrap (smaller). */
+const priceLine = (label, value, { big = true } = {}) => h('div', { class: 'ml' },
+  h('dt', null, label), h('i', { class: 'ld' }), h('dd', { class: big ? undefined : 'sm' }, value));
+
+/**
+ * The facts on the taped white paper: opening hours as price lines (「每日 ····· 11:00–21:00」) with 營業中 / 再 N 打烊 under them, then
+ * the distance (only when the phone has given my position; straight-line metres and the walking minutes). null when there is
+ * neither. Hours the Sheet has not confirmed show 待確認, never a time as fact (place-view.js hoursCard).
+ */
+function buildPaper(place, ctx) {
+  const tr = ctx.translations;
+  const kids = [h('span', { class: 'tape tl' }), h('span', { class: 'tape tr' })];
+  const hc = hoursCard(place, ctx.now ?? new Date());
+  let any = false;
+  if (hc) {
+    any = true;
+    if (hc.rows.length === 0 && hc.status?.tone === 'pending') kids.push(priceLine('營業時間', '待確認', { big: false })); // (checked hours always come with a value row, see hoursCard)
+    hc.rows.forEach((r, i) => {
+      if (r.value) kids.push(priceLine(r.label, r.value.length > 12 ? textWithZh(r.value, tr) : r.value, { big: r.value.length <= 12 }));
+      else kids.push(priceLine(i === 0 ? '營業時間' : '', textWithZh(r.text, tr), { big: false }));
+    });
+    const st = hc.status;
+    if (st?.tone === 'open') kids.push(h('div', { class: 'sub' }, h('span', { class: 'open' }, '營業中'), st.leftMin ? h('span', null, leftNodes(st.leftMin)) : null));
+    else if (st?.tone === 'closed') kids.push(h('div', { class: 'sub' }, h('span', null, '已打烊'), st.opensInMin ? h('span', null, opensNodes(st.opensInMin)) : null));
+    else if (st?.tone === 'pending' && hc.rows.length > 0) kids.push(h('div', { class: 'sub' }, badge('pending', st.badge)));
   }
-  const sv = signatureView(place);
-  if (sv) {
-    rows.push(fact('招牌', sv.pending ? badge('pending', '待確認') : null, sv.text ? textWithZh(sv.text, tr) : null));
+  const here = ctx.here?.();
+  if (here && hasCoords(place)) {
+    const m = distanceMeters(here, { lat: toCoord(place.lat), lng: toCoord(place.lng) });
+    if (Number.isFinite(m)) {
+      any = true;
+      const shown = m < 1000 ? [num(Math.max(10, Math.round(m / 10) * 10)), h('small', null, ' m')] : [num((m / 1000).toFixed(1)), h('small', null, ' km')];
+      kids.push(priceLine('距離', shown));
+      kids.push(h('div', { class: 'sub' }, h('span', null, '直線距離 ・ 步行約 ', num(walkMinutes(m)), ' 分')));
+    }
   }
+  return any ? h('dl', { class: 'facts', 'aria-label': '營業時間與距離' }, kids) : null;
+}
+
+/** 分類 · 誰想去 as ruled rows: the category's round mark, the five people (the ones who want to go filled), n/5. */
+function buildRows(place, ctx) {
+  const tr = ctx.translations;
+  const cat = categoryOf(place.category);
+  const rows = [];
+  const catTags = [famDot(cat, 'fdot--sm'), cat.label];
+  if (place.source === 'recommend') catTags.push(h('span', { class: 'tag tag--rec' }, '推薦'));
+  if (place.source === 'app') catTags.push(h('span', { class: 'tag tag--added' }, tagWithName(tr, '由 ', clean(place.added_by) || '朋友', ' 新增')));
+  rows.push(h('div', { class: 'row' }, h('dt', null, '分類'), h('dd', null, catTags)));
   const names = whoNames(place);
-  if (names.length) {
-    rows.push(fact('誰想去', names.map((n) => {
-      const tag = h('span', { class: `tag tag--who${n === ctx.person ? ' is-me' : ''}` }, `${n} 想去`);
-      const p = personOf(n); // one pale colour per person, so who wants to go reads at a glance
-      if (p) { tag.style.setProperty('--t', p.tint); tag.style.setProperty('--k', p.ink); }
-      return tag;
-    })));
-  }
-  return rows;
+  rows.push(h('div', { class: 'row row--who' }, h('dt', null, '誰想去'),
+    h('dd', { role: 'group', 'aria-label': '誰想去' },
+      PEOPLE.map((p) => {
+        const on = names.includes(p.name);
+        const me = p.name === ctx.person;
+        return h('span', { class: `ini${on ? ' is-on' : ''}`, 'aria-label': `${p.name}${me ? '（我）' : ''}${on ? ' 想去' : ' 沒有說想去'}` }, h('span', { 'aria-hidden': 'true' }, p.initial, me ? h('small', null, '我') : null));
+      }),
+      h('span', { class: 'who-n' }, `${names.length}/${PEOPLE.length}`))));
+  return h('dl', { class: 'rows' }, rows);
 }
 
 function buildMine(place, ctx) {
@@ -175,10 +240,6 @@ function limitedList(rows, renderRow, limit = 3) {
   return ul;
 }
 
-function navAnchor(kind, label, sub, attrs, onclick) {
-  return h('a', { class: `nav-btn nav-btn--${kind}`, ...attrs, onclick }, icon('i-nav'), h('span', { class: 'nav-label' }, label), h('span', { class: 'nav-sub' }, sub));
-}
-
 // iOS: try the Naver app via its URL scheme; if this page is still visible 1.5 s later the app did not open -> web.
 // One check at a time for the whole page (repeated taps do not stack timers); see fallback-guard.js.
 const iosGuard = createFallbackGuard({
@@ -195,16 +256,26 @@ const iosFallback = (fallbackUrl, go) => iosGuard.arm(() => go(fallbackUrl));
 
 const navigateTo = (ctx) => ctx.navigate ?? ((url) => { window.location.href = url; });
 
-/** The Naver / Google buttons with their hint (also used by the hotel card): same links, platform handling and no-coordinates fallback. */
-export function buildNav(place, ctx = {}) {
-  const platform = ctx.platform ?? detectPlatform({ userAgent: navigator.userAgent, platform: navigator.platform, maxTouchPoints: navigator.maxTouchPoints });
+/**
+ * The Naver walking link of a place as an <a> with class `cls` and the given children: the same target, platform handling (the iOS
+ * app scheme with a web fallback, the Android intent) and no-coordinates fallback everywhere it is used (the card, the hotel card,
+ * the 今日菜單's next stop).
+ */
+export function naverLink(place, ctx, cls, ...children) {
+  const platform = ctx?.platform ?? detectPlatform({ userAgent: navigator.userAgent, platform: navigator.platform, maxTouchPoints: navigator.maxTouchPoints });
   const naver = naverTarget(place, platform);
-  const naverAttrs = { href: naver.href };
-  if (naver.kind === 'web') { naverAttrs.target = '_blank'; naverAttrs.rel = 'noopener noreferrer'; }
-  const naverBtn = navAnchor('naver', 'Naver Map', '走路導航', naverAttrs, naver.kind === 'app' ? () => iosFallback(naver.fallback, navigateTo(ctx)) : undefined);
-  const googleBtn = navAnchor('google', 'Google Map', '大眾運輸', { href: googleUrl(place), target: '_blank', rel: 'noopener noreferrer' });
+  const attrs = { class: cls, href: naver.href };
+  if (naver.kind === 'web') { attrs.target = '_blank'; attrs.rel = 'noopener noreferrer'; }
+  if (naver.kind === 'app') attrs.onclick = () => iosFallback(naver.fallback, navigateTo(ctx ?? {}));
+  return h('a', attrs, ...children);
+}
+
+/** The Naver / Google capsules with their hint (also used by the hotel card): same links, platform handling and no-coordinates fallback. */
+export function buildNav(place, ctx = {}) {
+  const naverBtn = naverLink(place, ctx, 'navbtn naver', 'Naver 步行', h('span', { class: 'chip-ink' }, icon('i-arrow')));
+  const googleBtn = h('a', { class: 'navbtn google', href: googleUrl(place), target: '_blank', rel: 'noopener noreferrer' }, 'Google 大眾運輸');
   return h('div', { class: 'nav-block' },
-    h('div', { class: 'nav' }, naverBtn, googleBtn),
+    h('div', { class: 'go' }, naverBtn, googleBtn),
     h('p', { class: 'nav-hint' }, HINT),
     hasCoords(place) ? null : h('p', { class: 'nav-hint nav-hint--warn' }, '這家的位置還沒確認，兩顆按鈕都改用店名搜尋。'));
 }
@@ -242,17 +313,22 @@ function buildSplit(place, ctx) {
 function buildDetails(place, ctx) {
   const tr = ctx.translations;
   const rows = [];
+  const row = (label, ...kids) => h('div', { class: 'row row--top' }, h('dt', null, label), h('dd', { class: 'row-wrap' }, kids));
+  const area = clean(place.area);
+  if (area) rows.push(row('區域', textWithZh(area, tr)));
+  const sv = signatureView(place);
+  if (sv) rows.push(row('招牌', sv.pending ? badge('pending', '待確認') : null, sv.text ? textWithZh(sv.text, tr) : null));
   const addr = clean(place.address_kr);
-  if (addr) rows.push(fact('地址', textWithZh(addr, tr, place.address_zh)));
-  else if (clean(place.address_zh)) rows.push(fact('地址', h('span', { class: 'tx' }, clean(place.address_zh))));
+  if (addr) rows.push(row('地址', textWithZh(addr, tr, place.address_zh)));
+  else if (clean(place.address_zh)) rows.push(row('地址', h('span', { class: 'tx' }, clean(place.address_zh))));
   const phone = clean(place.phone);
   if (phone) {
     const tel = phone.replace(/[^\d+]/g, '');
-    rows.push(fact('電話', tel ? h('a', { class: 'link', href: `tel:${tel}` }, icon('i-phone'), phone) : phone));
+    rows.push(row('電話', tel ? h('a', { class: 'link', href: `tel:${tel}` }, icon('i-phone'), phone) : phone));
   }
   const note = clean(place.note);
-  if (note) rows.push(fact('備註', textWithZh(note, tr)));
-  return rows.length ? section('details', null, rows) : null;
+  if (note) rows.push(row('備註', textWithZh(note, tr)));
+  return rows.length ? h('dl', { class: 'rows details' }, rows) : null;
 }
 
 function buildCard(place, ctx) {
@@ -260,8 +336,9 @@ function buildCard(place, ctx) {
   const nav = buildNav(place, ctx);
   const content = h('div', { class: 'sheet-content' },
     head,
-    buildMeta(place, ctx),
-    h('div', { class: 'facts' }, buildFacts(place, ctx)),
+    buildStrip(place, ctx),
+    buildPaper(place, ctx),
+    buildRows(place, ctx),
     buildMine(place, ctx),
     nav,
     h('div', { class: 'nav-end' }),
@@ -274,9 +351,9 @@ function buildCard(place, ctx) {
 
 function ensureSheet() {
   if (els) return els;
-  const grab = h('button', { class: 'sheet-grab sheet-drag', type: 'button', 'aria-expanded': 'false', 'aria-label': '展開或收合店家資訊' });
+  const grab = h('button', { class: 'sheet-grab sheet-drag', type: 'button', 'aria-expanded': 'false', 'aria-label': '展開或收合店家資訊' }); // invisible: the curved edge is the handle
   const scroll = h('div', { class: 'sheet-scroll' });
-  const sheet = h('section', { class: 'sheet', role: 'dialog', 'aria-label': '店家資訊', tabindex: '-1', hidden: true }, grab, scroll);
+  const sheet = h('section', { class: 'sheet', role: 'dialog', 'aria-label': '店家資訊', tabindex: '-1', hidden: true }, sheetEdge(), grab, scroll);
   document.body.append(sheet);
   els = { sheet, grab, scroll, content: null, head: null, nav: null, end: null };
 
@@ -292,20 +369,51 @@ function ensureSheet() {
   return els;
 }
 
-/** The sheet is `px` tall and anchored to the bottom edge; its content is anchored to its top, so it rides up with the edge. */
-function setVis(px) {
+let settleTimer = 0;
+
+/**
+ * The sheet is `px` tall and anchored to the bottom edge; its content is anchored to its top, so it rides up with the edge.
+ * `animate`: the drawer slides there with a transform (css/app.css .sheet transitions `transform`, never `height`): growing, the new
+ * height is set at once and the drawer starts translated down by the difference and slides to 0; shrinking, it slides down by the
+ * difference first and takes the room back when it has arrived. While a finger drags it (`is-dragging`) the height follows it directly.
+ */
+function setVis(px, { animate = false } = {}) {
+  const { sheet } = els;
+  const before = state.vis;
+  const height = `${Math.round(px)}px`;
   state.vis = px;
-  els.sheet.style.height = `${Math.round(px)}px`;
   root().style.setProperty('--sheet-h', `${Math.round(px)}px`);
   root().classList.toggle('sheet-tall', px > window.innerHeight * 0.5);
   root().classList.toggle('sheet-open', px > 0);
+  clearTimeout(settleTimer);
+  const jump = (extra) => { // no transition for this change
+    sheet.style.transition = 'none';
+    extra();
+    void sheet.offsetHeight;
+    sheet.style.transition = '';
+  };
+  if (!animate || px === before) {
+    jump(() => { sheet.style.height = height; sheet.style.transform = ''; });
+  } else if (px > before) {
+    jump(() => { sheet.style.height = height; sheet.style.transform = `translateY(${px - before}px)`; });
+    sheet.style.transform = ''; // the transition slides it up to where it belongs
+  } else {
+    sheet.style.transform = `translateY(${before - px}px)`; // slides down; the height follows once it has arrived
+    settleTimer = setTimeout(() => jump(() => { sheet.style.height = height; sheet.style.transform = ''; }), SNAP_MS);
+  }
   updateStuck();
 }
 
-/** While the navigation buttons would fall below the visible part of the card they stay pinned to its bottom edge (CSS sticky). */
+/** How much of the drawer's bottom edge the tab bar covers (it stays on screen over the card). */
+function coveredByTabbar() {
+  const bar = document.getElementById('tabbar');
+  return bar ? Math.max(0, Math.round(window.innerHeight - bar.getBoundingClientRect().top)) : 0;
+}
+
+/** While the navigation buttons would fall below the part of the card the tab bar leaves visible they stay pinned above it (CSS sticky). */
 function updateStuck() {
   if (!els?.end || !els.nav) return;
-  els.nav.classList.toggle('is-stuck', els.end.offsetTop - els.scroll.scrollTop > els.scroll.clientHeight + 1);
+  els.nav.classList.toggle('is-stuck', els.end.offsetTop - els.scroll.scrollTop > els.scroll.clientHeight - coveredByTabbar() - TAB_GAP + 1);
 }
 
 /** Measure the content. peek = everything down to the navigation buttons (capped); full = everything (capped). */
@@ -313,9 +421,8 @@ function layout() {
   const { sheet, scroll, content, end, grab } = els;
   const vh = window.innerHeight;
   const chrome = scroll.getBoundingClientRect().top - sheet.getBoundingClientRect().top;
-  const padBottom = parseFloat(getComputedStyle(content).paddingBottom) || 0;
   state.fullH = Math.round(Math.min(chrome + content.offsetHeight, vh * MAX_SHEET));
-  const toNav = chrome + end.offsetTop + padBottom; // `end` sits right after the navigation block, in normal flow
+  const toNav = chrome + end.offsetTop + coveredByTabbar() + TAB_GAP; // `end` sits right after the navigation block; the tab bar and a small gap go under it
   state.peekH = Math.round(clamp(toNav, Math.min(220, state.fullH), Math.min(vh * MAX_PEEK, state.fullH)));
   grab.setAttribute('aria-expanded', String(state.mode === 'full'));
   setVis(state.open ? (state.mode === 'full' ? state.fullH : state.peekH) : 0);
@@ -326,7 +433,7 @@ const relayout = () => { if (state.open) layout(); };
 function snapTo(mode) {
   state.mode = mode;
   els.grab.setAttribute('aria-expanded', String(mode === 'full'));
-  setVis(mode === 'full' ? state.fullH : state.peekH);
+  setVis(mode === 'full' ? state.fullH : state.peekH, { animate: true });
 }
 
 function onDown(e) {
@@ -373,7 +480,6 @@ function onUp(e) {
 
 // ---- public API -------------------------------------------------------------------------------------------
 
-export const isCardOpen = () => state.open;
 export const cardPlaceId = () => (state.open ? state.place?.id ?? null : null);
 export const cardVisibleHeight = () => (state.open ? state.vis : 0);
 
@@ -409,9 +515,9 @@ export function openCard(place, ctx = {}, { keepState = false } = {}) {
   if (keep) scroll.scrollTop = prevScroll;
   if (!wasOpen) {
     setVis(0);
-    void sheet.offsetHeight; // commit the zero height before animating to the open one
+    void sheet.offsetHeight; // commit the zero height before sliding up to the open one
     sheet.classList.remove('no-anim');
-    setVis(state.peekH);
+    setVis(state.peekH, { animate: true });
   }
   sheet.classList.add('is-open');
   if (!keep) sheet.focus({ preventScroll: true });
@@ -425,8 +531,8 @@ export function closeCard() {
   releaseBack?.();
   releaseBack = null;
   sheet.classList.remove('is-open');
-  setVis(0);
-  state.closeTimer = setTimeout(() => { if (!state.open) sheet.hidden = true; }, SNAP_MS);
+  setVis(0, { animate: true });
+  state.closeTimer = setTimeout(() => { if (!state.open) sheet.hidden = true; }, SNAP_MS + 30);
   const prev = state.prevFocus;
   state.prevFocus = null;
   if (prev && prev.isConnected && typeof prev.focus === 'function') prev.focus({ preventScroll: true });

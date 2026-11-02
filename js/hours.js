@@ -53,6 +53,43 @@ export function isOpenAt(hoursJson, at) {
   return today.some(([start, end]) => (end > start ? now.minutes >= start && now.minutes < end : now.minutes >= start));
 }
 
+const pad2 = (n) => String(n).padStart(2, '0');
+const clock = (minutes) => `${pad2(Math.floor(minutes / 60))}:${pad2(minutes % 60)}`; // 1440 -> '24:00'
+
+/**
+ * Today's windows and the minutes to the next change, for the place card ("再 6 小時 50 分打烊") and the menu board's price column.
+ * @returns {{open: boolean|null, windows: string[][]|null, closesInMin: number|null, opensInMin: number|null}}
+ *   windows       today's [from, to] pairs as 'HH:MM' ([] = closed all day, null = unknown)
+ *   closesInMin   minutes until the window that is running now ends (also a past-midnight one that began yesterday)
+ *   opensInMin    minutes until the next window today starts, when closed now and one is left
+ */
+export function hoursToday(hoursJson, at) {
+  const unknown = { open: null, windows: null, closesInMin: null, opensInMin: null };
+  if (hoursJson === null || typeof hoursJson !== 'object') return unknown;
+  const now = seoulNow(at);
+  if (!now) return unknown;
+  const today = windowsOf(hoursJson, now.day);
+  const yesterday = windowsOf(hoursJson, (now.day + 6) % 7);
+  const open = isOpenAt(hoursJson, at);
+  if (open === null) return unknown;
+
+  let closesInMin = null;
+  let opensInMin = null;
+  if (open) {
+    const carry = yesterday?.find(([start, end]) => end <= start && now.minutes < end);
+    if (carry) {
+      closesInMin = carry[1] - now.minutes;
+    } else {
+      const [start, end] = today.find(([s, e]) => (e > s ? now.minutes >= s && now.minutes < e : now.minutes >= s));
+      closesInMin = (end > start ? end : end + 24 * 60) - now.minutes;
+    }
+  } else {
+    const later = today.filter(([start]) => start > now.minutes).map(([start]) => start).sort((a, b) => a - b)[0];
+    if (later !== undefined) opensInMin = later - now.minutes;
+  }
+  return { open, windows: today ? today.map(([start, end]) => [clock(start), clock(end)]) : null, closesInMin, opensInMin };
+}
+
 /** Label for the place card. */
 export function formatHoursBadge(hoursJson, at) {
   const open = isOpenAt(hoursJson, at);

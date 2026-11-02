@@ -1,4 +1,4 @@
-// A full-height view above the map and below the tab bar (the 今天 page, the hotel card, the 清單 list): a <dialog> the caller fills
+// A full-height view above the map and below the tab bar (the 今天 page, the 今晚住 hotel card, the 未上地圖 list): a <dialog> the caller fills
 // with a head and a body. It is opened non-modally (show(), not showModal()): a modal dialog would sit in the browser's top layer
 // and cover the tab bar, and the tab bar has to stay visible and tappable. The map, chips and 定位 button behind it are made
 // inert by main.js while a view is open (app.on('view')).

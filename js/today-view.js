@@ -2,9 +2,12 @@
 // Which date to show, how far the day switcher may go, the flight shown before the trip starts, the wording of the
 // banner / flight lines, and each schedule item with its Chinese line and the pin it points to.
 // Flight numbers and hotel names are never written here: they come from the Sheet at runtime.
+import { doneKeys } from './done.js';
 import { findHotelPlace } from './hotel-view.js';
 import { hasHangul, zhOf } from './i18n.js';
 import { matchPlace } from './match.js';
+import { itemTime, stripTime } from './next-stop.js';
+import { placeName } from './pin-labels.js';
 import { isHidden } from './place-view.js';
 import { parseFlights, parseHotels, parseSchedule } from './sheet-parse.js';
 import { buildToday, nightDateISO, todayISO } from './today.js';
@@ -88,7 +91,7 @@ export function outboundFlight(flights, person) {
 
 const WHEN = { today: '今天', tomorrow: '明天' };
 
-/** buildToday().flight -> {when: '今天'|'明天', text: '13:50 <flight> 仁川出發'}; null when there is no flight to show. */
+/** buildToday().flight -> {when: '今天'|'明天', text: '09:00 <flight> 仁川出發'}; null when there is no flight to show. */
 export function flightView(flight) {
   if (!flight) return null;
   const text = [clean(flight.dep), clean(flight.flight), flight.from ? `${airportZh(flight.from)}出發` : ''].filter(Boolean).join(' ');
@@ -130,14 +133,19 @@ const zhFor = (s, translations) => (hasHangul(s) ? zhOf(s, translations) : null)
  * One schedule item for display. `zh` / `detail[].zh` / `noteZh` are the Chinese lines of the Korean parts (nothing when the
  * snapshot has no translation); `placeId` is the pin the item points to (hidden places never count), or null.
  * The note is two Sheet cells joined with '；' by the parser, so it is translated part by part.
+ * `time` is the explicit 'HH:MM' written in the text, not one end of a range (null when there is none: most lines have none); `key`
+ * is the item's done.js key: its text + which of the identical lines of the day it is.
  */
 export function itemViews(items, places, translations) {
   const visible = (places ?? []).filter((p) => !isHidden(p));
-  return (items ?? []).map((it) => {
+  const keys = doneKeys(items);
+  return (items ?? []).map((it, i) => {
     const text = clean(it.text);
     const note = clean(it.note);
     return {
       text,
+      key: keys[i],
+      time: itemTime(text)?.label ?? null,
       zh: zhFor(text, translations),
       note,
       noteZh: note.split('；').map((part) => zhFor(clean(part), translations)).filter(Boolean),
@@ -146,6 +154,13 @@ export function itemViews(items, places, translations) {
     };
   });
 }
+
+/**
+ * The name a stop goes by on the strip, the card's previous / next buttons and the menu board's tooltips: the pin's name (Chinese
+ * first, placeName) when the item points to one, else the item's Chinese line when its text is Korean, else its text (without a time
+ * written at its start or end: the strip shows that on its own).
+ */
+export const stopName = (view, place, translations) => (place ? placeName(place, translations) : clean(view?.zh) || stripTime(clean(view?.text)));
 
 /**
  * Everything the panel draws for `person` on `dateISO`. `today` is the app's current date (marks the "今天" tag); `night` is

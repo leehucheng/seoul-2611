@@ -1,13 +1,6 @@
 // "我是誰": which of the five people is holding this phone. Stored in localStorage `seoul.me` (the person's name).
-import { PEOPLE, initialOf, personOf } from '../people.js';
+import { PEOPLE, initialOf } from '../people.js';
 import { append, h } from './dom.js';
-
-/** The person's own pale tint and dark ink as CSS variables (--t, --k) on an element. */
-function tintFor(el, p) {
-  if (!p) return;
-  el.style.setProperty('--t', p.tint);
-  el.style.setProperty('--k', p.ink);
-}
 
 export const ME_KEY = 'seoul.me';
 
@@ -21,11 +14,10 @@ export function savedPerson(storage) {
   }
 }
 
-/** Top-right button: the person's initial as a round avatar; its label says who and that it switches. */
+/** Top-right button: the person's initial in an ink circle; its label says who and that it switches. */
 export function showMeButton(btn, name) {
   btn.hidden = false;
   btn.textContent = initialOf(name) ?? '?';
-  tintFor(btn, personOf(name));
   btn.setAttribute('aria-label', `你是 ${name}，按一下切換身分`);
   btn.title = `你是 ${name}，按一下切換`;
 }
@@ -50,7 +42,6 @@ export function pickPerson(storage, { force = false } = {}) {
 
     const list = h('div', { class: 'picker-list' }, PEOPLE.map((p) => {
       const initial = h('span', { class: 'picker-initial', 'aria-hidden': 'true' }, p.initial);
-      tintFor(initial, p);
       return h(
         'button',
         {

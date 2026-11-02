@@ -1,15 +1,14 @@
-// The pin shown while a place is being added: same look as a real pin (category colour and icon, a neutral pin
-// when no category is chosen yet) with a pulsing ring, so it reads as "not saved yet". `L` is the Leaflet global.
+// The pin shown while a place is being added: same look as a real pin (family colour and icon, a neutral grey pin
+// when no category is chosen yet) with a pulsing dashed ring, so it reads as "not saved yet". `L` is the Leaflet global.
 import { categoryOf } from '../place-view.js';
-import { h, icon } from './dom.js';
+import { famStyle, h, icon } from './dom.js';
 
 const BOX = 44; // touch box of every pin; the drawn circle is smaller
 
 function previewIcon(categoryId) {
   const cat = categoryOf(categoryId);
-  const pin = h('div', { class: 'pin pin--preview' }, icon(cat.icon));
-  pin.style.setProperty('--c', cat.color);
-  return L.divIcon({ className: 'pin-icon', html: pin, iconSize: [BOX, BOX], iconAnchor: [BOX / 2, BOX / 2] });
+  const pin = famStyle(h('div', { class: 'pin-stack pin-stack--preview' }, h('span', { class: 'pin-dot' }, icon(cat.icon))), cat);
+  return L.divIcon({ className: 'pin-icon is-preview', html: pin, iconSize: [BOX, BOX], iconAnchor: [BOX / 2, BOX / 2] });
 }
 
 /** createPreviewPin(mapHandle) -> {show(lat, lng, categoryId), setCategory(id), hide(), position()} */

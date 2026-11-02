@@ -1,0 +1,176 @@
+{
+  "version": 8,
+  "name": "G2β ginkgo paper",
+  "metadata": {
+    "note": "OpenMapTiles schema on OpenFreeMap (https://tiles.openfreemap.org/planet, no key). Cream paper, white streets with a hairline warm-grey casing, no POI icons, no house numbers, no place labels and NO ROAD NAMES (the tiles carry them in Korean or Simplified Chinese only). The texts are the names of rivers and lakes that have a name:zh-Hant (Traditional Chinese) in the tiles (anything without one shows no name at all), and the subway stations of the trip's table (layer station-label: Traditional Chinese names written in this file, with line-number badges). Derived from docs/design/g2b/vector-style.json. The yellow district lobes are drawn by the app, not by this style. Zoom numbers here are MapLibre's: Leaflet zoom minus 1."
+  },
+  "sources": {
+    "openmaptiles": { "type": "vector", "url": "https://tiles.openfreemap.org/planet" },
+    "lobes": { "type": "geojson", "data": { "type": "FeatureCollection", "features": [] } }
+  },
+  "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
+  "layers": [
+    { "id": "land", "type": "background", "paint": { "background-color": "#F5F1E4" } },
+    {
+      "id": "park", "type": "fill", "source": "openmaptiles", "source-layer": "park",
+      "paint": { "fill-color": "#DCEACB", "fill-antialias": true }
+    },
+    {
+      "id": "landcover-green", "type": "fill", "source": "openmaptiles", "source-layer": "landcover", "minzoom": 15,
+      "filter": ["in", ["get", "class"], ["literal", ["grass", "wood"]]],
+      "paint": { "fill-color": "#DCEACB" }
+    },
+    {
+      "id": "landuse-green", "type": "fill", "source": "openmaptiles", "source-layer": "landuse", "minzoom": 15,
+      "filter": ["in", ["get", "class"], ["literal", ["cemetery", "pitch", "stadium"]]],
+      "paint": { "fill-color": "#E3EDD5" }
+    },
+    {
+      "id": "water", "type": "fill", "source": "openmaptiles", "source-layer": "water",
+      "filter": ["!=", ["get", "brunnel"], "tunnel"],
+      "paint": { "fill-color": "#9BD3FF" }
+    },
+    {
+      "id": "waterway", "type": "line", "source": "openmaptiles", "source-layer": "waterway",
+      "filter": ["all", ["!=", ["get", "brunnel"], "tunnel"], ["in", ["get", "class"], ["literal", ["stream", "canal", "river"]]]],
+      "paint": { "line-color": "#9BD3FF", "line-width": ["interpolate", ["linear"], ["zoom"], 12, 0.8, 16, 2] }
+    },
+    {
+      "id": "building", "type": "fill", "source": "openmaptiles", "source-layer": "building", "minzoom": 13,
+      "paint": { "fill-color": ["interpolate", ["linear"], ["zoom"], 14, "#F1ECE1", 16, "#ECE6D8"], "fill-antialias": false }
+    },
+    {
+      "id": "rail", "type": "line", "source": "openmaptiles", "source-layer": "transportation",
+      "filter": ["all", ["in", ["get", "class"], ["literal", ["rail", "transit"]]], ["!=", ["get", "brunnel"], "tunnel"], ["!=", ["get", "service"], "yard"], ["!=", ["get", "service"], "siding"]],
+      "layout": { "line-join": "round" },
+      "paint": { "line-color": "#B8B1A3", "line-width": ["interpolate", ["linear"], ["zoom"], 12, 0.7, 16, 1.4] }
+    },
+    {
+      "id": "road-casing", "type": "line", "source": "openmaptiles", "source-layer": "transportation",
+      "filter": ["all", ["!=", ["get", "brunnel"], "tunnel"], ["in", ["get", "class"], ["literal", ["motorway", "trunk", "primary", "secondary", "tertiary", "minor", "service"]]]],
+      "layout": { "line-join": "round", "line-cap": "round" },
+      "paint": {
+        "line-color": "#D9D0BD",
+        "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"],
+          12, ["match", ["get", "class"], ["motorway", "trunk"], 2.2, "primary", 1.8, "secondary", 1.4, "tertiary", 1, 0],
+          14, ["match", ["get", "class"], ["motorway", "trunk"], 4.2, "primary", 3.6, "secondary", 3, "tertiary", 2.2, "minor", 1.1, 0],
+          16, ["match", ["get", "class"], ["motorway", "trunk"], 10, "primary", 9, "secondary", 8, "tertiary", 7, "minor", 5, 2.6],
+          18, ["match", ["get", "class"], ["motorway", "trunk"], 22, "primary", 20, "secondary", 18, "tertiary", 16, "minor", 12, 6]],
+        "line-width": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 16, 0.9],
+        "line-opacity": ["step", ["zoom"], ["match", ["get", "class"], ["minor", "service"], 0, 1], 13.5, ["match", ["get", "class"], "service", 0, 1], 15, 1]
+      }
+    },
+    {
+      "id": "road", "type": "line", "source": "openmaptiles", "source-layer": "transportation",
+      "filter": ["all", ["!=", ["get", "brunnel"], "tunnel"], ["in", ["get", "class"], ["literal", ["motorway", "trunk", "primary", "secondary", "tertiary", "minor", "service"]]]],
+      "layout": { "line-join": "round", "line-cap": "round" },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": ["interpolate", ["exponential", 1.5], ["zoom"],
+          12, ["match", ["get", "class"], ["motorway", "trunk"], 2.2, "primary", 1.8, "secondary", 1.4, "tertiary", 1, 0],
+          14, ["match", ["get", "class"], ["motorway", "trunk"], 4.2, "primary", 3.6, "secondary", 3, "tertiary", 2.2, "minor", 1.1, 0],
+          16, ["match", ["get", "class"], ["motorway", "trunk"], 10, "primary", 9, "secondary", 8, "tertiary", 7, "minor", 5, 2.6],
+          18, ["match", ["get", "class"], ["motorway", "trunk"], 22, "primary", 20, "secondary", 18, "tertiary", 16, "minor", 12, 6]],
+        "line-opacity": ["step", ["zoom"], ["match", ["get", "class"], ["minor", "service"], 0, 1], 13.5, ["match", ["get", "class"], "service", 0, 1], 15, 1]
+      }
+    },
+    {
+      "id": "lobe-wash", "type": "fill", "source": "lobes", "minzoom": 15,
+      "metadata": { "note": "The pale yellow wash of the districts at street zoom (Leaflet 16 and up = MapLibre 15), in the map itself so the station names and the river names stay crisp above it. The shapes come from the app (js/area-lobes.js) through ui/basemap-layer.js setLobeShapes(); a normal-blend wash: #FFEEA8 at 62% nets about #FBEFBF over the cream map. Below 16 the app's own stronger multiplied fill takes over (css/app.css). The picture fallback has no such layer: there the same wash is drawn by Leaflet." },
+      "paint": { "fill-color": "#FFEEA8", "fill-opacity": 0.62, "fill-antialias": true }
+    },
+    {
+      "id": "station-dot", "type": "circle", "source": "openmaptiles", "source-layer": "poi", "minzoom": 13,
+      "filter": ["all", ["==", ["get", "class"], "railway"], ["in", ["get", "subclass"], ["literal", ["station", "subway", "halt"]]]],
+      "paint": { "circle-radius": 3.5, "circle-color": "#8A8579", "circle-stroke-color": "#FFFFFF", "circle-stroke-width": 1.5 }
+    },
+    {
+      "id": "station-label", "type": "symbol", "source": "openmaptiles", "source-layer": "poi", "minzoom": 14,
+      "metadata": { "note": "Only the stations of the trip's table (js/stations.js, checked by tests/stations.test.mjs): the label is a match on the station's Korean `name` (written with or without 역) giving its Traditional Chinese name; the icon is the strip of line badges (images `stn:<lines>` made at run time by ui/station-badges.js). A station that is not in the table has no label." },
+      "filter": ["all", ["==", ["get", "class"], "railway"], ["in", ["get", "subclass"], ["literal", ["station", "subway", "halt"]]],
+        ["in", ["get", "name"], ["literal", ["성수", "성수역", "뚝섬", "뚝섬역", "서울숲", "서울숲역", "건대입구", "건대입구역", "안국", "안국역", "경복궁", "경복궁역", "종로3가", "종로3가역", "광화문", "광화문역", "시청", "시청역", "을지로입구", "을지로입구역", "명동", "명동역", "회현", "회현역", "서울역", "서울", "홍대입구", "홍대입구역", "신촌", "신촌역", "압구정", "압구정역", "압구정로데오", "압구정로데오역", "강남", "강남역", "신논현", "신논현역", "한강진", "한강진역", "이태원", "이태원역", "녹사평", "녹사평역", "삼각지", "삼각지역", "용산", "용산역", "신용산", "신용산역", "잠실", "잠실역", "혜화", "혜화역", "동대문", "동대문역", "동대문역사문화공원", "동대문역사문화공원역", "김포공항", "김포공항역"]]]],
+      "layout": {
+        "icon-image": ["match", ["get", "name"],
+          ["성수", "성수역", "뚝섬", "뚝섬역", "을지로입구", "을지로입구역", "신촌", "신촌역"], "stn:2",
+          ["서울숲", "서울숲역", "압구정로데오", "압구정로데오역"], "stn:水仁盆唐",
+          ["건대입구", "건대입구역"], "stn:2,7",
+          ["안국", "안국역", "경복궁", "경복궁역", "압구정", "압구정역"], "stn:3",
+          ["종로3가", "종로3가역"], "stn:1,3,5",
+          ["광화문", "광화문역"], "stn:5",
+          ["시청", "시청역"], "stn:1,2",
+          ["명동", "명동역", "회현", "회현역", "신용산", "신용산역", "혜화", "혜화역"], "stn:4",
+          ["서울역", "서울"], "stn:1,4,機場鐵路,京義中央",
+          ["홍대입구", "홍대입구역"], "stn:2,機場鐵路,京義中央",
+          ["강남", "강남역"], "stn:2,新盆唐",
+          ["신논현", "신논현역"], "stn:9,新盆唐",
+          ["한강진", "한강진역", "이태원", "이태원역", "녹사평", "녹사평역"], "stn:6",
+          ["삼각지", "삼각지역"], "stn:4,6",
+          ["용산", "용산역"], "stn:1,京義中央",
+          ["잠실", "잠실역"], "stn:2,8",
+          ["동대문", "동대문역"], "stn:1,4",
+          ["동대문역사문화공원", "동대문역사문화공원역"], "stn:2,4,5",
+          ["김포공항", "김포공항역"], "stn:5,9,機場鐵路",
+          ""],
+        "icon-anchor": "right",
+        "icon-offset": [-6, 0],
+        "icon-padding": 30,
+        "text-field": ["match", ["get", "name"],
+          ["성수", "성수역"], "聖水站",
+          ["뚝섬", "뚝섬역"], "纛島站",
+          ["서울숲", "서울숲역"], "首爾林站",
+          ["건대입구", "건대입구역"], "建大入口站",
+          ["안국", "안국역"], "安國站",
+          ["경복궁", "경복궁역"], "景福宮站",
+          ["종로3가", "종로3가역"], "鐘路3街站",
+          ["광화문", "광화문역"], "光化門站",
+          ["시청", "시청역"], "市廳站",
+          ["을지로입구", "을지로입구역"], "乙支路入口站",
+          ["명동", "명동역"], "明洞站",
+          ["회현", "회현역"], "會賢站",
+          ["서울역", "서울"], "首爾站",
+          ["홍대입구", "홍대입구역"], "弘大入口站",
+          ["신촌", "신촌역"], "新村站",
+          ["압구정", "압구정역"], "狎鷗亭站",
+          ["압구정로데오", "압구정로데오역"], "狎鷗亭羅德奧站",
+          ["강남", "강남역"], "江南站",
+          ["신논현", "신논현역"], "新論峴站",
+          ["한강진", "한강진역"], "漢江鎮站",
+          ["이태원", "이태원역"], "梨泰院站",
+          ["녹사평", "녹사평역"], "綠莎坪站",
+          ["삼각지", "삼각지역"], "三角地站",
+          ["용산", "용산역"], "龍山站",
+          ["신용산", "신용산역"], "新龍山站",
+          ["잠실", "잠실역"], "蠶室站",
+          ["혜화", "혜화역"], "惠化站",
+          ["동대문", "동대문역"], "東大門站",
+          ["동대문역사문화공원", "동대문역사문화공원역"], "東大門歷史文化公園站",
+          ["김포공항", "김포공항역"], "金浦機場站",
+          ""],
+        "text-font": ["Noto Sans Bold"],
+        "text-size": 12,
+        "text-anchor": "left",
+        "text-offset": [0.75, 0],
+        "text-padding": 30
+      },
+      "paint": { "text-color": "#2C2E2A", "text-halo-color": "#FFFFFF", "text-halo-width": 1.8 }
+    },
+    {
+      "id": "river-name", "type": "symbol", "source": "openmaptiles", "source-layer": "waterway", "minzoom": 15,
+      "filter": ["all", ["has", "name:zh-Hant"], ["==", ["get", "class"], "river"]],
+      "layout": { "symbol-placement": "line", "text-field": ["get", "name:zh-Hant"], "text-font": ["Noto Sans Regular"], "text-size": 13, "text-letter-spacing": 0.3, "symbol-spacing": 400 },
+      "paint": { "text-color": "#4F8FC4", "text-halo-color": "#9BD3FF", "text-halo-width": 1 }
+    },
+    {
+      "id": "water-name-point", "type": "symbol", "source": "openmaptiles", "source-layer": "water_name", "minzoom": 15,
+      "filter": ["all", ["has", "name:zh-Hant"], ["==", ["geometry-type"], "Point"]],
+      "layout": { "symbol-placement": "point", "text-field": ["get", "name:zh-Hant"], "text-font": ["Noto Sans Regular"], "text-size": 13, "text-letter-spacing": 0.3 },
+      "paint": { "text-color": "#4F8FC4", "text-halo-color": "#9BD3FF", "text-halo-width": 1 }
+    },
+    {
+      "id": "water-name-line", "type": "symbol", "source": "openmaptiles", "source-layer": "water_name", "minzoom": 15,
+      "filter": ["all", ["has", "name:zh-Hant"], ["!=", ["geometry-type"], "Point"]],
+      "layout": { "symbol-placement": "line", "text-field": ["get", "name:zh-Hant"], "text-font": ["Noto Sans Regular"], "text-size": 13, "text-letter-spacing": 0.3 },
+      "paint": { "text-color": "#4F8FC4", "text-halo-color": "#9BD3FF", "text-halo-width": 1 }
+    }
+  ]
+}

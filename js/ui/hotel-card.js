@@ -8,7 +8,7 @@ import { hotelCardView } from '../hotel-view.js';
 import { categoryOf } from '../place-view.js';
 import { formatMD, isISODate, loadTripData, stayLabel } from '../today-view.js';
 import { buildToday } from '../today.js';
-import { append, clear, h, icon, tile } from './dom.js';
+import { append, clear, famDot, h, icon } from './dom.js';
 import { buildNav } from './card.js';
 import { closeButton, createPanel } from './panel.js';
 
@@ -49,13 +49,15 @@ export function initHotel(app) {
         parts.push(h('div', { class: 'hc-none' }, icon('i-bed'),
           h('p', { class: 'hc-none-text' }, unreadable ? '飯店表讀不到。確認有網路，或到表上看看分頁有沒有被改名。' : v.text)));
       } else {
-        parts.push(h('p', { class: 'hc-label hc-label--tile' }, tile(categoryOf('hotel'), 'tile--sm'), `${tonight ? '今晚住' : '這晚住'}（${stayLabel(v.stay)}）`));
-        parts.push(h('section', { class: 'hc-block' },
+        parts.push(h('p', { class: 'hc-label hc-label--tile' }, famDot(categoryOf('hotel'), 'fdot--sm'), `${tonight ? '今晚住' : '這晚住'}（${stayLabel(v.stay)}）`));
+        parts.push(h('section', { class: 'hc-block hc-paper' },
+          h('span', { class: 'tape tl' }), h('span', { class: 'tape tr' }),
           h('h3', { class: `hc-name${v.name.korean ? ' kr' : ''}`, lang: v.name.korean ? 'ko' : undefined }, v.name.text),
           v.name.zh ? h('p', { class: 'hc-zh' }, v.name.zh) : null,
           v.others.map((o) => h('p', { class: 'hc-other' }, o))));
         if (v.address) {
-          parts.push(h('section', { class: 'hc-block' },
+          parts.push(h('section', { class: 'hc-block hc-paper' },
+            h('span', { class: 'tape tl' }), h('span', { class: 'tape tr' }),
             h('p', { class: 'hc-label' }, '地址（給司機看）'),
             h('p', { class: `hc-addr${v.address.korean ? ' kr' : ''}`, lang: v.address.korean ? 'ko' : undefined }, v.address.text),
             v.address.zh ? h('p', { class: 'hc-zh' }, v.address.zh) : null));

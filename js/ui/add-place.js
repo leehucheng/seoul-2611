@@ -19,7 +19,7 @@ import { CATEGORIES } from '../categories.js';
 import { holdBack } from '../back-stack.js';
 import { hasHangul } from '../i18n.js';
 import { classifyPlaceInput } from '../place-input.js';
-import { append, clear, h, icon } from './dom.js';
+import { append, clear, famStyle, h, icon, sheetEdge } from './dom.js';
 import { createPreviewPin } from './preview-pin.js';
 
 const root = () => document.documentElement;
@@ -97,10 +97,7 @@ function createForm(app, preview, opts, onClosed) {
   });
   const nameMsg = h('p', { id: 'as-name-msg', class: 'field-error', role: 'alert' });
   const catButtons = CATEGORIES.map((c) => {
-    const b = h('button', { class: 'as-cat', type: 'button', 'aria-pressed': 'false', 'data-cat': c.id }, icon(c.icon), h('span', null, c.label));
-    b.style.setProperty('--c', c.color);
-    b.style.setProperty('--t', c.tint);
-    b.style.setProperty('--k', c.ink);
+    const b = famStyle(h('button', { class: 'as-cat', type: 'button', 'aria-pressed': 'false', 'data-cat': c.id }, h('span', { class: 'fdot fdot--sm' }, icon(c.icon)), h('span', null, c.label)), c);
     b.addEventListener('click', () => setCategory(st.category === c.id ? '' : c.id));
     return b;
   });
@@ -131,7 +128,7 @@ function createForm(app, preview, opts, onClosed) {
   const pickText = h('span', { class: 'as-pick-text' }, '在地圖上點要放的位置');
   const pickbar = h('div', { class: 'as-pickbar', hidden: true }, icon('i-pin'), pickText,
     h('button', { class: 'btn btn--ghost as-pick-cancel', type: 'button', onclick: () => exitPick() }, '取消'));
-  const sheet = h('section', { class: 'addsheet', role: 'dialog', 'aria-labelledby': 'as-title', tabindex: '-1' }, head, body, foot, pickbar);
+  const sheet = h('section', { class: 'addsheet', role: 'dialog', 'aria-labelledby': 'as-title', tabindex: '-1' }, sheetEdge(), head, body, foot, pickbar);
 
   // ---- small renderers ------------------------------------------------------------------------------------
   const setMsg = (el, text, tone = 'error') => {

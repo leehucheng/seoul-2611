@@ -1,25 +1,25 @@
-// Place categories (pastel-consumer style: one hue + saturation per category, see colors.js).
-//   color  the solid pin colour. Icons are drawn white on it, so every one keeps >= 3:1 contrast against #FFFFFF
-//          (checked in tests/links-match.test.mjs and tests/style-colors.test.mjs).
-//   tint   the pale tile / tag background; ink: the dark text and icon colour of the same hue on it (>= 4.5:1)
-//   icon   an SVG <symbol> id in index.html
-import { hslToHex, inkOf, tintOf } from './colors.js';
+// Place categories: twelve ids, six colour families (colors.js FAMILIES). A pin is the family colour with the category's icon drawn
+// in the family's `on` colour (>= 3:1, checked in tests/style-colors.test.mjs and tests/links-match.test.mjs); the icon tells the
+// exact category inside a family.
+//   label  the full name (card, add form)       short  the filter capsule's word
+//   icon   an SVG <symbol> id in index.html     family eat | sweet | shop | culture | night | stay
+import { FAMILIES } from './colors.js';
 
-const category = (id, label, icon, hue, sat, lightness) => Object.freeze({
-  id, label, icon, hue, sat, color: hslToHex(hue, sat, lightness), tint: tintOf(hue, sat), ink: inkOf(hue, sat),
+const category = (id, label, short, icon, familyId) => Object.freeze({
+  id, label, short, icon, family: familyId, color: FAMILIES[familyId].color, on: FAMILIES[familyId].on,
 });
 
 export const CATEGORIES = [
-  category('bbq', '烤肉', 'i-flame', 358, 78, 44),
-  category('korean', '韓食/麵食', 'i-bowl', 58, 86, 31),
-  category('seafood', '海鮮/醬蟹', 'i-fish', 198, 76, 36),
-  category('dessert', '甜點', 'i-cake', 296, 52, 46),
-  category('cafe', '咖啡廳', 'i-coffee', 28, 36, 38),
-  category('bar', '酒吧/夜店', 'i-glass', 262, 56, 50),
-  category('fashion', '衣服', 'i-shirt', 228, 72, 48),
-  category('beauty', '美妝/香水', 'i-perfume', 330, 68, 48),
-  category('art', '展覽/美術館', 'i-frame', 158, 60, 32),
-  category('sight', '景點/銀杏', 'i-leaf', 104, 50, 32),
-  category('night', '夜景/日落', 'i-moon', 30, 92, 44),
-  category('hotel', '住宿', 'i-bed', 210, 14, 38),
+  category('bbq', '烤肉', '烤肉', 'i-flame', 'eat'),
+  category('korean', '韓食/麵食', '韓食', 'i-bowl', 'eat'),
+  category('seafood', '海鮮/醬蟹', '海鮮', 'i-fish', 'eat'),
+  category('dessert', '甜點', '甜點', 'i-cake', 'sweet'),
+  category('cafe', '咖啡廳', '咖啡', 'i-coffee', 'sweet'),
+  category('bar', '酒吧/夜店', '酒吧', 'i-glass', 'night'),
+  category('fashion', '衣服', '衣服', 'i-shirt', 'shop'),
+  category('beauty', '美妝/香水', '美妝', 'i-perfume', 'shop'),
+  category('art', '展覽/美術館', '展覽', 'i-frame', 'culture'),
+  category('sight', '景點/銀杏', '景點', 'i-leaf', 'culture'),
+  category('night', '夜景/日落', '夜景', 'i-moon', 'night'),
+  category('hotel', '住宿', '住宿', 'i-bed', 'stay'),
 ];

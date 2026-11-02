@@ -48,8 +48,9 @@ function storeEntries(rows) {
   return out;
 }
 
-function ginkgoEntries(rows) {
-  const h = (rows ?? []).findIndex((r) => flat(r[1]) === 'Area');
+export function ginkgoEntries(rows) {
+  if (!Array.isArray(rows)) return [];
+  const h = rows.findIndex((r) => flat(r[1]) === 'Area');
   if (h < 0) return [];
   const [areaCol, nameCol, krCol] = ['Area', 'Name', 'Korean name'].map((n) => colOf(rows[h], n));
   const out = [];
@@ -87,7 +88,7 @@ export const SCHEDULE_TO = '2026-11-09';
 // Flights, trains and "go back to the hotel" lines are part of the plan but not places a pin could mark.
 const TRANSPORT_WORDS = ['KTX', '機場', '航班', '抵達', '出發', '回飯店'];
 const FLIGHT_NUMBER = /\b[A-Z]{2}\d{3,4}\b/;
-const AIRPORT_LEG = /\b[A-Z]{3}\s+\d{1,2}:\d{2}\s*-\s*[A-Z]{3}\s+\d{1,2}:\d{2}\b/; // "TPE 17:05 - ICN 20:30": a flight written as airports and times
+const AIRPORT_LEG = /\b[A-Z]{3}\s+\d{1,2}:\d{2}\s*-\s*[A-Z]{3}\s+\d{1,2}:\d{2}\b/; // "TPE 09:00 - ICN 12:30": a flight written as airports and times
 
 /** An itinerary line about getting somewhere (flight, train, airport, hotel return), not a place. */
 export function isTransportLine(text) {

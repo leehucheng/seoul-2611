@@ -1,15 +1,14 @@
-// The five people. Each has one hue (>= 60 degrees from every other; here 72 apart) with a pale tint and a dark ink of that
-// hue (see colors.js): the 誰想去 tags on the place card, the avatar, the who-am-I list.
-import { inkOf, tintOf } from './colors.js';
+// The five people. A person is a name and an initial; the look of "me" (an ink circle with the initial) and of everyone else (an
+// outlined initial) is the same for all five (app.css), so no per-person colour lives here.
 
-const person = (name, initial, hue) => Object.freeze({ name, initial, hue, sat: 70, tint: tintOf(hue, 70), ink: inkOf(hue, 70) });
+const person = (name, initial) => Object.freeze({ name, initial });
 
 export const PEOPLE = [
-  person('Alper', 'A', 142),
-  person('Lee', 'L', 214),
-  person('Kai', 'K', 70),
-  person('Jack', 'J', 358),
-  person('Benson', 'B', 286),
+  person('Alper', 'A'),
+  person('Lee', 'L'),
+  person('Kai', 'K'),
+  person('Jack', 'J'),
+  person('Benson', 'B'),
 ];
 
 export const initialOf = (name) => PEOPLE.find((p) => p.name === name)?.initial;

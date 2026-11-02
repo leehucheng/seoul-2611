@@ -1,9 +1,9 @@
 // Pure view-model helpers for the place card and the map (no DOM, no globals) so they run in Node tests.
 // Every Place value arrives from the Sheet as a string; nothing here trusts a value to be well formed.
 import { CATEGORIES } from './categories.js';
-import { NEUTRAL } from './colors.js';
-import { formatHoursBadge } from './hours.js';
-import { hasHangul, zhOf } from './i18n.js';
+import { FAMILIES } from './colors.js';
+import { formatHoursBadge, hoursToday } from './hours.js';
+import { hasHan, hasHangul, zhOf } from './i18n.js';
 import { googleDirUrl, naverLinks } from './links.js';
 import { itemsForPlace } from './match.js';
 import { nameOf } from './people.js';
@@ -11,7 +11,7 @@ import { nameOf } from './people.js';
 const NAVER_APPNAME = 'seoul-2611';
 const clean = (v) => String(v ?? '').trim();
 
-const OTHER = Object.freeze({ id: 'other', label: '其他', color: '#475569', ...NEUTRAL, icon: 'i-pin' });
+const OTHER = Object.freeze({ id: 'other', label: '其他', short: '其他', icon: 'i-pin', family: 'other', color: FAMILIES.other.color, on: FAMILIES.other.on });
 
 /** Category record for a place's `category` id; an unknown id (e.g. typed by hand in the Sheet) gets a neutral pin. */
 export const categoryOf = (id) => CATEGORIES.find((c) => c.id === clean(id)) ?? OTHER;
@@ -22,10 +22,18 @@ export const categoryOf = (id) => CATEGORIES.find((c) => c.id === clean(id)) ?? 
  */
 export const matchesCategory = (place, filter) => filter === 'all' || categoryOf(place?.category).id === filter;
 
+/** The filter id of the 銀杏 capsule (not a category: the places the Sheet's 銀杏 tab lists, see ginkgo.js). */
+export const GINKGO_FILTER = 'ginkgo';
+
+/** matchesCategory plus the 銀杏 filter. `ginkgoIds` is the Set from ginkgoPlaceIds(). */
+export const matchesFilter = (place, filter, ginkgoIds) => (filter === GINKGO_FILTER ? Boolean(ginkgoIds?.has(place?.id)) : matchesCategory(place, filter));
+
 /**
  * Names for the top of the card. The Chinese name is the title and the Korean name sits under it, smaller;
  * with no Chinese name the Korean name is the title and gets its Chinese line (`zh`) under it. Any Korean string
- * on a line carries `zh` too when the snapshot has a translation; null means "nothing extra".
+ * on a line carries `zh` too when the snapshot has a translation; null means "nothing extra". Under a Latin-only title (MONBREW) the
+ * Korean name has no Chinese line above it that could stand for it, so it gets its own translation; with none it stays as it is (it is
+ * what finds the shop).
  * -> {title: {text, zh}, sub: [{text, zh}]}
  */
 export function nameBlock(place, translations) {
@@ -35,7 +43,7 @@ export function nameBlock(place, translations) {
   const text = zhName || kr || en || '（未命名）';
   const zhFor = (s) => (hasHangul(s) ? zhOf(s, translations) : null);
   const sub = [];
-  if (zhName && kr && kr !== zhName) sub.push({ text: kr, zh: null }); // the title above is this Korean name's Chinese line
+  if (zhName && kr && kr !== zhName) sub.push({ text: kr, zh: hasHan(zhName) ? null : zhFor(kr) }); // a Chinese title is this Korean name's Chinese line
   if (en && en !== text && en !== kr) sub.push({ text: en, zh: zhFor(en) });
   return { title: { text, zh: zhFor(text) }, sub };
 }
@@ -92,6 +100,55 @@ export function hoursView(place, now = new Date()) {
   if (state === '營業中') return { tone: 'open', badge: state, text };
   if (state === '已打烊') return { tone: 'closed', badge: state, text };
   return text ? { tone: 'plain', badge: null, text } : { tone: 'pending', badge: '待確認', text };
+}
+
+/**
+ * Today's hours as the price of a line on the 今日菜單: the windows of today as '11:00–21:00' (several joined by ' / '), 公休 for a
+ * closed day, 24 小時 for a whole day. null whenever it would not be a checked fact: unverified, added in the app, no hours_json, or
+ * a weekday the data does not cover (an empty price beats a wrong one).
+ */
+export function menuHours(place, now = new Date()) {
+  if (!place || clean(place.source) === 'app' || !isVerified(place)) return null;
+  const obj = parseJsonObject(place.hours_json);
+  if (!obj) return null;
+  const { windows } = hoursToday(obj, now);
+  if (!windows) return null;
+  if (windows.length === 0) return '公休';
+  if (windows.length === 1 && windows[0][0] === '00:00' && windows[0][1] === '24:00') return '24 小時';
+  return windows.map(([from, to]) => `${from}–${to}`).join(' / ');
+}
+
+const HOURS_LINE = /^(.*?\S)\s+(\d{1,2}:\d{2}.*)$/;
+
+/**
+ * hours_text -> the rows of the card's menu. A line written "label time…" (「每日 11:00–21:00」) is a row with the label on the left and
+ * the time as the price; any other line (time first, no time, prose) stays one row of plain text: it is never cut up.
+ * Lines are separated by '；', ';' or a line break. -> [{label, value, text}]
+ */
+export function splitHoursText(text) {
+  return clean(text).split(/[；;\n]/).map(clean).filter(Boolean).map((line) => {
+    const m = HOURS_LINE.exec(line);
+    return m && !/\d:\d/.test(m[1]) ? { label: m[1], value: m[2], text: line } : { label: '', value: '', text: line };
+  });
+}
+
+/**
+ * What the card's hours block shows: the rows (splitHoursText) and the state line. status: {tone: 'open'|'closed'|'pending', badge,
+ * leftMin (open: minutes to closing), opensInMin (closed: minutes to the next opening today)}, null when the Sheet only has text.
+ * null for a place that shows no hours at all (see hoursView).
+ */
+export function hoursCard(place, now = new Date()) {
+  const hv = hoursView(place, now);
+  if (!hv) return null;
+  const rows = splitHoursText(hv.text);
+  if (hv.tone === 'pending') return { rows, status: { tone: 'pending', badge: hv.badge, leftMin: null, opensInMin: null } };
+  if (hv.tone === 'plain') return { rows, status: null };
+  if (rows.length === 0) { // checked, structured hours but no text: today's hours are the value (a bare 待確認 would contradict 營業中)
+    const today = menuHours(place, now);
+    if (today) rows.push({ label: '今天', value: today, text: `今天 ${today}` });
+  }
+  const t = hoursToday(parseJsonObject(place.hours_json), now);
+  return { rows, status: { tone: hv.tone, badge: hv.badge, leftMin: t.closesInMin, opensInMin: t.opensInMin } };
 }
 
 /** Signature dish / item; same "unverified -> 待確認" rule as the hours. null for places added in the app. */

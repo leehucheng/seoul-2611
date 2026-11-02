@@ -1,9 +1,9 @@
-// "還沒上地圖": the names in the Sheet's plan tabs that have no pin yet. It is the 清單 tab: a full-height view above the
+// "還沒上地圖": the names in the Sheet's plan tabs that have no pin yet. It is the 未上地圖 tab: a full-height view above the
 // map and below the tab bar. Tapping a name opens the add form with that name searched, and the Sheet's wording stored as an
 // alias of the new pin.
 //
 // renderUnmapped(entries, onPick, {translations}) -> element   (a list grouped by where the name came from)
-// initUnmapped(app)  sets app.openUnmapped() (opens the list) and app.unmappedCount() (the number on the 清單 tab)
+// initUnmapped(app)  sets app.openUnmapped() (opens the list) and app.unmappedCount() (the number on the 未上地圖 tab)
 import { hasHangul, zhOf } from '../i18n.js';
 import { unmappedEntries } from '../plan-names.js';
 import { append, clear, h, icon } from './dom.js';
