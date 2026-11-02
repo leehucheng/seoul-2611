@@ -4,17 +4,18 @@
 //   state     app.cfg, app.me, app.snapshot, app.places, app.purchases, app.translations, app.config,
 //             app.stars (Set of ids), app.filter, app.map (initMap handle), app.fromCache, app.fetchedAt,
 //             app.placesKept (App_Places was unreadable, the places shown are this phone's last good ones)
-//   actions   app.actions.add / today / hotel (the FABs call these); today(dateISO?) and hotel(dateISO?) open the 今天 panel /
+//   actions   app.actions.add / today / hotel (the tab bar calls these); today(dateISO?) and hotel(dateISO?) open the 今天 view /
 //             the hotel card (app.openToday / app.openHotelCard); app.currentDate() is the date they use (see today-view.js);
 //             app.currentNightDate() is the date the hotel lookup uses (before 06:00 still the night before)
 //   data      app.applySnapshot({snapshot, fromCache, fetchedAt}) - for polling; app.reload() - fetch now;
 //             app.addPlaceLocal(place) - show a just-saved place at once
 //   ui        app.openPlace(id) / app.openPlaceCard(place) / app.closeCard(); app.showToast(text);
-//             app.addFab({id, label, iconId, onClick}); app.mapMode (set a string while picking a spot on the
-//             map so a tap on the map is not treated as "dismiss the card"); app.on('snapshot'|'me'|'card', fn)
-//             app.addMenuItem({id, label, iconId, count?, onClick}) - an entry in the ≡ menu (top bar)
-//             app.openAddPlace({mode, presetName, presetQuery, presetAlias, presetText}); app.openUnmapped()
+//             app.mapMode (set a string while picking a spot on the map so a tap on the map is not treated as
+//             "dismiss the card"); app.on('snapshot'|'me'|'card'|'view', fn)
+//             app.openAddPlace({mode, presetName, presetQuery, presetAlias, presetText}); app.openUnmapped() (the 清單 view)
 //             app.coverBottom() - px of the bottom of the screen a sheet other than the card covers (map insets)
+//             app.currentView() -> 'map' | 'today' | 'hotel' | 'list' (the full-height view above the map, ui/panel.js);
+//             app.closeView() shows the map; app.unmappedCount() is the number on the 清單 tab
 // Sync: startPolling(app.cfg, applySnapshot) runs from boot; a place saved here stays on the map until a snapshot has it.
 import { fetchSnapshot, startPolling } from './api.js';
 import { parseShareParams } from './add-place-logic.js';
@@ -31,9 +32,10 @@ import { cardPlaceId, cardVisibleHeight, closeCard, openCard } from './ui/card.j
 import { append, clear, h, icon } from './ui/dom.js';
 import { initHotel } from './ui/hotel-card.js';
 import { initMap } from './ui/map.js';
-import { initMenu } from './ui/menu.js';
+import { closeView, currentView, onViewChange } from './ui/panel.js';
 import { pickPerson, showMeButton } from './ui/person.js';
 import { showSetup } from './ui/setup.js';
+import { initTabbar } from './ui/tabbar.js';
 import { initToday } from './ui/today-panel.js';
 import { initUnmapped } from './ui/unmapped.js';
 
@@ -95,7 +97,8 @@ export const app = {
   visiblePlaces: () => app.places.filter((p) => !isHidden(p) && matchesCategory(p, app.filter)),
 
   showToast,
-  addFab,
+  currentView,
+  closeView,
   closeCard,
   openPlace,
   openPlaceCard,
@@ -143,16 +146,13 @@ function renderStatus() {
   if (line !== null) append(el, [line.iconId ? icon(line.iconId) : null, line.text]);
 }
 
-function addFab({ id, label, iconId, onClick, primary = false, position = 'top' }) {
-  const btn = h('button', { class: `fab${primary ? ' fab--primary' : ''}`, type: 'button', id: `fab-${id}` }, icon(iconId), h('span', { class: 'fab-label' }, label));
-  btn.addEventListener('click', () => onClick(btn));
-  const box = $('fabs');
-  if (position === 'bottom') box.append(btn); else box.prepend(btn);
-  return btn;
-}
-
 const comingSoon = (what) => () => showToast(`「${what}」還沒開放，馬上就有`);
-Object.assign(app.actions, { add: comingSoon('新增地點') }); // today and hotel are set by initToday / initHotel below
+Object.assign(app.actions, { add: comingSoon('新增地點') }); // add, today and hotel are set by initAddPlace / initToday / initHotel below
+
+/** While a full-height view covers the map, the map, the chips and 定位 are out of reach for the keyboard and screen readers too. */
+function setMapInert(view) {
+  for (const el of [$('map'), document.querySelector('.topbar'), $('locate-btn')]) if (el) el.inert = view !== 'map';
+}
 
 async function onLocate(btn) {
   if (!app.map || btn.getAttribute('aria-busy') === 'true') return;
@@ -179,7 +179,7 @@ function renderChips() {
   const select = (id) => { app.filter = app.filter === id ? 'all' : id; refreshPins(); renderChips(); app.emit('filter', app.filter); };
   const mk = (id, label, cat) => {
     const btn = h('button', { class: 'chip', type: 'button', 'aria-pressed': String(app.filter === id), onclick: () => select(id) }, cat ? icon(cat.icon) : null, label);
-    if (cat) btn.style.setProperty('--c', cat.color);
+    if (cat) { btn.style.setProperty('--c', cat.color); btn.style.setProperty('--k', cat.ink); } // the icon is drawn in the category's dark ink
     return btn;
   };
   append(clear(box), [
@@ -193,7 +193,7 @@ function renderChips() {
 // ---- pins and card ----------------------------------------------------------------------------------------
 
 function refreshPins() {
-  app.map?.setPlaces(app.visiblePlaces(), { me: app.me ?? '', starred: app.stars });
+  app.map?.setPlaces(app.visiblePlaces(), { me: app.me ?? '', starred: app.stars, translations: app.translations });
 }
 
 function cardContext(place) {
@@ -330,7 +330,12 @@ async function boot() {
   app.stars = loadStars(storage);
 
   try {
-    app.map = initMap($('map'), { insets: () => ({ top: document.querySelector('.topbar').offsetHeight, bottom: Math.max(cardVisibleHeight(), app.coverBottom()) }) });
+    app.map = initMap($('map'), {
+      insets: () => ({ // screen space the chips and what sits at the bottom (tab bar, place card, add form) cover
+        top: document.querySelector('.topbar').offsetHeight,
+        bottom: Math.max($('tabbar').offsetHeight, cardVisibleHeight(), app.coverBottom()),
+      }),
+    });
   } catch (e) {
     console.error(e);
     showFatal('地圖載入失敗', '地圖元件沒有載入，可能是沒有網路。連上網路後重新載入。');
@@ -339,20 +344,17 @@ async function boot() {
   app.map.onPinClick((id) => { if (!app.mapMode) openPlace(id); }); // while a place is being added, pins are not tapped open
   app.map.onMapClick(() => { if (!app.mapMode) closeCard(); });
 
-  // top to bottom: 飯店, 今天, 新增, 定位 (the thumb reaches 定位 and 新增 first)
-  addFab({ id: 'hotel', label: '飯店', iconId: 'i-bed', onClick: () => app.actions.hotel(), position: 'bottom' });
-  addFab({ id: 'today', label: '今天', iconId: 'i-calendar', onClick: () => app.actions.today(), position: 'bottom' });
-  addFab({ id: 'add', label: '新增', iconId: 'i-plus', primary: true, onClick: () => app.actions.add(), position: 'bottom' });
-  addFab({ id: 'locate', label: '定位', iconId: 'i-locate', onClick: onLocate, position: 'bottom' });
+  $('locate-btn').addEventListener('click', () => onLocate($('locate-btn')));
   $('me-btn').addEventListener('click', switchPerson);
+  onViewChange((view) => { setMapInert(view); app.emit('view', view); }); // a full-height view opened / closed: the tab bar and the map follow
   // typing in the card stopped: run a redraw that was held back. Not at once: the tap that moved focus away may be on a
   // button of the card, and replacing the card between its press and release would swallow that tap.
   document.addEventListener('focusout', () => setTimeout(() => cardGate.flush(), 400));
-  initMenu(app); // the ≡ button; features add their entries with app.addMenuItem
   initAddPlace(app); // replaces app.actions.add
-  initUnmapped(app);
+  initUnmapped(app); // app.openUnmapped, app.unmappedCount
   initToday(app); // replaces app.actions.today
   initHotel(app); // replaces app.actions.hotel
+  initTabbar(app); // the bottom tab bar calls the hooks above
 
   app.loading = true;
   renderStatus();

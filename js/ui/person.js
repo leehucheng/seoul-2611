@@ -1,6 +1,13 @@
 // "我是誰": which of the five people is holding this phone. Stored in localStorage `seoul.me` (the person's name).
-import { PEOPLE, initialOf } from '../people.js';
+import { PEOPLE, initialOf, personOf } from '../people.js';
 import { append, h } from './dom.js';
+
+/** The person's own pale tint and dark ink as CSS variables (--t, --k) on an element. */
+function tintFor(el, p) {
+  if (!p) return;
+  el.style.setProperty('--t', p.tint);
+  el.style.setProperty('--k', p.ink);
+}
 
 export const ME_KEY = 'seoul.me';
 
@@ -18,6 +25,7 @@ export function savedPerson(storage) {
 export function showMeButton(btn, name) {
   btn.hidden = false;
   btn.textContent = initialOf(name) ?? '?';
+  tintFor(btn, personOf(name));
   btn.setAttribute('aria-label', `你是 ${name}，按一下切換身分`);
   btn.title = `你是 ${name}，按一下切換`;
 }
@@ -40,18 +48,22 @@ export function pickPerson(storage, { force = false } = {}) {
       resolve(name);
     };
 
-    const list = h('div', { class: 'picker-list' }, PEOPLE.map((p) => h(
-      'button',
-      {
-        class: 'picker-btn', type: 'button', 'aria-current': p.name === current ? 'true' : undefined,
-        onclick: () => {
-          try { storage.setItem(ME_KEY, p.name); } catch { /* private mode: still works until the page closes */ }
-          close(p.name);
+    const list = h('div', { class: 'picker-list' }, PEOPLE.map((p) => {
+      const initial = h('span', { class: 'picker-initial', 'aria-hidden': 'true' }, p.initial);
+      tintFor(initial, p);
+      return h(
+        'button',
+        {
+          class: 'picker-btn', type: 'button', 'aria-current': p.name === current ? 'true' : undefined,
+          onclick: () => {
+            try { storage.setItem(ME_KEY, p.name); } catch { /* private mode: still works until the page closes */ }
+            close(p.name);
+          },
         },
-      },
-      h('span', { class: 'picker-initial', 'aria-hidden': 'true' }, p.initial),
-      h('span', { class: 'picker-name' }, p.name),
-    )));
+        initial,
+        h('span', { class: 'picker-name' }, p.name),
+      );
+    }));
 
     append(dialog, [
       h('h2', { id: 'picker-title', class: 'picker-title' }, '你是誰？'),

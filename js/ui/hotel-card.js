@@ -5,9 +5,10 @@
 // initHotel(app) sets app.actions.hotel and app.openHotelCard(dateISO?): the hotel for the night that starts on that date
 // (no date: tonight, app.currentNightDate()).
 import { hotelCardView } from '../hotel-view.js';
+import { categoryOf } from '../place-view.js';
 import { formatMD, isISODate, loadTripData, stayLabel } from '../today-view.js';
 import { buildToday } from '../today.js';
-import { append, clear, h, icon } from './dom.js';
+import { append, clear, h, icon, tile } from './dom.js';
 import { buildNav } from './card.js';
 import { closeButton, createPanel } from './panel.js';
 
@@ -23,7 +24,6 @@ export function initHotel(app) {
       return null;
     }
     app.closeCard();
-    app.closeMenu?.();
 
     const date = isISODate(dateArg) ? dateArg : app.currentNightDate(); // before 06:00 "tonight" is still the night that began yesterday
     const state = { sig: '' };
@@ -31,7 +31,7 @@ export function initHotel(app) {
     const head = h('header', { class: 'panel-head' }, null, title);
     const body = h('div', { class: 'panel-body hc-body' });
     const offs = [];
-    const panel = createPanel({ cls: 'panel--hotel', label: '飯店', onClose: () => offs.forEach((off) => off()) });
+    const panel = createPanel({ cls: 'panel--hotel', label: '飯店', view: 'hotel', onClose: () => offs.forEach((off) => off()) });
     head.prepend(closeButton(panel));
     append(panel.dialog, [head, body]);
 
@@ -49,7 +49,7 @@ export function initHotel(app) {
         parts.push(h('div', { class: 'hc-none' }, icon('i-bed'),
           h('p', { class: 'hc-none-text' }, unreadable ? '飯店表讀不到。確認有網路，或到表上看看分頁有沒有被改名。' : v.text)));
       } else {
-        parts.push(h('p', { class: 'hc-label' }, `${tonight ? '今晚住' : '這晚住'}（${stayLabel(v.stay)}）`));
+        parts.push(h('p', { class: 'hc-label hc-label--tile' }, tile(categoryOf('hotel'), 'tile--sm'), `${tonight ? '今晚住' : '這晚住'}（${stayLabel(v.stay)}）`));
         parts.push(h('section', { class: 'hc-block' },
           h('h3', { class: `hc-name${v.name.korean ? ' kr' : ''}`, lang: v.name.korean ? 'ko' : undefined }, v.name.text),
           v.name.zh ? h('p', { class: 'hc-zh' }, v.name.zh) : null,

@@ -9,11 +9,12 @@ import { holdBack } from '../back-stack.js';
 import { createFallbackGuard } from '../fallback-guard.js';
 import { hasHangul, zhOf } from '../i18n.js';
 import { lightsplitShareUrl } from '../links.js';
+import { personOf } from '../people.js';
 import {
   categoryOf, detectPlatform, googleUrl, hasCoords, hoursView, nameBlock, naverTarget, parseAmount, personalFor,
   safeHttpsUrl, signatureView, whoNames,
 } from '../place-view.js';
-import { h, icon } from './dom.js';
+import { h, icon, tile } from './dom.js';
 
 const HINT = '走路導航用 Naver；Google 在韓國通常只有大眾運輸路線';
 const MAX_SHEET = 0.9; // of the viewport height
@@ -89,7 +90,7 @@ function buildHeader(place, ctx) {
     starBtn.setAttribute('aria-pressed', String(on));
   });
   const closeBtn = h('button', { class: 'icon-btn', type: 'button', 'aria-label': '關閉', onclick: () => closeCard() }, icon('i-close'));
-  return h('div', { class: 'card-head sheet-drag' }, titles, h('div', { class: 'card-actions' }, starBtn, closeBtn));
+  return h('div', { class: 'card-head sheet-drag' }, tile(categoryOf(place.category), 'tile--lg'), titles, h('div', { class: 'card-actions' }, starBtn, closeBtn));
 }
 
 function buildMeta(place, ctx) {
@@ -97,6 +98,8 @@ function buildMeta(place, ctx) {
   const cat = categoryOf(place.category);
   const catTag = h('span', { class: 'tag tag--cat' }, icon(cat.icon), cat.label);
   catTag.style.setProperty('--c', cat.color);
+  catTag.style.setProperty('--t', cat.tint);
+  catTag.style.setProperty('--k', cat.ink);
   const area = clean(place.area);
   const tags = [catTag, area ? h('span', { class: 'tag' }, icon('i-pin'), textWithZh(area, tr)) : null];
   if (place.source === 'recommend') tags.push(h('span', { class: 'tag tag--rec' }, '推薦'));
@@ -124,7 +127,12 @@ function buildFacts(place, ctx) {
   }
   const names = whoNames(place);
   if (names.length) {
-    rows.push(fact('誰想去', names.map((n) => h('span', { class: `tag tag--who${n === ctx.person ? ' is-me' : ''}` }, `${n} 想去`))));
+    rows.push(fact('誰想去', names.map((n) => {
+      const tag = h('span', { class: `tag tag--who${n === ctx.person ? ' is-me' : ''}` }, `${n} 想去`);
+      const p = personOf(n); // one pale colour per person, so who wants to go reads at a glance
+      if (p) { tag.style.setProperty('--t', p.tint); tag.style.setProperty('--k', p.ink); }
+      return tag;
+    })));
   }
   return rows;
 }

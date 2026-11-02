@@ -19,7 +19,7 @@
 // tests/sw-precache.test.mjs fails while PRECACHE or the BUILD stamp is out of date.
 'use strict';
 
-const BUILD = 'bd589ed186'; // written by tools/stamp-sw.mjs: a hash of every precached app file (this file excluded)
+const BUILD = '082a222d7c'; // written by tools/stamp-sw.mjs: a hash of every precached app file (this file excluded)
 const SHELL_CACHE = `seoul-shell-${BUILD}`; // activate removes every other seoul-shell-* cache
 const TILE_CACHE = 'seoul-tiles-v1'; // not tied to BUILD: viewed tiles survive an app update
 const TILE_LIMIT = 300;
@@ -38,6 +38,7 @@ const PRECACHE = [
   'js/api.js',
   'js/back-stack.js',
   'js/categories.js',
+  'js/colors.js',
   'js/config.js',
   'js/fallback-guard.js',
   'js/fields.js',
@@ -49,6 +50,7 @@ const PRECACHE = [
   'js/main.js',
   'js/match.js',
   'js/people.js',
+  'js/pin-labels.js',
   'js/place-input.js',
   'js/place-view.js',
   'js/plan-names.js',
@@ -63,11 +65,11 @@ const PRECACHE = [
   'js/ui/dom.js',
   'js/ui/hotel-card.js',
   'js/ui/map.js',
-  'js/ui/menu.js',
   'js/ui/panel.js',
   'js/ui/person.js',
   'js/ui/preview-pin.js',
   'js/ui/setup.js',
+  'js/ui/tabbar.js',
   'js/ui/today-panel.js',
   'js/ui/unmapped.js',
   `${LEAFLET}leaflet.min.css`,

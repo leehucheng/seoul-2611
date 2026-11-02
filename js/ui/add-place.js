@@ -99,6 +99,8 @@ function createForm(app, preview, opts, onClosed) {
   const catButtons = CATEGORIES.map((c) => {
     const b = h('button', { class: 'as-cat', type: 'button', 'aria-pressed': 'false', 'data-cat': c.id }, icon(c.icon), h('span', null, c.label));
     b.style.setProperty('--c', c.color);
+    b.style.setProperty('--t', c.tint);
+    b.style.setProperty('--k', c.ink);
     b.addEventListener('click', () => setCategory(st.category === c.id ? '' : c.id));
     return b;
   });

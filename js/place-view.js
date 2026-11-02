@@ -1,6 +1,7 @@
 // Pure view-model helpers for the place card and the map (no DOM, no globals) so they run in Node tests.
 // Every Place value arrives from the Sheet as a string; nothing here trusts a value to be well formed.
 import { CATEGORIES } from './categories.js';
+import { NEUTRAL } from './colors.js';
 import { formatHoursBadge } from './hours.js';
 import { hasHangul, zhOf } from './i18n.js';
 import { googleDirUrl, naverLinks } from './links.js';
@@ -10,7 +11,7 @@ import { nameOf } from './people.js';
 const NAVER_APPNAME = 'seoul-2611';
 const clean = (v) => String(v ?? '').trim();
 
-const OTHER = Object.freeze({ id: 'other', label: '其他', color: '#475569', icon: 'i-pin' });
+const OTHER = Object.freeze({ id: 'other', label: '其他', color: '#475569', ...NEUTRAL, icon: 'i-pin' });
 
 /** Category record for a place's `category` id; an unknown id (e.g. typed by hand in the Sheet) gets a neutral pin. */
 export const categoryOf = (id) => CATEGORIES.find((c) => c.id === clean(id)) ?? OTHER;

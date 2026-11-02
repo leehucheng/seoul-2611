@@ -1,12 +1,13 @@
-// "還沒上地圖": the names in the Sheet's plan tabs that have no pin yet. Lives in the ≡ menu with its count; tapping a
-// name opens the add form with that name searched, and the Sheet's wording stored as an alias of the new pin.
+// "還沒上地圖": the names in the Sheet's plan tabs that have no pin yet. It is the 清單 tab: a full-height view above the
+// map and below the tab bar. Tapping a name opens the add form with that name searched, and the Sheet's wording stored as an
+// alias of the new pin.
 //
 // renderUnmapped(entries, onPick, {translations}) -> element   (a list grouped by where the name came from)
-// initUnmapped(app)  registers the menu entry; app.openUnmapped() opens the list
-import { holdBack } from '../back-stack.js';
+// initUnmapped(app)  sets app.openUnmapped() (opens the list) and app.unmappedCount() (the number on the 清單 tab)
 import { hasHangul, zhOf } from '../i18n.js';
 import { unmappedEntries } from '../plan-names.js';
-import { append, h, icon } from './dom.js';
+import { append, clear, h, icon } from './dom.js';
+import { closeButton, createPanel } from './panel.js';
 
 const GROUPS = [['Store', '店家清單'], ['銀杏', '銀杏景點'], ['Exhibition', '展覽'], ['Schedule', '行程表']];
 
@@ -49,16 +50,21 @@ export function initUnmapped(app) {
   const compute = () => unmappedEntries(app.snapshot?.tabs ?? {}, app.places, app.config?.ignore_names ?? []);
 
   function open() {
-    const entries = compute();
-    const dialog = h('dialog', { class: 'sheet-dialog', 'aria-labelledby': 'up-heading' });
-    let releaseBack = () => {};
-    const close = () => {
-      releaseBack(); // the history entry the open list holds (back-stack.js); a second call does nothing
-      try { dialog.close(); } catch { /* not open */ }
-      dialog.remove();
-    };
+    if (!app.snapshot) {
+      app.showToast('資料還沒載入好，等一下再按一次');
+      return null;
+    }
+    app.closeCard();
+    const offs = [];
+    const title = h('h2', { id: 'up-heading', class: 'panel-title' });
+    const hint = h('p', { class: 'up-hint' }, '表上有寫、地圖上還沒有 pin 的名字。點一個，搜尋後加到地圖。');
+    const list = h('div', { class: 'up-wrap' });
+    const body = h('div', { class: 'panel-body' }, hint, list);
+    const panel = createPanel({ cls: 'panel--list', label: '還沒上地圖', view: 'list', onClose: () => offs.forEach((off) => off()) });
+    append(panel.dialog, [h('header', { class: 'panel-head' }, closeButton(panel), title), body]);
+
     const pick = (entry) => {
-      close();
+      panel.close(); // back to the map: the add form needs it to pick a spot
       app.actions.add({
         mode: 'tap',
         presetName: entry.shop,
@@ -66,22 +72,21 @@ export function initUnmapped(app) {
         presetAlias: entry.aliases,
       });
     };
-    const scroll = h('div', { class: 'sd-scroll' }, renderUnmapped(entries, pick, { translations: app.translations }));
-    append(dialog, [
-      h('div', { class: 'sd-head' },
-        h('h2', { id: 'up-heading', class: 'sd-title' }, `還沒上地圖（${entries.length}）`),
-        h('button', { class: 'icon-btn', type: 'button', 'aria-label': '關閉', onclick: close }, icon('i-close'))),
-      entries.length ? h('p', { class: 'sd-hint' }, '表上有寫、地圖上還沒有 pin 的名字。點一個，搜尋後加到地圖。') : null,
-      scroll,
-    ]);
-    dialog.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
-    dialog.addEventListener('click', (e) => { if (e.target === dialog) close(); }); // the dimmed area above the sheet
-    document.body.append(dialog);
-    if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', '');
-    releaseBack = holdBack(close); // the Back button closes the list instead of leaving the app
-    return dialog;
+    let sig = '';
+    function render() {
+      const entries = compute();
+      sig = JSON.stringify([entries, app.translations]);
+      const scroll = body.scrollTop;
+      title.textContent = `還沒上地圖（${entries.length}）`;
+      hint.hidden = entries.length === 0;
+      clear(list).append(renderUnmapped(entries, pick, { translations: app.translations }));
+      body.scrollTop = scroll;
+    }
+    render();
+    offs.push(app.on('snapshot', () => { if (JSON.stringify([compute(), app.translations]) !== sig) render(); })); // a poll or a just-added pin changes the list
+    return panel;
   }
 
   app.openUnmapped = open;
-  app.addMenuItem({ id: 'unmapped', label: '還沒上地圖', iconId: 'i-pin', count: () => compute().length, onClick: open });
+  app.unmappedCount = () => compute().length;
 }

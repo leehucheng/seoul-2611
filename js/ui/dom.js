@@ -36,6 +36,14 @@ export function icon(id, cls = '') {
   return svg;
 }
 
+/** A rounded square in a category's pale tint with its icon in the dark ink: tile(categoryOf(id)) or tile(cat, 'tile--sm'). */
+export function tile(cat, cls = '') {
+  const el = h('span', { class: `tile ${cls}`.trim() }, icon(cat.icon));
+  el.style.setProperty('--t', cat.tint);
+  el.style.setProperty('--k', cat.ink);
+  return el;
+}
+
 export function clear(el) {
   el.replaceChildren();
   return el;

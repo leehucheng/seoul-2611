@@ -3,9 +3,14 @@
 // closes and the map flies there). Every Korean string has a smaller Chinese line under it.
 //
 // initToday(app) sets app.actions.today and app.openToday(dateISO?). Text from the Sheet only goes in through dom.js (textContent).
+import { NEUTRAL } from '../colors.js';
+import { categoryOf } from '../place-view.js';
 import { isISODate, loadTripData, todayView } from '../today-view.js';
-import { append, clear, h, icon } from './dom.js';
+import { append, clear, h, icon, tile } from './dom.js';
 import { closeButton, createPanel, textWithZh } from './panel.js';
+
+/** The tile of a schedule item that has no pin on the map: a neutral grey one. */
+const NO_PIN = Object.freeze({ icon: 'i-list', ...NEUTRAL });
 
 /** What a poll can change on this panel: the three tabs, the people, the places the items point to, the translations. */
 const signatureOf = (app) => JSON.stringify([
@@ -20,13 +25,12 @@ export function initToday(app) {
       return null;
     }
     app.closeCard();
-    app.closeMenu?.();
 
     const state = { date: isISODate(dateArg) ? dateArg : app.currentDate(), expanded: new Set(), sig: '' };
     const head = h('header', { class: 'panel-head today-head' });
     const body = h('div', { class: 'panel-body' });
     const offs = [];
-    const panel = createPanel({ cls: 'panel--today', label: '今天', onClose: () => offs.forEach((off) => off()) });
+    const panel = createPanel({ cls: 'panel--today', label: '今天', view: 'today', onClose: () => offs.forEach((off) => off()) });
     append(panel.dialog, [head, body]);
 
     const go = (date) => {
@@ -64,11 +68,14 @@ export function initToday(app) {
         it.note ? h('span', { class: 'td-note' }, it.note) : null,
         it.noteZh.map((zh) => h('span', { class: 'td-note td-note--zh' }, zh)),
       ];
+      const place = it.placeId ? app.placeById(it.placeId) : null;
+      const mark = tile(place ? categoryOf(place.category) : NO_PIN); // the category of the pin it points to, else a grey tile
       const main = it.placeId
         ? h('button', { class: 'td-main td-main--go', type: 'button', onclick: () => goToPlace(it.placeId) },
+          mark,
           h('span', { class: 'td-lines' }, lines),
           h('span', { class: 'td-go' }, icon('i-pin'), '地圖'))
-        : h('div', { class: 'td-main' }, h('span', { class: 'td-lines' }, lines));
+        : h('div', { class: 'td-main' }, mark, h('span', { class: 'td-lines' }, lines));
 
       const li = h('li', { class: 'td-item' });
       const row = h('div', { class: 'td-row' }, main);
@@ -108,7 +115,7 @@ export function initToday(app) {
       }
       if (v.hotel) {
         parts.push(h('button', { class: 'td-hotel', type: 'button', onclick: () => app.actions.hotel(v.hotelDate) }, // the night the row shows (before 06:00 on today: yesterday's), so the card agrees
-          icon('i-bed'),
+          tile(categoryOf('hotel')),
           h('span', { class: 'td-hotel-main' }, h('span', { class: 'td-k' }, v.isToday ? '今晚住' : '這晚住'), textWithZh(v.hotel.name, v.hotel.zh)),
           h('span', { class: 'td-hotel-go' }, '韓文卡', icon('i-chevron-right'))));
       }
