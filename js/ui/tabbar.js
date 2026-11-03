@@ -1,7 +1,8 @@
-// The bottom bar (a cream capsule with a thin ink ring): 地圖 · 今天 · 新增 (the yellow capsule) · 今晚住 · 未上地圖 (with a count).
-// Always on screen: the 今天 / 今晚住 / 未上地圖 views and the place card sit under it; only the add form covers it.
+// The bottom bar (a cream capsule with a thin ink ring): 地圖 · 今天 · 新增 (the yellow capsule) · 韓文卡 · 未上地圖 (with a count).
+// Always on screen: the 今天 / 韓文卡 / 未上地圖 views and the place card sit under it; only the add form (and a phrase card held up to
+// a shop assistant) covers it.
 //
-// 地圖 closes the place card and whichever full-height view is open and shows the map. 今天, 今晚住 and 未上地圖 open their view
+// 地圖 closes the place card and whichever full-height view is open and shows the map. 今天, 韓文卡 (tonight's hotel card, then the phrase cards) and 未上地圖 open their view
 // above the map and below this bar; the tab of the open view is the ink circle with the yellow icon. 新增 closes an open view first
 // (the add form needs the map to pick a spot on) and opens the add form. The tabs call the hooks other modules set on `app`:
 // app.actions.today / .hotel / .add, app.openUnmapped, app.closeView, app.closeCard; they follow app.on('view') and, for the number on
@@ -12,7 +13,7 @@ export const TABS = Object.freeze([
   { id: 'map', label: '地圖', icon: 'i-map' },
   { id: 'today', label: '今天', icon: 'i-calendar', aria: '今天的行程' },
   { id: 'add', label: '新增', icon: 'i-plus', primary: true, aria: '新增地點' },
-  { id: 'hotel', label: '今晚住', icon: 'i-bed', aria: '今晚住的飯店' },
+  { id: 'hotel', label: '韓文卡', icon: 'i-id', aria: '韓文卡，今晚住的飯店和給店員看的句子' },
   { id: 'list', label: '未上地圖', icon: 'i-list' },
 ]);
 

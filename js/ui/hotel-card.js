@@ -1,6 +1,6 @@
-// 飯店韓文卡: a full-screen card made to be shown to a taxi driver. The hotel's Korean name and Korean address are
-// large, each with its smaller Chinese line under it (for the people holding the phone), then the phone (a tel: link)
-// and the same Naver / Google buttons as the place card.
+// 韓文卡 (the 韓文卡 tab): the place to show something Korean to a Korean. First the 飯店韓文卡, made to be shown to a taxi driver: the
+// hotel's Korean name and Korean address are large, each with its smaller Chinese line under it (for the people holding the phone), then
+// the phone (a tel: link) and the same Naver / Google buttons as the place card. Under it, 給店員看: the phrase cards (phrase-cards.js).
 //
 // initHotel(app) sets app.actions.hotel and app.openHotelCard(dateISO?): the hotel for the night that starts on that date
 // (no date: tonight, app.currentNightDate()).
@@ -11,6 +11,7 @@ import { buildToday } from '../today.js';
 import { append, clear, famDot, h, icon } from './dom.js';
 import { buildNav } from './card.js';
 import { closeButton, createPanel } from './panel.js';
+import { openPhraseCard, phraseSection } from './phrase-cards.js';
 
 const signatureOf = (app) => JSON.stringify([
   app.me, app.snapshot?.tabs?.Hotel, app.translations,
@@ -31,9 +32,14 @@ export function initHotel(app) {
     const head = h('header', { class: 'panel-head' }, null, title);
     const body = h('div', { class: 'panel-body hc-body' });
     const offs = [];
-    const panel = createPanel({ cls: 'panel--hotel', label: '飯店', view: 'hotel', onClose: () => offs.forEach((off) => off()) });
+    let phraseCard = null; // the full-screen phrase card that is open over this panel, if any
+    const panel = createPanel({ cls: 'panel--hotel', label: '韓文卡', view: 'hotel', onClose: () => { offs.forEach((off) => off()); phraseCard?.close(); } });
     head.prepend(closeButton(panel));
     append(panel.dialog, [head, body]);
+    const phrases = phraseSection((phrase, trigger) => { // built once: a snapshot redraw must not drop the button that has the focus
+      phraseCard?.close();
+      phraseCard = openPhraseCard(phrase, { behind: [panel.dialog, document.getElementById('tabbar')], trigger, onClose: () => { phraseCard = null; } });
+    });
 
     function render() {
       const scroll = body.scrollTop;
@@ -41,7 +47,7 @@ export function initHotel(app) {
       const stay = buildToday(trip, app.me, date).hotel;
       const v = hotelCardView({ stay, places: app.places, translations: app.translations });
       const tonight = date === app.currentNightDate();
-      title.textContent = tonight ? '今晚住哪' : `${formatMD(date)} 晚住哪`;
+      title.textContent = tonight ? '韓文卡' : `${formatMD(date)} 晚住哪`;
 
       const parts = [];
       if (v.kind === 'none') {
@@ -74,6 +80,7 @@ export function initHotel(app) {
         if (v.kind === 'unmapped') parts.push(h('p', { class: 'hc-warn' }, '地圖上還沒有這間飯店的資料，所以沒有韓文地址和電話。'));
         parts.push(buildNav(v.navPlace));
       }
+      parts.push(phrases);
       clear(body);
       append(body, parts);
       body.scrollTop = scroll;
