@@ -27,3 +27,31 @@ export const PLACE_FIELDS = [
   'updated_at',
   'address_zh', // Traditional Chinese of address_kr, made by the server (LanguageApp)
 ];
+
+// Column order of the Google Sheet tab `App_Shopping` (the 代購清單): one row per item, every row owned by one person. Every column is
+// plain text. `owner` is the name the app calls the person by (app.me); qty is a whole number 1-99; price_krw / actual_krw / actual_twd
+// are whole numbers >= 0 or empty; bought / hidden are 'TRUE' or ''. Append-only like PLACE_FIELDS (gas/Code.template.gs has the same list).
+export const SHOP_FIELDS = [
+  'id',
+  'owner',
+  'name_zh',
+  'name_ko',
+  'brand',
+  'spec',
+  'qty',
+  'for_whom',
+  'price_krw',
+  'price_source',
+  'price_date',
+  'price_note',
+  'official_url',
+  'image_url',
+  'where',
+  'note',
+  'bought',
+  'actual_krw',
+  'actual_twd',
+  'hidden',
+  'added_by',
+  'updated_at',
+];

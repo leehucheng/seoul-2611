@@ -23,6 +23,7 @@
 //             app.switchPerson() opens the who-am-I picker
 //             app.packing -> the 行李清單 ticks of this phone (packing-ticks.js createPacking: count(), toggle(id), reset()); emits 'packing'
 //           app.getVersion() -> Promise of the running build (sw.js BUILD), null without a worker or an answer; the 今天 page shows it
+//           app.shopping -> the 代購清單 (ui/shopping.js initShopping): items(), mine(), apply(row), api; emits 'shopping' when the items change
 // Start: once the person is picked, the 今天 view opens over the map (openStartView; not for an Android share, which opens the add form).
 // Update: ui/update-bar.js shows 「新版本好了」 + 「更新」 above the tab bar when a new service worker takes over an already controlled page.
 // Sync: startPolling(app.cfg, applySnapshot) runs from boot; a place saved here stays on the map until a snapshot has it.
@@ -54,6 +55,7 @@ import { initPacking } from './ui/packing.js';
 import { closeView, currentView, onViewChange } from './ui/panel.js';
 import { pickPerson, showMeButton } from './ui/person.js';
 import { showSetup } from './ui/setup.js';
+import { initShopping } from './ui/shopping.js';
 import { initTabbar } from './ui/tabbar.js';
 import { initToday } from './ui/today-panel.js';
 import { initUnmapped } from './ui/unmapped.js';
@@ -482,6 +484,7 @@ async function boot() {
   initAddPlace(app); // replaces app.actions.add
   initUnmapped(app); // app.openUnmapped, app.unmappedCount
   initPacking(app); // app.packing: what is ticked on the 行李清單 (the 今天 page's card on the first and last trip day)
+  initShopping(app); // app.shopping: the 代購清單 items (snapshot.shopping + what this phone saved) and the calls that write them
   initToday(app); // replaces app.actions.today
   initHotel(app); // replaces app.actions.hotel
   initTabbar(app); // the bottom tab bar calls the hooks above

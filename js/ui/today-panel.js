@@ -24,6 +24,8 @@
 // On the first and the last trip day (and on the 全程總覽 before the trip) a 「行李清單 N/46」 card sits under the banner / flight reminder,
 // above the board's lines; a tap opens the packing screen over this page (ui/packing.js: it holds its own back-stack entry, this page stays
 // open under it). Every page ends with a small muted 「版本 <build>」 once the service worker has said which build runs (app.getVersion()).
+// On the 全程總覽 (after the packing card) and on every day page (in the same place, under the banner / flight reminder) a 「代購清單」 card with
+// 「我的 N 項・已買 M」 opens the shopping screen over this page the same way (ui/shopping.js).
 //
 // initToday(app) sets app.actions.today and app.openToday(dateISO?). Text from the Sheet only goes in through dom.js (textContent).
 import { hasHan, hasHangul } from '../i18n.js';
@@ -38,6 +40,7 @@ import { append, clear, famStyle, h, icon, leaf } from './dom.js';
 import { openPacking, packingCard } from './packing.js';
 import { createPanel, textWithZh } from './panel.js';
 import { showMeButton } from './person.js';
+import { openShopping, shoppingCard } from './shopping.js';
 
 const clean = (v) => String(v ?? '').trim();
 const REFRESH_MS = 30000;
@@ -139,16 +142,22 @@ export function initToday(app) {
       h('span', { class: 'tape tl' }), h('span', { class: 'tape tr' }), h('span', { class: 'tape bl' }), h('span', { class: 'tape br' }), bh, scroll);
     const offs = [];
     let packingScreen = null; // the packing screen that is open over this page, if any
+    let shoppingScreen = null; // the shopping screen that is open over this page, if any
     let closed = false;
     let version = null; // the build this page runs, once the service worker has said (app.getVersion)
     const versionLine = h('p', { class: 't-ver' });
-    const panel = createPanel({ cls: 'panel--today', label: '今天', view: 'today', onClose: () => { closed = true; offs.forEach((off) => off()); packingScreen?.close(); } });
+    const panel = createPanel({ cls: 'panel--today', label: '今天', view: 'today', onClose: () => { closed = true; offs.forEach((off) => off()); packingScreen?.close(); shoppingScreen?.close(); } });
     append(panel.dialog, [meta, days, board]);
     const packing = packingCard(app, (trigger) => { // built once: a redraw of the page puts the same button back, so focus can return to it
       packingScreen?.close();
       packingScreen = openPacking(app, { behind: [panel.dialog, document.getElementById('tabbar')], trigger, onClose: () => { packingScreen = null; } });
     });
     offs.push(app.on('packing', packing.paint));
+    const shopping = shoppingCard(app, (trigger) => { // built once, like the packing card
+      shoppingScreen?.close();
+      shoppingScreen = openShopping(app, { behind: [panel.dialog, document.getElementById('tabbar')], trigger, onClose: () => { shoppingScreen = null; } });
+    });
+    offs.push(app.on('shopping', shopping.paint));
 
     const go = (date) => {
       if (!date) return;
@@ -383,6 +392,8 @@ export function initToday(app) {
 
       const parts = [];
       if (today < TRIP_FIRST && packing.sync(TRIP_FIRST)) parts.push(packing.element); // the same card, count and screen as on the first day; before the trip only
+      shopping.paint();
+      parts.push(shopping.element);
       if (!app.snapshot) parts.push(h('p', { class: 'td-empty' }, '正在讀行程…'));
       else if (!trip.ok) parts.push(h('p', { class: 'td-empty' }, '行程表讀不到。確認有網路，或到表上看看分頁有沒有被改名。'));
       else parts.push(h('ol', { class: 'ov-days' }, rows.map(renderOverviewRow)));
@@ -417,6 +428,8 @@ export function initToday(app) {
           h('p', { class: 'td-flight-text' }, h('span', { class: 'td-when' }, v.flight.when), ' ', v.flight.text)));
       }
       if (packing.sync(v.date)) parts.push(packing.element); // only on TRIP_FIRST and TRIP_LAST
+      shopping.paint();
+      parts.push(shopping.element); // on every day page, under the packing card's place
 
       clear(lines);
       rows.forEach((r, i) => {

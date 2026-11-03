@@ -1,7 +1,8 @@
-// Client for the Apps Script web app (GET ?action=all, POST addPlace / searchPlace / resolveLink) with an offline snapshot cache.
+// Client for the Apps Script web app (GET ?action=all, POST addPlace / searchPlace / resolveLink / saveShopping / deleteShopping / setBought) with an offline snapshot cache.
 // `cfg` is what readConfig() returns: {api, writeKey}. `fetchFn`, `storage`, `now` and `doc` are
 // injectable so everything here runs in Node tests; defaults are the browser globals.
 import { placeAsTyped, quotedForServer } from './add-place-logic.js';
+import { SHOP_FIELDS } from './fields.js';
 
 export const SNAP_KEY = 'seoul.snap';
 
@@ -163,6 +164,65 @@ export async function resolveLink(cfg, text, { fetchFn = defaultFetch, timeoutMs
   const data = await postAction(cfg, { action: 'resolveLink', key: cfg.writeKey, text: s }, fetchFn, timeoutMs);
   if (!data.place || typeof data.place !== 'object') throw new Error('bad_response');
   return data.place;
+}
+
+// ---- 代購清單 (the backend's saveShopping / deleteShopping / setBought; every row belongs to one `owner`, the name app.me holds) ----------
+// Each of them resolves to the row as the backend stored it (every SHOP_FIELDS key as text) and throws Error(code) like addPlace: the
+// server's own code on ok:false (not_owner, not_found, bad_item, missing_tab:App_Shopping, busy, ...), else not_configured / bad_key (no
+// local key) / network / bad_response. With api=mock nothing is stored and the answers are built here, like the real ones.
+
+const SHOP_TIMEOUT_MS = 30_000; // like a place: aborting a POST client-side does not undo it server-side
+const shopText = (v) => String(v ?? '').trim();
+
+function shopRowOf(data) {
+  if (!data.item || typeof data.item !== 'object') throw new Error('bad_response');
+  return data.item;
+}
+
+/**
+ * Mock answer to a save. A new item (no id): every SHOP_FIELDS key, with a mock id, the owner as added_by and no tick. An edit: the id, the owner
+ * and the fields that were sent, as the form's own fields (what changed, like the mock's delete and tick: the caller lays it over the row it has).
+ */
+function mockShopRow(item) {
+  const now = new Date().toISOString();
+  if (shopText(item.id) !== '') {
+    const NOT_SENT = ['bought', 'hidden', 'added_by', 'updated_at']; // the backend never takes these from a save
+    const row = {};
+    for (const k of SHOP_FIELDS) if (k in item && !NOT_SENT.includes(k)) row[k] = shopText(item[k]);
+    return { ...row, updated_at: now };
+  }
+  const row = Object.fromEntries(SHOP_FIELDS.map((k) => [k, shopText(item[k])]));
+  row.id = `mock-sh-${Date.now()}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`;
+  if (row.qty === '') row.qty = '1';
+  row.bought = '';
+  row.hidden = '';
+  row.added_by = row.owner;
+  row.updated_at = now;
+  return row;
+}
+
+/** `item` is a new item (no id) or the id, the owner and the fields to change of an existing one; `item.owner` is who is saving. */
+export async function saveShopping(cfg, item, { fetchFn = defaultFetch, timeoutMs = SHOP_TIMEOUT_MS } = {}) {
+  if (!cfg?.api) throw new Error('not_configured');
+  if (cfg.api === 'mock') return mockShopRow(item);
+  if (!cfg.writeKey) throw new Error('bad_key');
+  return shopRowOf(await postAction(cfg, { action: 'saveShopping', key: cfg.writeKey, item }, fetchFn, timeoutMs));
+}
+
+/** Soft delete (the row stays in the Sheet, hidden). */
+export async function deleteShopping(cfg, { id, owner }, { fetchFn = defaultFetch, timeoutMs = SHOP_TIMEOUT_MS } = {}) {
+  if (!cfg?.api) throw new Error('not_configured');
+  if (cfg.api === 'mock') return { id, owner, hidden: 'TRUE', updated_at: new Date().toISOString() }; // what changed: the caller lays it over the row it has
+  if (!cfg.writeKey) throw new Error('bad_key');
+  return shopRowOf(await postAction(cfg, { action: 'deleteShopping', key: cfg.writeKey, id, owner }, fetchFn, timeoutMs));
+}
+
+/** Tick (bought: true) or un-tick one item. */
+export async function setBought(cfg, { id, owner, bought }, { fetchFn = defaultFetch, timeoutMs = SHOP_TIMEOUT_MS } = {}) {
+  if (!cfg?.api) throw new Error('not_configured');
+  if (cfg.api === 'mock') return { id, owner, bought: bought ? 'TRUE' : '', updated_at: new Date().toISOString() }; // what changed, as above
+  if (!cfg.writeKey) throw new Error('bad_key');
+  return shopRowOf(await postAction(cfg, { action: 'setBought', key: cfg.writeKey, id, owner, bought: Boolean(bought) }, fetchFn, timeoutMs));
 }
 
 // Pulls a snapshot every intervalMs while the page is visible, and once immediately when it becomes

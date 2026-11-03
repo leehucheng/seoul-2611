@@ -797,30 +797,30 @@ body:has(.update-bar) .board-scroll, body:has(.update-bar) .panel-body { padding
 
 /* 行李清單 (ui/packing.js): a card on the 今天 page on the first and the last trip day, and the screen it opens over the page (above the
    tab bar like .pc, z-index 30). The screen is cream with paper sheets; the ticks are ink circles, a full group's count turns ginkgo. */
-.pk-card { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin: 8px 0 4px; padding: 8px 14px 8px 10px; border-radius: 30px; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); text-align: left; }
-.pk-card:active { background: var(--ginkgo-pale); }
-.pk-card > .ico { width: 20px; height: 20px; }
-.pk-card-main { flex: 1; min-width: 0; display: grid; gap: 2px; }
-.pk-card-title { font: 800 15.5px/1.2 var(--sans); }
+.pk-card, .sp-card { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin: 8px 0 4px; padding: 8px 14px 8px 10px; border-radius: 30px; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); text-align: left; }
+.pk-card:active, .sp-card:active { background: var(--ginkgo-pale); }
+.pk-card > .ico, .sp-card > .ico { width: 20px; height: 20px; }
+.pk-card-main, .sp-card-main { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.pk-card-title, .sp-card-title { font: 800 15.5px/1.2 var(--sans); }
 .pk-card-title .num { font-weight: 900; }
-.pk-card-line { font: 600 13px/1.35 var(--sans); color: var(--ink-2); }
+.pk-card-line, .sp-card-line { font: 600 13px/1.35 var(--sans); color: var(--ink-2); }
 
-.pk {
+.pk, .sp {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; width: 100%; max-width: 600px; margin: 0 auto;
   display: flex; flex-direction: column; padding-top: var(--safe-top);
   background: var(--cream); color: var(--ink); animation: pc-in .28s var(--ease);
 }
-.pk:focus { outline: none; }
-.pk-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px calc(12px + var(--safe-right)) 6px calc(20px + var(--safe-left)); }
-.pk-title { min-width: 0; font: 900 clamp(28px, 8.6vw, 34px)/1 var(--sans); letter-spacing: -.025em; }
-.pk-close { flex: none; width: 48px; height: 48px; }
-.pk-scroll {
+.pk:focus, .sp:focus { outline: none; }
+.pk-head, .sp-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px calc(12px + var(--safe-right)) 6px calc(20px + var(--safe-left)); }
+.pk-title, .sp-title { min-width: 0; font: 900 clamp(28px, 8.6vw, 34px)/1 var(--sans); letter-spacing: -.025em; }
+.pk-close, .sp-close { flex: none; width: 48px; height: 48px; }
+.pk-scroll, .sp-scroll {
   flex: 1; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
   padding: 6px calc(20px + var(--safe-right)) calc(56px + var(--safe-bottom)) calc(20px + var(--safe-left));   /* 20px gutters: the tape on a sheet's corners reaches ~16px outside it */
 }
 .pk-lead { font: 600 15px/1.45 var(--sans); }
 .pk a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
-.pk-paper { position: relative; padding: 14px 16px; background: var(--paper); border-radius: 2px; box-shadow: var(--paper-sh); --tw: 40px; --th: 13px; }
+.pk-paper, .sp-paper { position: relative; padding: 14px 16px; background: var(--paper); border-radius: 2px; box-shadow: var(--paper-sh); --tw: 40px; --th: 13px; }
 .pk-small { font: 500 12.5px/1.55 var(--sans); color: var(--ink-2); }
 .pk-small b { font-weight: 800; color: var(--ink); }
 
@@ -909,8 +909,70 @@ body:has(.update-bar) .board-scroll, body:has(.update-bar) .panel-body { padding
 .pk-foot { margin-top: 28px; }
 .pk-foot p + p { margin-top: 8px; }
 @media (hover: hover) {
-  .pk-btn:hover, .pk-links a:hover { filter: brightness(.94); }
+  .pk-btn:hover, .pk-links a:hover, .sp-chip:hover:not([aria-pressed="true"]), .sp-link:hover { filter: brightness(.94); }
 }
+
+/* 代購清單 (ui/shopping.js): the card is the packing card's twin (grouped above); the screen is the same cream screen with paper sheets.
+   An item is a row: the round 已買 tick, the picture (72 px), the Korean name big (it is what a shop assistant reads), the Chinese name under
+   it, then brand・spec, ×qty, who it is for, the price; a 官網 link and a 備註 disclosure under the row. A bought item is struck out. */
+.sp-body { padding-top: 6px; }
+.sp-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.sp-chip { min-height: 44px; max-width: 100%; padding: 0 18px; border-radius: 22px; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); font: 800 15px/1.2 var(--sans); overflow-wrap: anywhere; }
+.sp-chip[aria-pressed="true"] { background: var(--ink); color: var(--cream); }
+.sp-ro { margin-top: 14px; padding: 10px 14px; border: 2px dashed var(--ink); border-radius: 16px; background: var(--ginkgo-pale); font: 700 14px/1.4 var(--sans); }
+.sp-sum { margin-top: 16px; }
+.sp-sum-main { font: 800 16px/1.3 var(--sans); font-variant-numeric: tabular-nums; }
+.sp-sum-note { margin-top: 2px; font: 600 13px/1.35 var(--sans); color: var(--ink-2); }
+.sp-msg { margin-top: 10px; font: 700 14px/1.4 var(--sans); color: var(--danger); }
+.sp-add { margin-top: 14px; }
+.sp-empty { margin: 28px 0; color: var(--ink-2); text-align: center; font-weight: 700; }
+.sp-grp { margin-top: 26px; }
+.sp-h2 { font: 900 19px/1.15 var(--sans); letter-spacing: -.01em; }
+.sp-items { margin-top: 18px; padding: 0; }   /* the rows run edge to edge; no overflow: hidden, the tape sticks out of the corners */
+.sp-item { padding: 6px 12px 8px 0; }
+.sp-item + .sp-item { border-top: 1px solid var(--tape-edge); }
+.sp-row { display: flex; align-items: flex-start; }
+.sp-ck { flex: none; width: 48px; height: 56px; display: grid; place-items: center; -webkit-tap-highlight-color: transparent; }
+.sp-ck-c { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); color: var(--cream); }
+.sp-ck[aria-pressed="true"] .sp-ck-c { background: var(--ink); }
+.sp-ck-tick { display: none; width: 16px; height: 16px; stroke-width: 3; }
+.sp-ck[aria-pressed="true"] .sp-ck-tick { display: block; }
+.sp-open, .sp-main { flex: 1; min-width: 0; min-height: 56px; display: flex; align-items: flex-start; gap: 12px; padding: 8px 0 4px; text-align: left; }
+.sp-main { padding-left: 16px; }
+.sp-open:active { background: var(--ginkgo-pale); }
+.sp-pic { flex: none; width: 72px; height: 72px; overflow: hidden; border-radius: 10px; background: var(--cream); box-shadow: 0 0 0 1.5px var(--ink); }
+.sp-pic img { display: block; width: 72px; height: 72px; object-fit: cover; }
+.sp-txt { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.sp-ko { font: 800 18px/1.25 var(--sans); overflow-wrap: anywhere; }
+.sp-zh { font: 600 14px/1.3 var(--sans); color: var(--ink-2); }
+.sp-meta { font: 500 13px/1.3 var(--sans); color: var(--ink-2); }
+.sp-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font: 700 13px/1.3 var(--sans); }
+.sp-qty { font: 900 14px/1.2 "Archivo", var(--sans); font-variant-numeric: tabular-nums; }
+.sp-for { padding: 0 8px; border-radius: 10px; background: var(--ginkgo-pale); font-weight: 800; }
+.sp-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; font-variant-numeric: tabular-nums; }
+.sp-price b { font: 900 16px/1.2 "Archivo", var(--sans); }
+.sp-price i { font: 600 12px/1.2 var(--sans); font-style: normal; color: var(--ink-2); }
+.sp-item.is-done .sp-ko { color: var(--ink-3); text-decoration: line-through; text-decoration-thickness: 2px; }
+.sp-item.is-done .sp-zh, .sp-item.is-done .sp-meta, .sp-item.is-done .sp-line, .sp-item.is-done .sp-price { color: var(--ink-3); }
+.sp-item.is-done .sp-pic { opacity: .6; }
+.sp-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 0 10px; padding: 0 0 2px 16px; }
+.sp-foot--mine { padding-left: 48px; }
+.sp-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: 22px; background: var(--white); box-shadow: inset 0 0 0 1.5px var(--ink); text-decoration: none; font: 800 13px/1.2 var(--sans); }
+.sp-link .ico { width: 14px; height: 14px; }
+.sp-more { min-width: 0; }
+.sp-more summary { display: inline-flex; align-items: center; min-height: 44px; padding: 0 8px; cursor: pointer; font: 800 13px/1.2 var(--sans); text-decoration: underline; text-underline-offset: 3px; list-style: none; }
+.sp-more summary::-webkit-details-marker { display: none; }
+.sp-more p { margin: 0 0 6px; font: 500 13.5px/1.45 var(--sans); overflow-wrap: anywhere; }
+.sp-formbox { padding-top: 6px; }
+.sp-formh { margin-top: 6px; }
+.sp-hint { margin: 6px 0 14px; font: 500 13px/1.4 var(--sans); color: var(--ink-2); }
+.sp-fld + .sp-fld { margin-top: 10px; }
+.sp-text { min-height: 88px; padding: 12px 16px; border-radius: 20px; resize: vertical; line-height: 1.4; }
+.sp-del { color: var(--danger); box-shadow: inset 0 0 0 2px var(--danger); }
+.sp-confirm { margin-top: 12px; padding: 12px; border: 2px dashed var(--ink); border-radius: 16px; background: var(--ginkgo-pale); }
+.sp-confirm p { font: 700 14.5px/1.35 var(--sans); overflow-wrap: anywhere; }
+.sp-crow { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.sp-crow .btn { flex: 1 1 120px; width: auto; margin-top: 0; }
 
 /* 未上地圖: names in the plan tabs that have no pin yet */
 .up-hint { margin: 0 4px; color: var(--ink-2); font: 600 14px/1.45 var(--sans); }
