@@ -125,6 +125,7 @@ export function buildAliases({ name, pick, preset }) {
 const round6 = (n) => Math.round(n * 1e6) / 1e6;
 const NAME_MAX = 80;
 const NOTE_MAX = 200;
+const SIGNATURE_MAX = 200;
 const ADDRESS_MAX = 200;
 
 /**
@@ -149,8 +150,9 @@ export function koreanFromPick(pick) {
  * the rule for pins, so the form never guesses one. `pick` is the chosen result (or null); `locationSource` is where
  * `loc` came from ('pick' | 'gps' | 'tap'). A position set by GPS or a tap after the pick no longer matches the
  * result's address, so the address (Korean and Chinese) is dropped; the name is still what the user chose and stays.
+ * `signature` (招牌／想買什麼) is optional: it is in the payload only when something was typed, so a place without one sends nothing extra.
  */
-export function buildPayload({ name, category, note, loc, me, aliases, pick = null, locationSource = 'pick' }) {
+export function buildPayload({ name, category, note, signature, loc, me, aliases, pick = null, locationSource = 'pick' }) {
   const n = clean(name);
   if (n === '' || n.length > NAME_MAX) return { ok: false, field: 'name' };
   const lat = loc?.lat === '' || loc?.lat === null ? NaN : Number(loc?.lat);
@@ -172,6 +174,7 @@ export function buildPayload({ name, category, note, loc, me, aliases, pick = nu
       lat: round6(lat),
       lng: round6(lng),
       note: clean(note).slice(0, NOTE_MAX),
+      ...(clean(signature) ? { signature: clean(signature).slice(0, SIGNATURE_MAX) } : {}),
       added_by: clean(me),
       aliases: clean(aliases),
     },
@@ -179,7 +182,7 @@ export function buildPayload({ name, category, note, loc, me, aliases, pick = nu
 }
 
 export const QUOTE_GUARD = 'quote-guard'; // the entry of the snapshot's `features` that says the server keeps = / ' texts as typed
-const QUOTED_FIELDS = ['name_zh', 'name_kr', 'address_zh', 'address_kr', 'note', 'aliases', 'added_by'];
+const QUOTED_FIELDS = ['name_zh', 'name_kr', 'address_zh', 'address_kr', 'note', 'signature', 'aliases', 'added_by'];
 const startsQuoted = (v) => typeof v === 'string' && (v.startsWith('=') || v.startsWith('\''));
 
 /**

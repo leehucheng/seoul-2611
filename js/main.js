@@ -4,6 +4,11 @@
 //   state     app.cfg, app.me, app.snapshot, app.places, app.purchases, app.translations, app.config,
 //             app.stars (Set of ids), app.filter, app.map (initMap handle), app.fromCache, app.fetchedAt,
 //             app.placesKept (App_Places was unreadable, the places shown are this phone's last good ones)
+//             The places of the July trip (source 'july', july-layer.js) are NOT in app.places: that is ours only, so the 今天 page, the 未上地圖
+//             count, the first view and the district shapes never see a July place. They are app.julyPlaces, a layer of the map that is off by
+//             default (app.julyOn(), per phone in localStorage `seoul.layer.july`; the 「7 月」 chip, app.setJulyLayer(on)): app.mapPlaces() is
+//             what the map may draw (ours, and the July ones while the layer is on); app.placeById finds a July place too, app.openPlace(id) of
+//             one turns the layer on first; app.emit('layer', {july}) after a switch
 //   actions   app.actions.add / today / hotel (the tab bar calls these); today(dateISO?) and hotel(dateISO?) open the 今天 view /
 //             the hotel card (app.openToday / app.openHotelCard); app.currentDate() is the date they use (see today-view.js);
 //             app.currentNightDate() is the date the hotel lookup uses (before 06:00 still the night before)
@@ -30,15 +35,15 @@
 // Sync: startPolling(app.cfg, applySnapshot) runs from boot; a place saved here stays on the map until a snapshot has it.
 import { fetchSnapshot, startPolling } from './api.js';
 import { parseShareParams } from './add-place-logic.js';
-import { CATEGORIES } from './categories.js';
 import { TOKENS } from './colors.js';
 import { readConfig } from './config.js';
 import { loadDone, toggleDone } from './done.js';
 import { chooseFirstView } from './first-view.js';
 import { ginkgoPlaceIds } from './ginkgo.js';
 import { findHotelPlace } from './hotel-view.js';
+import { createJulyLayer, mapPlaces, splitJuly } from './july-layer.js';
 import { myItems } from './next-stop.js';
-import { GINKGO_FILTER, categoryOf, hasCoords, isHidden, matchesFilter } from './place-view.js';
+import { GINKGO_FILTER, chipCategories, hasCoords, isHidden, isJulyPlace, matchesFilter } from './place-view.js';
 import { registerServiceWorker } from './register-sw.js';
 import { parsePurchase } from './sheet-parse.js';
 import { loadStars, toggleStar } from './stars.js';
@@ -88,6 +93,8 @@ export const app = {
   me: null,
   snapshot: null,
   places: [],
+  julyPlaces: [], // the places whose source is 'july': a layer of the map, off by default (see the header)
+  julyLayer: null, // createJulyLayer(storage), once the storage is known (boot)
   purchases: [],
   translations: {},
   config: {},
@@ -120,9 +127,13 @@ export const app = {
     }
   },
 
-  placeById: (id) => app.places.find((p) => p.id === id) ?? null,
+  placeById: (id) => app.places.find((p) => p.id === id) ?? app.julyPlaces.find((p) => p.id === id) ?? null,
+  /** Is the 「7 月」 layer on (this phone's choice, off until it is pressed)? */
+  julyOn: () => Boolean(app.julyLayer?.isOn()),
+  /** What the map may draw: our places, and the July ones while their layer is on. */
+  mapPlaces: () => mapPlaces(app.places, app.julyPlaces, app.julyOn()),
   /** Places that pass the category chip and are not hidden (they may still lack coordinates). */
-  visiblePlaces: () => app.places.filter((p) => !isHidden(p) && matchesFilter(p, app.filter, app.ginkgo)),
+  visiblePlaces: () => app.mapPlaces().filter((p) => !isHidden(p) && matchesFilter(p, app.filter, app.ginkgo)),
 
   todayStops,
   doneSet,
@@ -134,6 +145,7 @@ export const app = {
   closeCard,
   openPlace,
   openPlaceCard,
+  setJulyLayer,
   applySnapshot,
   addPlaceLocal,
   async reload() {
@@ -211,12 +223,14 @@ async function onLocate(btn) {
 /** The 銀杏 capsule: a ginkgo-yellow dot with the line ginkgo leaf (the Sheet's 銀杏 tab: ginkgo spots and ginkgo cafes). */
 const GINKGO_CHIP = Object.freeze({ id: GINKGO_FILTER, short: '銀杏', icon: 'i-ginkgo', color: TOKENS.ginkgo, on: TOKENS.ink, label: '銀杏：銀杏景點與銀杏咖啡廳' });
 
+/** The 「7 月」 capsule's spoken label: a switch for the layer of the July trip's places (not a category filter; it combines with them). */
+const JULY_CHIP_LABEL = '7 月清單：顯示 7 月那趟的地點，淡色圖釘';
+
 let chipSig = '';
-function renderChips() {
-  const inUse = new Set(app.places.filter((p) => !isHidden(p) && hasCoords(p)).map((p) => categoryOf(p.category).id));
-  const shown = CATEGORIES.filter((c) => inUse.has(c.id) || c.id === app.filter);
-  if (inUse.has('other') || app.filter === 'other') shown.push(categoryOf('other'));
-  const sig = JSON.stringify([shown.map((c) => c.id), app.filter]);
+/** `keepScroll`: leave the row where it is (the 「7 月」 switch must not move the row under the finger that pressed it). */
+function renderChips({ keepScroll = false } = {}) {
+  const shown = chipCategories(app.mapPlaces(), app.filter); // the July places count only while their layer is on
+  const sig = JSON.stringify([shown.map((c) => c.id), app.filter, app.julyOn()]);
   if (sig === chipSig) return;
   chipSig = sig;
 
@@ -228,13 +242,16 @@ function renderChips() {
       h('span', { class: 'fv' }, h('span', { class: 'fdot' }, icon(cat.icon)), cat.short));
     return famStyle(btn, cat); // the capsule fills with the family colour when pressed; the dot always shows it
   };
+  const july = h('button', { class: 'fcap fcap--july', type: 'button', 'aria-pressed': String(app.julyOn()), 'aria-label': JULY_CHIP_LABEL, onclick: () => setJulyLayer(!app.julyOn()) },
+    h('span', { class: 'fv' }, h('span', { class: 'fdot' }, icon('i-calendar')), '7 月'));
   append(clear(box), [
     h('button', { class: 'fcap is-all', type: 'button', 'aria-pressed': String(app.filter === 'all'), onclick: () => choose('all') }, h('span', { class: 'fv' }, '全部')),
     mk(GINKGO_CHIP),
+    july,
     shown.map(mk),
   ]);
   box.scrollLeft = scroll;
-  box.querySelector('[aria-pressed="true"]')?.scrollIntoView({ inline: 'center', block: 'nearest' });
+  if (!keepScroll) box.querySelector('.fcap[aria-pressed="true"]:not(.fcap--july)')?.scrollIntoView({ inline: 'center', block: 'nearest' });
   fadeChips();
 }
 
@@ -253,10 +270,29 @@ function fadeChips() {
   box.classList.toggle('fade-r', box.scrollLeft < room - 4);
 }
 
+// ---- the 7 月 layer ---------------------------------------------------------------------------------------
+
+/**
+ * Switch the layer of the July trip's places (the 「7 月」 chip, or opening one of them from the add form's search). It is a state of its own,
+ * not a category filter, so the category capsules keep working and combine with it. Switching it off while a July place's card is open
+ * closes that card (the pin it belongs to is gone). The choice is kept on this phone (july-layer.js).
+ */
+function setJulyLayer(on) {
+  if (!app.julyLayer?.set(on)) return;
+  if (!app.julyOn()) {
+    const open = cardPlaceId();
+    if (open && isJulyPlace(app.placeById(open))) closeCard();
+  }
+  renderChips({ keepScroll: true });
+  refreshPins();
+  app.emit('layer', { july: app.julyOn() });
+}
+
 // ---- pins and card ----------------------------------------------------------------------------------------
 
 function refreshPins() {
-  // `lobePlaces`: the yellow district shapes come from every place that is not hidden, not only from the ones the category filter lets through
+  // `lobePlaces`: the yellow district shapes come from every place of ours that is not hidden, not only from the ones the category filter lets
+  // through (app.places has no July place: the layer never reshapes a district)
   // `firstView`: asked only when the map makes its first view (first-view.js), so nothing is computed on the later refreshes
   app.map?.setPlaces(app.visiblePlaces(), { me: app.me ?? '', starred: app.stars, ginkgo: app.ginkgo, translations: app.translations, lobePlaces: app.places, firstView });
 }
@@ -355,6 +391,7 @@ function openPlaceCard(place) {
 function openPlace(id, { focus = true } = {}) {
   const place = app.placeById(id);
   if (!place || isHidden(place)) return false;
+  if (isJulyPlace(place) && !app.julyOn()) setJulyLayer(true); // a July place found by name: its layer comes on, so there is a pin to fly to
   if (focus && hasCoords(place) && !matchesFilter(place, app.filter, app.ginkgo)) { // a filter capsule hides this pin: show everything so there is a pin to fly to
     app.filter = 'all';
     renderChips();
@@ -376,7 +413,7 @@ function addPlaceLocal(place) {
   if (!matchesFilter(place, app.filter, app.ginkgo)) { app.filter = 'all'; app.emit('filter', 'all'); } // the new pin must not hide behind a chip
   renderChips();
   refreshPins();
-  app.emit('places', place.id); // the 未上地圖 number on the tab bar: the name just put on the map is no longer missing from it
+  app.emit('places', place.id); // the 未上地圖 row on the 清單 view: the name just put on the map is no longer missing from it
 }
 
 /** Redraw the open card with fresh data; it stays open, peeking or expanded as it was, and a typed amount is kept. */
@@ -415,7 +452,9 @@ function applySnapshot({ snapshot, fromCache, fetchedAt, placesKept }) {
   app.fetchedAt = fetchedAt ?? null;
   const merged = mergePending(Array.isArray(snapshot.places) ? snapshot.places : [], pending);
   pending = merged.pending;
-  app.places = merged.places;
+  const { own, july } = splitJuly(merged.places); // the July trip's places are a layer of their own, never in app.places
+  app.places = own;
+  app.julyPlaces = july;
   app.translations = isObject(snapshot.translations) ? snapshot.translations : {};
   app.config = isObject(snapshot.config) ? snapshot.config : {};
   try { app.purchases = parsePurchase(snapshot.tabs?.['Purchase list'] ?? []); } catch { app.purchases = []; }
@@ -457,6 +496,7 @@ async function boot() {
   if (/(^|[#&])(a|k)=/.test(hash)) history.replaceState(null, '', window.location.pathname + window.location.search); // the key stays in localStorage, not in the address bar
   app.cfg = cfg;
   app.stars = loadStars(storage);
+  app.julyLayer = createJulyLayer(storage); // off unless this phone switched it on (seoul.layer.july)
 
   try {
     app.map = initMap($('map'), {

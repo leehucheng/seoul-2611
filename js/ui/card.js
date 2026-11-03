@@ -21,7 +21,7 @@ import { lightsplitShareUrl } from '../links.js';
 import { distanceMeters, walkMinutes } from '../geo.js';
 import { PEOPLE } from '../people.js';
 import {
-  categoryOf, detectPlatform, googleUrl, hasCoords, hoursCard, nameBlock, naverShopTarget, parseAmount, personalFor,
+  categoryOf, detectPlatform, googleUrl, hasCoords, hoursCard, isJulyPlace, nameBlock, naverShopTarget, parseAmount, personalFor,
   safeHttpsUrl, signatureView, toCoord, whoNames,
 } from '../place-view.js';
 import { famDot, h, icon, leaf, sheetEdge } from './dom.js';
@@ -188,6 +188,7 @@ function buildRows(place, ctx) {
   const rows = [];
   const catTags = [famDot(cat, 'fdot--sm'), cat.label];
   if (place.source === 'recommend') catTags.push(h('span', { class: 'tag tag--rec' }, '推薦'));
+  if (isJulyPlace(place)) catTags.push(h('span', { class: 'tag tag--july' }, '7 月清單'));
   if (place.source === 'app') catTags.push(h('span', { class: 'tag tag--added' }, tagWithName(tr, '由 ', clean(place.added_by) || '朋友', ' 新增')));
   rows.push(h('div', { class: 'row' }, h('dt', null, '分類'), h('dd', null, catTags)));
   const names = whoNames(place);
@@ -337,7 +338,8 @@ function buildDetails(place, ctx) {
   return rows.length ? h('dl', { class: 'rows details' }, rows) : null;
 }
 
-function buildCard(place, ctx) {
+/** The card's content for `place` (exported so the tests can read what a card says without the sheet around it). */
+export function buildCard(place, ctx) {
   const head = buildHeader(place, ctx);
   const nav = buildNav(place, ctx);
   const content = h('div', { class: 'sheet-content' },

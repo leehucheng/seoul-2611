@@ -1,8 +1,10 @@
 // New-place form: a bottom sheet over the map.
 //   1. one box at the top: paste a Google / Naver Map link (or a whole share text) -> resolveLink,
 //      or type a name -> searchPlace (the name as typed and, in Seoul, also with the nearest district's name: place-input.js planSearch)
-//      and pick one of <= 8 results, nearest first with the distance (a pin is previewed on the map);
-//   2. 店名 (required), 分類, 備註;
+//      and pick one of <= 8 results, nearest first with the distance (a pin is previewed on the map). A typed name also finds the July
+//      trip's places (july-layer.js findJulyPlaces: app.julyPlaces, no network), listed above the results with a 「7 月」 tag; pressing one opens
+//      that place (app.openPlace turns the 7 月 layer on and flies to it) and this form closes;
+//   2. 店名 (required), 招牌／想買什麼 (optional, sent as `signature`), 分類, 備註;
 //   3. a position when nothing was picked: 「我現在的位置」 or 「在地圖上點」.
 // Nothing is guessed: a place without a chosen position is not sent (a wrong pin is worse than a missing one).
 //
@@ -19,6 +21,8 @@ import {
 import { CATEGORIES } from '../categories.js';
 import { holdBack } from '../back-stack.js';
 import { hasHangul } from '../i18n.js';
+import { findJulyPlaces } from '../july-layer.js';
+import { labelLines } from '../pin-labels.js';
 import { MAX_MERGED, classifyPlaceInput, collectSearches, formatDistance, mergeResults, planSearch } from '../place-input.js';
 import { append, clear, famStyle, h, icon, sheetEdge } from './dom.js';
 import { createPreviewPin } from './preview-pin.js';
@@ -61,6 +65,7 @@ function createForm(app, preview, opts, onClosed) {
   const st = {
     pick: null, // the chosen search / link result
     results: [], // the last search results (shown again by 重選)
+    july: [], // the July trip's places the last typed name found (shown with the results, tagged 7 月)
     loc: null, // {lat, lng, source: 'pick' | 'gps' | 'tap'}
     category: '',
     nameTouched: false,
@@ -84,12 +89,13 @@ function createForm(app, preview, opts, onClosed) {
   });
   const goBtn = h('button', { class: 'btn btn--primary as-go', type: 'submit' });
   const qMsg = h('p', { id: 'as-q-msg', class: 'field-error as-msg', role: 'alert' });
+  const julyBox = h('div', { class: 'as-july-box' }); // the places of the July trip that the typed name finds (above the geocoder's results)
   const resultsBox = h('div', { class: 'as-results-box' });
   const pickedBox = h('div', { class: 'as-picked-box' });
   const searchForm = h('form', { class: 'as-search', novalidate: true },
     h('label', { class: 'field-label', for: 'as-q' }, '搜尋店家'),
     h('div', { class: 'as-search-row' }, q, goBtn),
-    qMsg, resultsBox, pickedBox);
+    qMsg, julyBox, resultsBox, pickedBox);
 
   // ---- name, category, note -------------------------------------------------------------------------------
   const nameInput = h('input', {
@@ -101,6 +107,9 @@ function createForm(app, preview, opts, onClosed) {
     const b = famStyle(h('button', { class: 'as-cat', type: 'button', 'aria-pressed': 'false', 'data-cat': c.id }, h('span', { class: 'fdot fdot--sm' }, icon(c.icon)), h('span', null, c.label)), c);
     b.addEventListener('click', () => setCategory(st.category === c.id ? '' : c.id));
     return b;
+  });
+  const signatureInput = h('input', {
+    id: 'as-sig', class: 'field', type: 'text', maxlength: '200', autocomplete: 'off', enterkeyhint: 'done', placeholder: '例如：生拌牛肉、限定香水（可不填）',
   });
   const noteInput = h('input', { id: 'as-note', class: 'field', type: 'text', maxlength: '200', autocomplete: 'off', enterkeyhint: 'done', placeholder: '例如：要排隊、只收現金（可不填）' });
 
@@ -120,6 +129,7 @@ function createForm(app, preview, opts, onClosed) {
   const body = h('div', { class: 'as-body' },
     searchForm,
     h('div', { class: 'as-field' }, h('label', { class: 'field-label', for: 'as-name' }, '店名（必填）'), nameInput, nameMsg),
+    h('div', { class: 'as-field' }, h('label', { class: 'field-label', for: 'as-sig' }, '招牌／想買什麼'), signatureInput),
     h('div', { class: 'as-field' }, h('p', { class: 'field-label', id: 'as-cat-label' }, '分類'), h('div', { class: 'as-cats', role: 'group', 'aria-labelledby': 'as-cat-label' }, catButtons)),
     h('div', { class: 'as-field' }, h('label', { class: 'field-label', for: 'as-note' }, '備註'), noteInput),
     locBox);
@@ -170,6 +180,22 @@ function createForm(app, preview, opts, onClosed) {
       icon('i-check', 'as-picked-ico'),
       h('div', { class: 'as-picked-body' }, twoLine(v.name, v.nameZh), v.address ? h('div', { class: 'as-addr' }, twoLine(v.address, v.addressZh)) : null),
       h('button', { class: 'as-link', type: 'button', onclick: unpick }, '重選')));
+  }
+
+  /**
+   * The July trip's places the typed name found: one row each, the name with a 「7 月」 tag (labelLines: Chinese first, the Korean small under it).
+   * Pressing one opens that place (app.openPlace turns the 7 月 layer on and flies to it); the card then takes over the bottom of the screen
+   * and this form closes. Nothing is shown once a result has been picked.
+   */
+  function renderJuly() {
+    clear(julyBox);
+    if (st.pick || st.july.length === 0) return;
+    julyBox.append(h('ul', { class: 'as-results as-results--july', 'aria-label': '7 月清單的結果' }, st.july.map((p) => {
+      const lines = labelLines(p, app.translations);
+      return h('li', null, h('button', { class: 'as-result as-result--july', type: 'button', 'aria-label': `7 月清單：${lines.zh}，打開這家的資訊`, onclick: () => app.openPlace(p.id) },
+        h('span', { class: 'as-july-name' }, lines.zh, h('span', { class: 'tag tag--july' }, '7 月')),
+        lines.kr ? h('span', { class: 'as-addr kr', lang: 'ko' }, lines.kr) : null));
+    })));
   }
 
   function showResults(list) {
@@ -248,6 +274,7 @@ function createForm(app, preview, opts, onClosed) {
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) { setQMsg(errorMessage('search', 'bad_response')); return; }
     st.pick = r;
     clear(resultsBox);
+    renderJuly(); // nothing once a result is picked
     renderPicked();
     setQMsg('');
     if (!st.nameTouched && !opts.presetName) nameInput.value = nameFromPick(r, app.translations);
@@ -260,6 +287,7 @@ function createForm(app, preview, opts, onClosed) {
     st.pick = null;
     if (st.loc?.source === 'pick') { st.loc = null; preview.hide(); renderLoc(); }
     renderPicked();
+    renderJuly(); // the July places of the last search are offered again
   }
 
   function unpick() {
@@ -282,7 +310,7 @@ function createForm(app, preview, opts, onClosed) {
     const list = mergeResults(lists, plan.centre);
     dropPick();
     showResults(list);
-    if (list.length === 0) setQMsg(noResultsMessage(plan));
+    if (list.length === 0) setQMsg(st.july.length > 0 ? '' : noResultsMessage(plan)); // a July place was found: it is not 「找不到」
     else setQMsg(note ?? '', 'note');
   }
 
@@ -294,6 +322,9 @@ function createForm(app, preview, opts, onClosed) {
     renderGo(true);
     setQMsg(input.kind === 'url' ? '讀取連結中，可能要等十幾秒…' : '搜尋中，第一次可能要等十幾秒…', 'note');
     clear(resultsBox);
+    // a typed name also finds the July trip's places (found here, no network); a link does not
+    st.july = input.kind === 'query' ? findJulyPlaces(app.julyPlaces, input.value, { translations: app.translations }) : [];
+    renderJuly();
     try {
       if (input.kind === 'url') {
         const place = await resolveLink(app.cfg, input.value);
@@ -352,7 +383,7 @@ function createForm(app, preview, opts, onClosed) {
     setMsg(footMsg, '');
     if (st.unsure) { await recheck(); return; }
     const built = buildPayload({
-      name: nameInput.value, category: st.category, note: noteInput.value, loc: st.loc, me: app.me, pick: st.pick, locationSource: st.loc?.source,
+      name: nameInput.value, category: st.category, note: noteInput.value, signature: signatureInput.value, loc: st.loc, me: app.me, pick: st.pick, locationSource: st.loc?.source,
       aliases: buildAliases({ name: clean(nameInput.value), pick: st.pick, preset: opts.presetAlias }),
     });
     if (!built.ok) {
@@ -421,7 +452,7 @@ function createForm(app, preview, opts, onClosed) {
   });
   nameInput.addEventListener('input', () => { st.nameTouched = true; if (clean(nameInput.value)) setMsg(nameMsg, ''); });
   nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); nameInput.blur(); } });
-  noteInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); noteInput.blur(); } });
+  for (const input of [signatureInput, noteInput]) input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); input.blur(); } });
   gpsBtn.addEventListener('click', useGps);
   tapBtn.addEventListener('click', () => enterPick());
   submitBtn.addEventListener('click', submit);

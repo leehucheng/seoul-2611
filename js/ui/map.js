@@ -25,7 +25,9 @@
 // the Korean name small under it (pin-labels.js; the name is never cut: a capsule may run up to 60% of the map's width, --cap-max, and
 // only a longer name gets an ellipsis there). My wish-list pins (`want`: a 3 px ginkgo ring) and the 推薦 ones (`rec`: a dashed ink ring)
 // carry their ring at every zoom. Capsules that would overlap are hidden whole, the lower priority first (selected, next stop, starred,
-// wanted by me, the rest); the dot always stays. Every capsule is in the page all the time: the map gets class `labels-on` at zoom >= 16, each
+// wanted by me, the rest, then the pins of the 7 月 layer: a `july` pin is muted (paper fill, a light ink ring, a dimmed icon), is drawn under
+// the others and never takes a capsule's room from one of ours; main.js only hands them over while that layer is on); the dot always stays.
+// Every capsule is in the page all the time: the map gets class `labels-on` at zoom >= 16, each
 // capsule carries data-side (right, left, below or above the dot), --dy (a few px up or down) and data-lines (1 or 2), and the hidden
 // ones class `is-off`. All of it is recomputed ~100 ms after zoomend / moveend (and after the places or the selection change): no pin
 // is rebuilt while the map moves.
@@ -107,11 +109,11 @@ export function initMap(el, { insets = () => ({ top: 0, bottom: 0 }) } = {}) {
     const sig = JSON.stringify([place.lat, place.lng, place.category, name, labelLines(place, translations), flags, selected]);
     if (sig === entry.sig) return;
     entry.sig = sig;
-    entry.label = name;
-    entry.marker.options.title = name;
+    entry.label = flags.july ? `${name}（7 月）` : name;
+    entry.marker.options.title = entry.label;
     entry.marker.setLatLng([toCoord(place.lat), toCoord(place.lng)]);
     entry.marker.setIcon(buildIcon(place, flags, selected, entry.labelHidden));
-    entry.marker.setZIndexOffset(selected ? 2000 : flags.wanted ? 1000 : 0);
+    entry.marker.setZIndexOffset(selected ? 2000 : flags.wanted ? 1000 : flags.july ? -1000 : 0); // a 7 月 pin lies under ours at the same spot
     setAria(entry);
     scheduleLabels(); // a rebuilt pin has a new capsule (a new name, a new width)
   }
@@ -208,9 +210,10 @@ export function initMap(el, { insets = () => ({ top: 0, bottom: 0 }) } = {}) {
       for (const dy of SIDE_SHIFTS) for (const side of ['r', 'l']) add(side, dy);
       for (const side of ['b', 't']) add(side);
       l.options = l.id === selectedId ? opts : opts.filter(inside);
-      return { id: l.id, options: l.options, priority: labelPriority({ selected: l.id === selectedId, next: l.id === nextId, starred: l.entry.flags.starred, mine: l.entry.flags.wanted }) };
+      return { id: l.id, options: l.options, priority: labelPriority({ selected: l.id === selectedId, next: l.id === nextId, starred: l.entry.flags.starred, mine: l.entry.flags.wanted, july: l.entry.flags.july }) };
     });
-    const dots = live.map((l) => ({ id: l.id, ...dotRect(l.pt.x, l.pt.y, dotSizeFor(l.entry.flags)) })); // the dot with its rings: no capsule is laid over it
+    // the dot with its rings: no capsule is laid over it (but one of ours may lie over a 7 月 dot: that pin is drawn under it, pin-labels.js `under`)
+    const dots = live.map((l) => ({ id: l.id, ...dotRect(l.pt.x, l.pt.y, dotSizeFor(l.entry.flags)), ...(l.entry.flags.july ? { under: true } : {}) }));
     const layout = pickLabelLayout(items, { dots });
     for (const l of live) {
       const pick = layout.get(l.id);

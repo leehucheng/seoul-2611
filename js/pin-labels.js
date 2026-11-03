@@ -41,11 +41,14 @@ export function labelLines(place, translations) {
 /**
  * Who wins a crowded spot: the selected place, then today's next stop (the one in the 下一站 strip: where the person is headed, so its
  * name matters most after the open card's), then a starred one, then one the person wants to go to, then the rest. `next` is below
- * `selected` on purpose: only the selected pin is kept when its capsule would overlap (pickLabelLayout).
+ * `selected` on purpose: only the selected pin is kept when its capsule would overlap (pickLabelLayout). A pin of the 7 月 layer comes
+ * after all of them (below `other`, whatever else it is: starred included), so its name never takes the room of one of our places'; only
+ * while it is the selected one (its card is open) is its name always kept.
  */
-export const PRIORITY = Object.freeze({ selected: 3, next: 2.5, starred: 2, mine: 1, other: 0 });
-export function labelPriority({ selected = false, next = false, starred = false, mine = false } = {}) {
+export const PRIORITY = Object.freeze({ selected: 3, next: 2.5, starred: 2, mine: 1, other: 0, july: -1 });
+export function labelPriority({ selected = false, next = false, starred = false, mine = false, july = false } = {}) {
   if (selected) return PRIORITY.selected;
+  if (july) return PRIORITY.july;
   if (next) return PRIORITY.next;
   if (starred) return PRIORITY.starred;
   if (mine) return PRIORITY.mine;
@@ -59,8 +62,8 @@ const inSet = (set, id) => (set instanceof Set ? set.has(id) : Array.isArray(set
 /**
  * What a pin shows besides its family colour: `wanted` (my initial is among the Sheet's who-wants-to-go initials, `a|b|c`; drawn as a
  * 3 px ginkgo-yellow ring and raises the label's priority), `recommended` (the 推薦 source; drawn as a dashed ink ring), `starred` (the
- * ginkgo leaf at the end of the name) and `ginkgo` (the small leaf on the pin, the 銀杏 tab). `mine` is my initial ('' = nobody picked);
- * `starred` / `ginkgo` are Sets (or arrays) of place ids.
+ * ginkgo leaf at the end of the name) and `ginkgo` (the small leaf on the pin, the 銀杏 tab). `july` (a place of the 7 月 layer, the `july`
+ * source: drawn muted, under the others). `mine` is my initial ('' = nobody picked); `starred` / `ginkgo` are Sets (or arrays) of place ids.
  */
 export function pinFlags(place, { mine = '', starred, ginkgo } = {}) {
   const id = place?.id;
@@ -69,11 +72,15 @@ export function pinFlags(place, { mine = '', starred, ginkgo } = {}) {
     recommended: String(place?.source ?? '').trim() === 'recommend',
     starred: inSet(starred, id),
     ginkgo: inSet(ginkgo, id),
+    july: String(place?.source ?? '').trim() === 'july',
   };
 }
 
-/** The class list of a pin's box for its flags (css/app.css draws `want` and `rec` as rings around the dot, `star` / `ginkgo` as the leaves). */
-export const pinClass = ({ wanted, recommended, starred, ginkgo } = {}) => ['pin-stack', starred && 'star', ginkgo && 'ginkgo', wanted && 'want', recommended && 'rec'].filter(Boolean).join(' ');
+/**
+ * The class list of a pin's box for its flags (css/app.css draws `want` and `rec` as rings around the dot, `star` / `ginkgo` as the leaves,
+ * `july` as the muted pin of the 7 月 layer).
+ */
+export const pinClass = ({ wanted, recommended, starred, ginkgo, july } = {}) => ['pin-stack', starred && 'star', ginkgo && 'ginkgo', wanted && 'want', recommended && 'rec', july && 'july'].filter(Boolean).join(' ');
 
 /** The drawn dot (30 px, its 2 px white ring and thin ink ring included) is this many px wide and tall; the capsule starts behind it. */
 export const DOT_SIZE = 36;
@@ -124,6 +131,8 @@ const overlaps = (a, b, gap) => a.x < b.x + b.w + gap && b.x < a.x + a.w + gap &
  * than `gap` px to, an option already chosen, and does not cover another pin's dot (`dots`: [{id, x, y, w, h}]; its own dot is
  * fine). An item with the selected priority is always kept: a free option if there is one, else its first. Options without a usable
  * rectangle are skipped. The input is not changed.
+ * A dot with `under: true` is the dot of a pin drawn under the others (a 7 月 pin): only an item of a priority below PRIORITY.other (another
+ * 7 月 pin) keeps clear of it; a capsule of one of our pins may lie over it, since it is drawn above it.
  */
 export function pickLabelLayout(items, { gap = 4, dots = [] } = {}) {
   const order = [];
@@ -138,7 +147,8 @@ export function pickLabelLayout(items, { gap = 4, dots = [] } = {}) {
   const chosen = new Map();
   const kept = [];
   for (const [it, options] of order) {
-    const free = (r) => usable(r) && !kept.some((k) => overlaps(r, k, gap)) && !obstacles.some((d) => d.id !== it.id && overlaps(r, d, 0));
+    const low = (Number(it.priority) || 0) < PRIORITY.other;
+    const free = (r) => usable(r) && !kept.some((k) => overlaps(r, k, gap)) && !obstacles.some((d) => d.id !== it.id && (low || !d.under) && overlaps(r, d, 0));
     const always = (Number(it.priority) || 0) >= PRIORITY.selected;
     let pick = options.findIndex(free);
     if (pick < 0 && always) pick = options.findIndex(usable);

@@ -28,6 +28,21 @@ export const GINKGO_FILTER = 'ginkgo';
 /** matchesCategory plus the 銀杏 filter. `ginkgoIds` is the Set from ginkgoPlaceIds(). */
 export const matchesFilter = (place, filter, ginkgoIds) => (filter === GINKGO_FILTER ? Boolean(ginkgoIds?.has(place?.id)) : matchesCategory(place, filter));
 
+/** The `source` of a place from the July trip (the 「7 月」 layer, july-layer.js): just a value of the column, no column of its own. */
+export const JULY_SOURCE = 'july';
+export const isJulyPlace = (place) => clean(place?.source) === JULY_SOURCE;
+
+/**
+ * The category capsules of the chip row for the places the map may show (the 7 月 ones only while their layer is on): every category with a
+ * pin that is not hidden and has coordinates, in the CATEGORIES order, 「其他」 last; the pressed filter's capsule stays even when it has none.
+ */
+export function chipCategories(places, filter) {
+  const inUse = new Set((places ?? []).filter((p) => !isHidden(p) && hasCoords(p)).map((p) => categoryOf(p.category).id));
+  const shown = CATEGORIES.filter((c) => inUse.has(c.id) || c.id === filter);
+  if (inUse.has('other') || filter === 'other') shown.push(categoryOf('other'));
+  return shown;
+}
+
 /**
  * Names for the top of the card. The Chinese name is the title and the Korean name sits under it, smaller;
  * with no Chinese name the Korean name is the title and gets its Chinese line (`zh`) under it. Any Korean string
@@ -151,10 +166,13 @@ export function hoursCard(place, now = new Date()) {
   return { rows, status: { tone: hv.tone, badge: hv.badge, leftMin: t.closesInMin, opensInMin: t.opensInMin } };
 }
 
-/** Signature dish / item; same "unverified -> 待確認" rule as the hours. null for places added in the app. */
+/**
+ * Signature dish / item; same "unverified -> 待確認" rule as the hours. A place added in the app has one only when the friend typed it in the add
+ * form: then it is that text as it is (nothing to confirm, no 待確認); without it, null (no section).
+ */
 export function signatureView(place) {
-  if (clean(place?.source) === 'app') return null;
   const text = clean(place?.signature);
+  if (clean(place?.source) === 'app') return text === '' ? null : { text, pending: false };
   if (clean(place?.category) === 'hotel' && text === '') return null; // nothing "signature" about a hotel
   return { text, pending: !isVerified(place) || text === '' };
 }
