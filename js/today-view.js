@@ -6,7 +6,7 @@ import { doneKeys } from './done.js';
 import { findHotelPlace } from './hotel-view.js';
 import { hasHangul, zhOf } from './i18n.js';
 import { matchPlace } from './match.js';
-import { itemTime, stripTime } from './next-stop.js';
+import { isPastByTime, isStopDone, itemTime, myItems, stripTime } from './next-stop.js';
 import { placeName } from './pin-labels.js';
 import { isHidden } from './place-view.js';
 import { parseFlights, parseHotels, parseSchedule } from './sheet-parse.js';
@@ -39,6 +39,16 @@ export function debugDate(search) {
 /** The date the app treats as today: the debug date when the address has one, else the date in Seoul right now. */
 export const currentDate = (now, search) => debugDate(search) ?? todayISO(now);
 
+/** A date pulled into the trip: before 11/5 -> 11/5, after 11/15 -> 11/15, inside it unchanged. */
+export const clampToTrip = (iso) => (iso < TRIP_FIRST ? TRIP_FIRST : iso > TRIP_LAST ? TRIP_LAST : iso);
+
+/**
+ * The day the 今天 panel opens on: today when today is a trip day, else the nearest end of the trip (before it the page would be an empty
+ * 「不在行程內」), and `?debug=1&date=` still wins, even outside the trip. Only the panel's first page: what is "today" (the 今日菜單 title,
+ * the next stop, ticks by time, the hotel of the night) stays currentDate() / currentNightDate().
+ */
+export const panelStartDate = (now, search) => debugDate(search) ?? clampToTrip(todayISO(now));
+
 /**
  * The night the app treats as tonight, for the hotel lookup: the debug date when the address has one (an explicit date is never
  * shifted), else the Seoul date of (now - 6 h), so 00:00-06:00 still shows the hotel slept in, not the one checked into later that day.
@@ -65,10 +75,19 @@ export function formatMD(iso) {
 }
 
 const WEEKDAYS = '日一二三四五六';
+/** '2026-11-05' -> '四' ('' for anything that is not a date) */
+export const weekdayOf = (iso) => (isISODate(iso) ? WEEKDAYS[new Date(`${iso}T00:00:00Z`).getUTCDay()] : '');
 /** '2026-11-05' -> '11/5（四）' */
 export function dayTitle(iso) {
   if (!isISODate(iso)) return clean(iso);
-  return `${formatMD(iso)}（${WEEKDAYS[new Date(`${iso}T00:00:00Z`).getUTCDay()]}）`;
+  return `${formatMD(iso)}（${weekdayOf(iso)}）`;
+}
+
+/** The trip's days, 11/5 to 11/15: ['2026-11-05', ..., '2026-11-15']. */
+export function tripDates() {
+  const dates = [];
+  for (let d = TRIP_FIRST; d <= TRIP_LAST; d = shiftDate(d, 1)) dates.push(d);
+  return dates;
 }
 
 /** 「11/5 入住，11/9 退房」 for the hotel card (the Sheet's `to` date is the check-out day). */
@@ -89,13 +108,21 @@ export function outboundFlight(flights, person) {
   return mine[0] ?? null;
 }
 
-const WHEN = { today: '今天', tomorrow: '明天' };
+/** The pill in front of a flight: 今天 / 明天 only against the app's real today (`today`), any other day is written as its date ('11/5'). */
+export function flightWhen(date, today) {
+  if (isISODate(today) && date === today) return '今天';
+  if (isISODate(today) && date === shiftDate(today, 1)) return '明天';
+  return formatMD(date);
+}
 
-/** buildToday().flight -> {when: '今天'|'明天', text: '09:00 <flight> 仁川出發'}; null when there is no flight to show. */
-export function flightView(flight) {
+/**
+ * buildToday().flight -> {when: '今天'|'明天'|'11/5', text: '09:00 <flight> 仁川出發'}; null when there is no flight to show. `today` is the
+ * app's current date (the panel may show another day than today: a flight is then named by its date, not 今天 / 明天).
+ */
+export function flightView(flight, today = '') {
   if (!flight) return null;
   const text = [clean(flight.dep), clean(flight.flight), flight.from ? `${airportZh(flight.from)}出發` : ''].filter(Boolean).join(' ');
-  return { when: WHEN[flight.when] ?? '', text };
+  return { when: flightWhen(flight.date, today), text };
 }
 
 /** The line shown before the trip: 「還沒出發，你的去程是 M/D HH:MM 航班號」 (just 「還沒出發」 when the Sheet has no outbound flight). */
@@ -178,11 +205,44 @@ export function todayView(trip, person, dateISO, { places = [], translations = {
     isToday: dateISO === today,
     status: t.status,
     banner: bannerFor(t, trip.flights, person),
-    flight: flightView(t.flight),
+    flight: flightView(t.flight, today),
     hotel: t.hotel ? hotelRow(t.hotel, places, translations) : null,
     items: itemViews(t.items, places, translations),
     prev,
     next,
+  };
+}
+
+/**
+ * The day strip under the panel's meta row: one entry per trip day. `count` is the number of lines of that day that are `person`'s
+ * (myItems, the same count as the panel's 「N 站」), 0 when the Sheet has none; `isToday` only for the app's current date (`today`);
+ * `label` is what a screen reader hears: 「11/5（四），2 站，今天」.
+ */
+export function dayStrip(trip, person, { selected = '', today = '' } = {}) {
+  return tripDates().map((date) => {
+    const count = myItems(buildToday(trip, person, date).items, person).length;
+    const isToday = date === today;
+    return {
+      date,
+      md: formatMD(date),
+      weekday: weekdayOf(date),
+      count,
+      isToday,
+      isSelected: date === selected,
+      label: `${dayTitle(date)}${count > 0 ? `，${count} 站` : ''}${isToday ? '，今天' : ''}`,
+    };
+  });
+}
+
+/**
+ * Whether one line of a day counts as done, and whether only its own time says so. Time only means something on today: a stop of
+ * any other day is done only when it is ticked on this phone for that day (`ticked` is that day's set of keys; ticks never cross days),
+ * and a line that is not mine is never done.
+ */
+export function stopState(view, { isToday, mine, at, ticked }) {
+  return {
+    byTime: Boolean(mine && isToday && isPastByTime(view, at)),
+    done: Boolean(mine && (isToday ? isStopDone(view, at, ticked, view.key) : ticked.has(view.key))),
   };
 }
 

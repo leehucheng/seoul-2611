@@ -1,6 +1,8 @@
 // Client for the Apps Script web app (GET ?action=all, POST addPlace / searchPlace / resolveLink) with an offline snapshot cache.
 // `cfg` is what readConfig() returns: {api, writeKey}. `fetchFn`, `storage`, `now` and `doc` are
 // injectable so everything here runs in Node tests; defaults are the browser globals.
+import { placeAsTyped, quotedForServer } from './add-place-logic.js';
+
 export const SNAP_KEY = 'seoul.snap';
 
 const SNAPSHOT_TIMEOUT_MS = 20_000; // cold start of the Apps Script can take 5-10 s
@@ -111,13 +113,19 @@ async function postAction(cfg, payload, fetchFn, timeoutMs) {
 // -> the stored Place. Throws Error(code) so the UI can show a message: the server's own code on
 // ok:false (bad_key, bad_place, busy, ...), else not_configured / bad_key (no local key) /
 // network / bad_response. With api=mock nothing is stored: the place comes back with a mock id.
-export async function addPlace(cfg, place, { fetchFn = defaultFetch, timeoutMs = ADD_TIMEOUT_MS } = {}) {
+// `place` is what the person typed. `features` is the last snapshot's `features`: a server that does not list 'quote-guard'
+// gets an extra ' in front of every text starting with = or ' (payloadForServer, with `quoted: true` beside the place so that a
+// server redeployed in the meantime does not add its own on top), and the place that comes back is shown as typed
+// either way (placeAsTyped).
+export async function addPlace(cfg, place, { fetchFn = defaultFetch, timeoutMs = ADD_TIMEOUT_MS, features } = {}) {
   if (!cfg?.api) throw new Error('not_configured');
   if (cfg.api === 'mock') return { ...place, id: `mock-${Date.now()}`, source: 'app', verified: 'no', updated_at: new Date().toISOString() }; // nothing is stored: the UI can be tried without a backend
   if (!cfg.writeKey) throw new Error('bad_key');
-  const data = await postAction(cfg, { action: 'addPlace', key: cfg.writeKey, place }, fetchFn, timeoutMs);
+  const wire = quotedForServer(place, features);
+  const body = { action: 'addPlace', key: cfg.writeKey, place: wire.place, ...(wire.quoted ? { quoted: true } : {}) };
+  const data = await postAction(cfg, body, fetchFn, timeoutMs);
   if (!data.place || typeof data.place !== 'object') throw new Error('bad_response');
-  return data.place;
+  return placeAsTyped(data.place, place);
 }
 
 // What api=mock answers, so the add-place UI can be built and tried without a backend.

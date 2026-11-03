@@ -1,7 +1,7 @@
 // Leaflet map with one round pin per place. `L` is the global from the CDN <script> in index.html.
 //
 // initMap(el, {insets}) -> {
-//   setPlaces(places, {me, starred, ginkgo, fit, translations, lobePlaces}), focus(placeId, {zoom}), setSelected(placeId|null),
+//   setPlaces(places, {me, starred, ginkgo, fit, translations, lobePlaces, firstView}), focus(placeId, {zoom}), setSelected(placeId|null),
 //   setNextStop(placeId|null) (today's next stop, the one in the 下一站 strip: its capsule ranks just below the selected pin's),
 //   onPinClick(fn) / onMapClick(fn) -> off(), locate() -> Promise<{lat,lng}|null>, lastLocation(),
 //   pressLocate() -> Promise<{status, pos}>, onFollowChange(fn) -> off(), isFollowing(), basemapMode(),
@@ -9,7 +9,10 @@
 // }
 // The base map (ui/basemap-layer.js) is our own vector map, or OpenStreetMap's pictures as a fallback; under the pins sit the yellow
 // district lobes of the areas with 3+ places (ui/lobe-layer.js; `lobePlaces` = the places they are made from, default `places`, so a
-// category filter does not shrink a district). Me (ui/me-layer.js) is a blue dot with a heading wedge. Follow-me (follow.js): after
+// category filter does not shrink a district). The first setPlaces that has a pin near Seoul sets the first view: the district named by
+// `firstView` ({area, include, zoom}, or a function that returns one, called then; first-view.js chooseFirstView): a district at zoom 14
+// to 16 with the pin that chose it in frame, or that one pin; pins far from Seoul (Gwangju, Jeonju) are never part of a district view,
+// nor of fitAll(). Me (ui/me-layer.js) is a blue dot with a heading wedge. Follow-me (follow.js): after
 // pressLocate() every new position pans the map (zoom unchanged) until the person drags the map, taps the button again, or the app
 // sends the map somewhere else (focus, flyTo, fitAll); onFollowChange(fn(on)) tells the button.
 // `insets()` (optional) returns {top, bottom} in px: screen space covered by the chips and the bottom of the screen (tab bar,
@@ -26,6 +29,7 @@
 // capsule carries data-side (right, left, below or above the dot), --dy (a few px up or down) and data-lines (1 or 2), and the hidden
 // ones class `is-off`. All of it is recomputed ~100 ms after zoomend / moveend (and after the places or the selection change): no pin
 // is rebuilt while the map moves.
+import { viewFrame, viewPoints } from '../first-view.js';
 import { FOLLOW_OFF, followReducer, locateWaitMs } from '../follow.js';
 import { initialOf } from '../people.js';
 import {
@@ -124,14 +128,42 @@ export function initMap(el, { insets = () => ({ top: 0, bottom: 0 }) } = {}) {
     return entry;
   }
 
-  function fitAll() {
-    const pts = [...entries.values()].map((e) => e.marker.getLatLng());
-    if (pts.length === 0) return;
+  /**
+   * Show [[lat, lng], ...] as large as fits between the chips and the tab bar, at a zoom of at most `maxZoom` (and, with `minZoom`, at
+   * least that: a district that is bigger than the screen is cut off rather than shown as dots). `must` (points of `points`): the ones
+   * that stay on screen even if that takes a zoom below `minZoom`. Nothing to show: the map stays.
+   */
+  function fitPoints(points, { minZoom, maxZoom = 16, must = [] } = {}) {
+    if (points.length === 0) return;
     const { top = 0, bottom = 0 } = insets(); // keep every pin clear of the chips and the tab bar
-    map.fitBounds(L.latLngBounds(pts), {
-      paddingTopLeft: [24, Math.max(76, top + 16)], paddingBottomRight: [24, Math.max(24, bottom + 16)], maxZoom: 16, animate: false,
-    });
+    const padTop = Math.max(76, top + 16);
+    const padBottom = Math.max(24, bottom + 16);
+    const bounds = L.latLngBounds(points);
+    const fits = Math.min(maxZoom, map.getBoundsZoom(bounds, false, L.point(48, padTop + padBottom))); // the zoom at which every point shows
+    const show = (z) => {
+      const centre = map.project(bounds.getCenter(), z).add([0, (padBottom - padTop) / 2]); // what fitBounds does: the middle of the uncovered part
+      map.setView(map.unproject(centre, z), z, { animate: false });
+    };
+    const size = map.getSize();
+    const onScreen = (pt) => {
+      const p = map.latLngToContainerPoint(pt);
+      return p.x >= 24 && p.x <= size.x - 24 && p.y >= padTop && p.y <= size.y - padBottom;
+    };
+    const z = minZoom === undefined ? fits : Math.max(minZoom, fits);
+    show(z);
+    if (z > fits && must.some((pt) => !onScreen(pt))) show(fits); // the pin that chose this view must not be cut off by the zoom limit
     fitted = true;
+  }
+
+  /** The first view (first-view.js chooseFirstView): one district at district zoom, or one pin. No pin near Seoul: the map stays. */
+  function fitFirst(placesForView, view) {
+    const { points, ...limits } = viewFrame(placesForView, view);
+    fitPoints(points, limits);
+  }
+
+  /** Every pin near Seoul (first-view.js: the ones in Gwangju and Jeonju are left out). */
+  function fitAll() {
+    fitPoints(viewPoints([...entries.values()].map((e) => e.place), ''));
   }
 
   // ---- name capsules (see the header) -----------------------------------------------------------------------
@@ -197,7 +229,7 @@ export function initMap(el, { insets = () => ({ top: 0, bottom: 0 }) } = {}) {
     document.fonts?.addEventListener?.('loadingdone', scheduleLabels);
   } catch { /* no font events: the next map move lays them out */ }
 
-  function setPlaces(places, { me = '', starred = [], ginkgo = [], fit, translations: tr, lobePlaces } = {}) {
+  function setPlaces(places, { me = '', starred = [], ginkgo = [], fit, translations: tr, lobePlaces, firstView } = {}) {
     if (tr && typeof tr === 'object') translations = tr; // before the pins are built; a pin whose Chinese name just arrived is rebuilt by render()
     const mine = initialOf(me) ?? '';
     const starSet = starred instanceof Set ? starred : new Set(starred);
@@ -216,7 +248,10 @@ export function initMap(el, { insets = () => ({ top: 0, bottom: 0 }) } = {}) {
       layer.removeLayer(entry.marker);
       entries.delete(id);
     }
-    if (fit === true || (fit !== false && !fitted)) { dispatchFollow('away'); fitAll(); }
+    if (fit === true || (fit !== false && !fitted)) {
+      dispatchFollow('away');
+      fitFirst(lobePlaces ?? places ?? [], typeof firstView === 'function' ? firstView() : firstView ?? {});
+    }
     lobes.update(lobePlaces ?? places, { translations }); // the district shapes (only the ones that changed are redrawn)
     scheduleLabels(); // pins came or went
   }

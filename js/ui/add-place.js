@@ -1,6 +1,7 @@
 // New-place form: a bottom sheet over the map.
 //   1. one box at the top: paste a Google / Naver Map link (or a whole share text) -> resolveLink,
-//      or type a name -> searchPlace and pick one of <= 5 results (a pin is previewed on the map);
+//      or type a name -> searchPlace (the name as typed and, in Seoul, also with the nearest district's name: place-input.js planSearch)
+//      and pick one of <= 8 results, nearest first with the distance (a pin is previewed on the map);
 //   2. 店名 (required), 分類, 備註;
 //   3. a position when nothing was picked: 「我現在的位置」 or 「在地圖上點」.
 // Nothing is guessed: a place without a chosen position is not sent (a wrong pin is worse than a missing one).
@@ -13,18 +14,18 @@
 //   presetAlias  string | string[] stored in `aliases`, so the Sheet's own wording finds the new pin
 import { addPlace, resolveLink, searchPlace } from '../api.js';
 import {
-  MSG, buildAliases, buildPayload, errorMessage, findSavedDuplicate, nameFromPick, searchResultView,
+  MSG, buildAliases, buildPayload, errorMessage, findSavedDuplicate, nameFromPick, noResultsMessage, searchResultView,
 } from '../add-place-logic.js';
 import { CATEGORIES } from '../categories.js';
 import { holdBack } from '../back-stack.js';
 import { hasHangul } from '../i18n.js';
-import { classifyPlaceInput } from '../place-input.js';
+import { MAX_MERGED, classifyPlaceInput, collectSearches, formatDistance, mergeResults, planSearch } from '../place-input.js';
 import { append, clear, famStyle, h, icon, sheetEdge } from './dom.js';
 import { createPreviewPin } from './preview-pin.js';
 
 const root = () => document.documentElement;
 const clean = (v) => String(v ?? '').trim();
-const MAX_RESULTS = 5;
+const MAX_RESULTS = MAX_MERGED; // the two searches of a name (place-input.js planSearch) together
 
 /** A string and, when it is Korean and a Chinese line is known, that line under it (the `.tx` / `.zh` pattern of the card). */
 function twoLine(text, zh) {
@@ -177,8 +178,10 @@ function createForm(app, preview, opts, onClosed) {
     if (st.pick || st.results.length === 0) return;
     resultsBox.append(h('ul', { class: 'as-results', 'aria-label': '搜尋結果' }, st.results.map((r) => {
       const v = searchResultView(r, app.translations);
+      const away = formatDistance(r.distanceM); // 350 m / 1.2 km from the map centre (or me); '' when unknown
       return h('li', null, h('button', { class: 'as-result', type: 'button', onclick: () => pickResult(r) },
-        twoLine(v.name || '（沒有名稱）', v.nameZh), v.address ? h('span', { class: 'as-addr' }, twoLine(v.address, v.addressZh)) : null));
+        twoLine(v.name || '（沒有名稱）', v.nameZh), away ? h('span', { class: 'as-dist zh' }, away) : null,
+        v.address ? h('span', { class: 'as-addr' }, twoLine(v.address, v.addressZh)) : null));
     })));
   }
 
@@ -264,12 +267,22 @@ function createForm(app, preview, opts, onClosed) {
     showResults(st.results);
   }
 
+  /** Where results are measured from: me while the map follows me, else the middle of the map ({lat, lng} or null). */
+  function searchCentre() {
+    const me = app.map?.isFollowing?.() ? app.map.lastLocation?.() : null;
+    return me ?? app.map?.getMap?.()?.getCenter?.() ?? null;
+  }
+
   async function searchByName(query, n, note) {
-    const list = await searchPlace(app.cfg, query);
+    const plan = planSearch(query, searchCentre()); // the name as typed, and with the nearest district's name (place-input.js)
+    const settled = await Promise.allSettled(plan.queries.map((text) => searchPlace(app.cfg, text)));
     if (stale(n)) return;
+    const { lists, error } = collectSearches(settled);
+    if (error) throw error; // every search failed: the same message as for one
+    const list = mergeResults(lists, plan.centre);
     dropPick();
     showResults(list);
-    if (list.length === 0) setQMsg(MSG.noResults);
+    if (list.length === 0) setQMsg(noResultsMessage(plan));
     else setQMsg(note ?? '', 'note');
   }
 
@@ -356,7 +369,7 @@ function createForm(app, preview, opts, onClosed) {
     renderSubmit();
     st.lastPayload = built.payload;
     try {
-      const place = await addPlace(app.cfg, built.payload);
+      const place = await addPlace(app.cfg, built.payload, { features: app.snapshot?.features });
       if (st.closed) { app.addPlaceLocal(place); return; }
       finish(place);
     } catch (e) {

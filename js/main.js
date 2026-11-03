@@ -28,20 +28,23 @@ import { CATEGORIES } from './categories.js';
 import { TOKENS } from './colors.js';
 import { readConfig } from './config.js';
 import { loadDone, toggleDone } from './done.js';
+import { chooseFirstView } from './first-view.js';
 import { ginkgoPlaceIds } from './ginkgo.js';
+import { findHotelPlace } from './hotel-view.js';
 import { myItems } from './next-stop.js';
 import { GINKGO_FILTER, categoryOf, hasCoords, isHidden, matchesFilter } from './place-view.js';
 import { registerServiceWorker } from './register-sw.js';
 import { parsePurchase } from './sheet-parse.js';
 import { loadStars, toggleStar } from './stars.js';
 import { cardSignature, createRefreshGate, isTextEntry, mergePending, statusLine } from './sync.js';
+import { buildToday } from './today.js';
 import { currentDate, currentNightDate, loadTripData, stopName, todayView } from './today-view.js';
 import { initAddPlace } from './ui/add-place.js';
 import { cardPlaceId, cardVisibleHeight, closeCard, openCard } from './ui/card.js';
 import { append, clear, famStyle, h, icon } from './ui/dom.js';
 import { initHotel } from './ui/hotel-card.js';
 import { initMap } from './ui/map.js';
-import { initNextBar } from './ui/nextbar.js';
+import { describeNext, initNextBar } from './ui/nextbar.js';
 import { closeView, currentView, onViewChange } from './ui/panel.js';
 import { pickPerson, showMeButton } from './ui/person.js';
 import { showSetup } from './ui/setup.js';
@@ -240,7 +243,20 @@ function fadeChips() {
 
 function refreshPins() {
   // `lobePlaces`: the yellow district shapes come from every place that is not hidden, not only from the ones the category filter lets through
-  app.map?.setPlaces(app.visiblePlaces(), { me: app.me ?? '', starred: app.stars, ginkgo: app.ginkgo, translations: app.translations, lobePlaces: app.places });
+  // `firstView`: asked only when the map makes its first view (first-view.js), so nothing is computed on the later refreshes
+  app.map?.setPlaces(app.visiblePlaces(), { me: app.me ?? '', starred: app.stars, ginkgo: app.ginkgo, translations: app.translations, lobePlaces: app.places, firstView });
+}
+
+/** What the map opens on: the district of today's next stop (else of tonight's hotel), or the busiest area; the pin that chose it stays in frame (first-view.js). */
+function firstView() {
+  let next = null;
+  let hotel = null;
+  try { next = describeNext(app)?.place ?? null; } catch { /* no today's stops: the hotel, then the busiest area */ }
+  try {
+    const stay = app.snapshot ? buildToday(loadTripData(app.snapshot.tabs), app.me, app.currentNightDate()).hotel : null;
+    hotel = stay ? findHotelPlace(stay.name, app.places) : null;
+  } catch { /* no hotel for tonight */ }
+  return chooseFirstView({ places: app.places, next, hotel });
 }
 
 /** The places the Sheet's 銀杏 tab lists, for the 銀杏 capsule and the leaf on the pins. */

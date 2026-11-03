@@ -38,7 +38,7 @@
 // tests/sw-precache.test.mjs fails while PRECACHE or the BUILD stamp is out of date.
 'use strict';
 
-const BUILD = '131950afa3'; // written by tools/stamp-sw.mjs: a hash of every precached app file (this file excluded)
+const BUILD = '6fdccd4943'; // written by tools/stamp-sw.mjs: a hash of every precached app file (this file excluded)
 const SHELL_CACHE = `seoul-shell-${BUILD}`; // activate removes every other seoul-shell-* cache
 const TILE_CACHE = 'seoul-tiles-v1'; // not tied to BUILD: viewed tiles survive an app update
 const TILE_LIMIT = 300;
@@ -90,6 +90,7 @@ const PRECACHE = [
   'js/done.js',
   'js/fallback-guard.js',
   'js/fields.js',
+  'js/first-view.js',
   'js/follow.js',
   'js/geo.js',
   'js/ginkgo.js',

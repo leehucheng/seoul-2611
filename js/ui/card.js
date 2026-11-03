@@ -15,12 +15,13 @@
 // (yellow, an arrow in an ink circle) and Google (outlined) capsules. The tab bar stays on top of the drawer's bottom edge.
 import { holdBack } from '../back-stack.js';
 import { createFallbackGuard } from '../fallback-guard.js';
+import { areaKoreanName } from '../area-lobes.js';
 import { hasHangul, zhOf } from '../i18n.js';
 import { lightsplitShareUrl } from '../links.js';
 import { distanceMeters, walkMinutes } from '../geo.js';
 import { PEOPLE } from '../people.js';
 import {
-  categoryOf, detectPlatform, googleUrl, hasCoords, hoursCard, nameBlock, naverTarget, parseAmount, personalFor,
+  categoryOf, detectPlatform, googleUrl, hasCoords, hoursCard, nameBlock, naverShopTarget, naverTarget, parseAmount, personalFor,
   safeHttpsUrl, signatureView, toCoord, whoNames,
 } from '../place-view.js';
 import { famDot, h, icon, leaf, sheetEdge } from './dom.js';
@@ -256,27 +257,41 @@ const iosFallback = (fallbackUrl, go) => iosGuard.arm(() => go(fallbackUrl));
 
 const navigateTo = (ctx) => ctx.navigate ?? ((url) => { window.location.href = url; });
 
-/**
- * The Naver walking link of a place as an <a> with class `cls` and the given children: the same target, platform handling (the iOS
- * app scheme with a web fallback, the Android intent) and no-coordinates fallback everywhere it is used (the card, the hotel card,
- * the 今日菜單's next stop).
- */
-export function naverLink(place, ctx, cls, ...children) {
-  const platform = ctx?.platform ?? detectPlatform({ userAgent: navigator.userAgent, platform: navigator.platform, maxTouchPoints: navigator.maxTouchPoints });
-  const naver = naverTarget(place, platform);
+const platformOf = (ctx) => ctx?.platform ?? detectPlatform({ userAgent: navigator.userAgent, platform: navigator.platform, maxTouchPoints: navigator.maxTouchPoints });
+
+/** A Naver target (place-view.js naverTarget / naverShopTarget) as an <a>: new tab for the web page, the iOS app scheme with its web fallback. */
+function naverAnchor(naver, ctx, cls, children) {
   const attrs = { class: cls, href: naver.href };
   if (naver.kind === 'web') { attrs.target = '_blank'; attrs.rel = 'noopener noreferrer'; }
   if (naver.kind === 'app') attrs.onclick = () => iosFallback(naver.fallback, navigateTo(ctx ?? {}));
   return h('a', attrs, ...children);
 }
 
-/** The Naver / Google capsules with their hint (also used by the hotel card): same links, platform handling and no-coordinates fallback. */
-export function buildNav(place, ctx = {}) {
-  const naverBtn = naverLink(place, ctx, 'navbtn naver', 'Naver 步行', h('span', { class: 'chip-ink' }, icon('i-arrow')));
+/**
+ * The Naver walking link of a place as an <a> with class `cls` and the given children: the same target, platform handling (the iOS
+ * app scheme with a web fallback, the Android intent) and no-coordinates fallback everywhere it is used (the hotel card, the
+ * 今日菜單's next stop: places you are going to).
+ */
+export function naverLink(place, ctx, cls, ...children) {
+  return naverAnchor(naverTarget(place, platformOf(ctx)), ctx, cls, children);
+}
+
+/** The link that opens the shop's own page in Naver Map (hours, photos, reviews, Naver's 길찾기), same platform handling as naverLink. */
+export function naverShopLink(place, ctx, cls, ...children) {
+  return naverAnchor(naverShopTarget(place, platformOf(ctx), areaKoreanName(place?.area)), ctx, cls, children);
+}
+
+/**
+ * The Naver / Google capsules with their hint: same links, platform handling and no-coordinates fallback. `shop` (the place card):
+ * Naver opens the shop's page ("Naver 店家"); without it (the hotel card) Naver starts walking directions ("Naver 步行").
+ */
+export function buildNav(place, ctx = {}, { shop = false } = {}) {
+  const chip = h('span', { class: 'chip-ink' }, icon('i-arrow'));
+  const naverBtn = shop ? naverShopLink(place, ctx, 'navbtn naver', 'Naver 店家', chip) : naverLink(place, ctx, 'navbtn naver', 'Naver 步行', chip);
   const googleBtn = h('a', { class: 'navbtn google', href: googleUrl(place), target: '_blank', rel: 'noopener noreferrer' }, 'Google 大眾運輸');
   return h('div', { class: 'nav-block' },
     h('div', { class: 'go' }, naverBtn, googleBtn),
-    h('p', { class: 'nav-hint' }, HINT),
+    h('p', { class: 'nav-hint' }, shop ? ['Naver 開店家頁，要走路再按它的 길찾기', h('br'), 'Google 在韓國通常只有大眾運輸路線'] : HINT),
     hasCoords(place) ? null : h('p', { class: 'nav-hint nav-hint--warn' }, '這家的位置還沒確認，兩顆按鈕都改用店名搜尋。'));
 }
 
@@ -333,7 +348,7 @@ function buildDetails(place, ctx) {
 
 function buildCard(place, ctx) {
   const head = buildHeader(place, ctx);
-  const nav = buildNav(place, ctx);
+  const nav = buildNav(place, ctx, { shop: true });
   const content = h('div', { class: 'sheet-content' },
     head,
     buildStrip(place, ctx),

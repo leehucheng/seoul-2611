@@ -4,7 +4,7 @@ import { CATEGORIES } from './categories.js';
 import { FAMILIES } from './colors.js';
 import { formatHoursBadge, hoursToday } from './hours.js';
 import { hasHan, hasHangul, zhOf } from './i18n.js';
-import { googleDirUrl, naverLinks } from './links.js';
+import { googleDirUrl, naverLinks, naverShopLinks } from './links.js';
 import { itemsForPlace } from './match.js';
 import { nameOf } from './people.js';
 
@@ -212,6 +212,18 @@ export function googleUrl(place) {
 export function naverTarget(place, platform) {
   const named = { ...place, name_kr: mapsQuery(place), name_zh: '' };
   const links = naverLinks(named, NAVER_APPNAME);
+  if (!hasCoords(place) || platform === 'desktop') return { kind: 'web', href: links.web };
+  if (platform === 'android') return { kind: 'intent', href: links.intent, fallback: links.web };
+  return { kind: 'app', href: links.app, fallback: links.web };
+}
+
+/**
+ * Naver Map target that opens the shop's own page (a search for its name, naverShopQuery) instead of walking directions; same kinds as
+ * naverTarget. `areaKr`: the Korean name of the place's area (area-lobes.js areaKoreanName), for a very short Korean name.
+ * Without coordinates the page is the search-by-name page on every platform, as for naverTarget.
+ */
+export function naverShopTarget(place, platform, areaKr = '') {
+  const links = naverShopLinks(place, NAVER_APPNAME, areaKr);
   if (!hasCoords(place) || platform === 'desktop') return { kind: 'web', href: links.web };
   if (platform === 'android') return { kind: 'intent', href: links.intent, fallback: links.web };
   return { kind: 'app', href: links.app, fallback: links.web };

@@ -594,10 +594,35 @@ ol, ul { list-style: none; }
 
 /* 今天: the 今日菜單, a paper menu board taped onto the ginkgo-yellow carpet */
 .panel--today { background: var(--ginkgo); }
-.t-meta { flex: none; display: flex; align-items: center; gap: 8px; padding: calc(10px + var(--safe-top)) calc(12px + var(--safe-right)) 12px calc(12px + var(--safe-left)); }
+.t-meta { flex: none; display: flex; align-items: center; gap: 8px; padding: calc(10px + var(--safe-top)) calc(12px + var(--safe-right)) 8px calc(12px + var(--safe-left)); }
 .t-day { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 8px; font: 800 15px/1.2 var(--sans); white-space: nowrap; }
 .t-day .gl { width: 22px; height: 22px; }
 .t-day span { overflow: hidden; text-overflow: ellipsis; }
+/* the day strip: the trip's 11 days as chips on the carpet; it scrolls sideways and fades at an edge that has more chips (today-panel.js sets .fade-l / .fade-r) */
+.t-days {
+  position: relative; flex: none; display: flex; gap: 6px; height: 48px; margin: 0 0 14px; padding: 2px calc(14px + var(--safe-right)) 2px calc(14px + var(--safe-left));
+  overflow-x: auto; scrollbar-width: none; --fade-l: 0px; --fade-r: 0px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+}
+.t-days.fade-l { --fade-l: 28px; }
+.t-days.fade-r { --fade-r: 28px; }
+.t-days::-webkit-scrollbar { display: none; }
+.dchip {
+  flex: none; min-width: 58px; height: 44px; padding: 0 13px; border-radius: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); transition: background-color .4s var(--over), transform .4s var(--over);
+}
+.dchip:active { transform: scale(.95); }
+.dchip:focus-visible { outline-offset: -5px; }
+.dchip .dd { display: flex; align-items: center; gap: 4px; font: 900 15px/1 "Archivo", sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -.015em; }
+.dchip.is-today .dd::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ginkgo); box-shadow: 0 0 0 1.5px var(--ink); }   /* today: the ginkgo dot */
+.dchip .dw { display: flex; align-items: baseline; gap: 4px; font: 800 11.5px/1 var(--sans); }
+.dchip .dw i { font: 800 11px/1 "Archivo", var(--sans); font-style: normal; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.dchip .dw i:empty { display: none; }
+.dchip[aria-pressed="true"] { background: var(--ink); color: var(--cream); box-shadow: none; }
+.dchip[aria-pressed="true"] .dw i { color: var(--cream); }
+.dchip[aria-pressed="true"].is-today .dd::after { box-shadow: 0 0 0 1.5px var(--cream); }
+.dchip[aria-pressed="true"]:focus-visible { outline-color: var(--cream); }
 .board { position: relative; flex: 1; min-height: 0; margin: 2px 14px 14px; padding: 16px 18px 0; display: flex; flex-direction: column; background: var(--paper); border-radius: 2px; box-shadow: var(--board-sh); --tw: 46px; --th: 15px; }
 .bh { flex: none; position: relative; padding-bottom: 11px; border-bottom: 3px solid var(--ink); }
 .bh h1 { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
@@ -605,7 +630,6 @@ ol, ul { list-style: none; }
 .bh .ttl span { position: relative; z-index: 1; }
 .bh .ttl svg { position: absolute; left: -4px; bottom: -5px; width: calc(100% + 8px); height: 15px; z-index: 0; fill: var(--ginkgo); }
 .bh .date { font: 900 31px/1 "Archivo", sans-serif; letter-spacing: -.02em; }
-.bh .date small { font: 900 18px/1 "Noto Sans TC", sans-serif; letter-spacing: 0; }
 .board-scroll { flex: 1; min-height: 0; margin: 0 -18px; padding: 4px 18px 16px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .lines { margin: 4px 0 0; }
 .li { position: relative; }
@@ -731,7 +755,7 @@ ol, ul { list-style: none; }
 .picker-cancel { width: 100%; min-height: 44px; margin-top: 10px; color: var(--ink-2); font: 800 15px/1 var(--sans); }
 
 @media (hover: hover) {
-  .fcap:hover:not([aria-pressed="true"]) .fv { background: var(--ginkgo-pale); }
+  .fcap:hover:not([aria-pressed="true"]) .fv, .dchip:hover:not([aria-pressed="true"]) { background: var(--ginkgo-pale); }
   .locate:hover:not([aria-pressed="true"]), .round:hover:not(:disabled), .icon-btn:hover:not(:disabled) { background: var(--ginkgo-pale); }
   .tab:hover:not([aria-current="page"]) .tdot { background: var(--ginkgo-pale); }
   .picker-btn:hover:not([aria-current="true"]), .up-item:hover, .as-result:hover { background: var(--ginkgo-pale); }

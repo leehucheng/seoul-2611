@@ -11,15 +11,18 @@
 //                                   stop, never done, never the pen's place and has no circle to tick. A stop that is done only
 //                                   because its own time is past shows its check mark in a circle that is not a button.
 //   last line                       tonight's hotel, and 「給司機看韓文地址」 (the hotel card)
-// Above the board: the day switcher (the trip's days), how many stops, and who I am. Before the trip and after the flight home the
-// banner and the flight reminder of the Sheet show first. Every Korean string has a smaller Chinese line.
+// Above the board: the day switcher (the ‹ › buttons), how many stops, and who I am; under it the day strip, the trip's 11 days as chips
+// (the date, the weekday, my number of stops; today has a yellow dot; a tap shows that day). The page opens on today when today is a trip
+// day, else on the nearest end of the trip (today-view.js panelStartDate). Time only matters on today: on any other day a stop is done only
+// when ticked for that day, and nothing is the next stop. Before the trip and after the flight home the banner and the flight reminder of
+// the Sheet show first. Every Korean string has a smaller Chinese line.
 //
 // initToday(app) sets app.actions.today and app.openToday(dateISO?). Text from the Sheet only goes in through dom.js (textContent).
 import { hasHan, hasHangul } from '../i18n.js';
 import { FAMILIES } from '../colors.js';
-import { isMyItem, isPastByTime, isStopDone, myItems, nextStop, stripTime, untilText } from '../next-stop.js';
+import { isMyItem, myItems, nextStop, stripTime, untilText } from '../next-stop.js';
 import { categoryOf, hoursCard, menuHours } from '../place-view.js';
-import { TRIP_FIRST, TRIP_LAST, isISODate, loadTripData, todayView } from '../today-view.js';
+import { TRIP_FIRST, TRIP_LAST, dayStrip, isISODate, loadTripData, panelStartDate, stopState, todayView } from '../today-view.js';
 import { naverLink } from './card.js';
 import { append, clear, famStyle, h, icon, leaf } from './dom.js';
 import { createPanel, textWithZh } from './panel.js';
@@ -36,6 +39,17 @@ const NO_PIN = Object.freeze({ icon: 'i-list', color: FAMILIES.other.color, on: 
 const signatureOf = (app) => JSON.stringify([
   app.me, app.snapshot?.tabs?.Schedule, app.snapshot?.tabs?.Flight, app.snapshot?.tabs?.Hotel, app.translations, [...app.ginkgo],
   app.places.map((p) => [p.id, p.category, p.name_zh, p.name_kr, p.name_en, p.aliases, p.hidden, p.lat, p.lng, p.verified, p.hours_json, p.source]),
+]);
+
+/**
+ * What decides whether the page has to be built again: the shown day, the app's current date (`today`: at Seoul midnight the today dot,
+ * the 今天 label and the flight pill move while the page stays open), the data (signatureOf), what is ticked, and which lines are done /
+ * next / showing which hours, and where the pen sits. The clock's own minute is not in it: the pen's time and the 「N 分後」 are patched in
+ * place (tick), so a tap is never swallowed by a rebuild that changed nothing.
+ */
+export const viewSignature = (date, today, dataSig, m) => JSON.stringify([
+  date, today, dataSig, [...m.ticked].sort(), m.v.status, m.live, m.nowAt,
+  m.rows.map((r) => [r.mine, r.isNext, r.byTime, r.done, r.price?.text ?? null, r.status]),
 ]);
 
 /** 1 for the first day of the trip; null outside it. */
@@ -93,8 +107,9 @@ export function initToday(app) {
     }
     app.closeCard();
 
-    const state = { date: isISODate(dateArg) ? dateArg : app.currentDate(), expanded: new Set(), viewSig: '' };
+    const state = { date: isISODate(dateArg) ? dateArg : panelStartDate(new Date(), window.location.search), expanded: new Set(), viewSig: '', stripDate: '' };
     const meta = h('div', { class: 't-meta' });
+    const days = h('div', { class: 't-days', role: 'group', 'aria-label': '選哪一天' });
     const lines = h('ol', { class: 'lines' });
     const scroll = h('div', { class: 'board-scroll' });
     const bh = h('header', { class: 'bh' });
@@ -102,7 +117,7 @@ export function initToday(app) {
       h('span', { class: 'tape tl' }), h('span', { class: 'tape tr' }), h('span', { class: 'tape bl' }), h('span', { class: 'tape br' }), bh, scroll);
     const offs = [];
     const panel = createPanel({ cls: 'panel--today', label: '今天', view: 'today', onClose: () => offs.forEach((off) => off()) });
-    append(panel.dialog, [meta, board]);
+    append(panel.dialog, [meta, days, board]);
 
     const go = (date) => {
       if (!date) return;
@@ -130,12 +145,47 @@ export function initToday(app) {
       ]);
     }
 
+    /** The edge fade of the day strip, like the filter row: an edge fades while there are chips beyond it. */
+    function fadeDays() {
+      days.classList.toggle('fade-l', days.scrollLeft > 4);
+      days.classList.toggle('fade-r', days.scrollLeft < days.scrollWidth - days.clientWidth - 4);
+    }
+    days.addEventListener('scroll', fadeDays, { passive: true });
+    window.addEventListener('resize', fadeDays);
+    offs.push(() => window.removeEventListener('resize', fadeDays));
+
+    const chips = new Map(); // date -> its button; made once, then updated in place, so a tapped chip keeps its focus and the strip its scroll
+
+    /** The day strip: one chip per trip day (today-view.js dayStrip). The chip of the shown day is centred when the day changes (and on open). */
+    function renderStrip(trip, v) {
+      for (const d of dayStrip(trip, app.me, { selected: v.date, today: app.currentDate() })) {
+        let chip = chips.get(d.date);
+        if (!chip) {
+          chip = h('button', { class: 'dchip', type: 'button', onclick: () => go(d.date) },
+            h('b', { class: 'dd' }, d.md), h('span', { class: 'dw' }, h('span', null, d.weekday), h('i')));
+          chips.set(d.date, chip);
+          days.append(chip);
+        }
+        chip.setAttribute('aria-pressed', String(d.isSelected));
+        chip.setAttribute('aria-label', d.label);
+        chip.classList.toggle('is-today', d.isToday);
+        chip.querySelector('i').textContent = d.count > 0 ? `${d.count}站` : '';
+      }
+      const shown = chips.get(v.date);
+      if (shown && state.stripDate !== v.date) {
+        const calm = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        days.scrollTo({ left: Math.max(0, shown.offsetLeft - (days.clientWidth - shown.offsetWidth) / 2), behavior: state.stripDate && !calm ? 'smooth' : 'auto' });
+      }
+      state.stripDate = v.date;
+      fadeDays();
+    }
+
     function renderHead(v) {
-      const m = /^(\d+\/\d+)(.*)$/.exec(v.title);
+      const m = /^(\d+\/\d+)/.exec(v.title); // the weekday ('（四）') is on the day strip's chip, so it is not repeated here
       clear(bh);
       bh.append(h('h1', null,
         h('span', { class: 'ttl' }, h('span', null, v.isToday ? '今日菜單' : '行程菜單'), underline()),
-        h('span', { class: 'date' }, m ? m[1] : v.title, m?.[2] ? h('small', null, m[2]) : null)));
+        h('span', { class: 'date' }, m ? m[1] : v.title)));
     }
 
     /** One stop as a menu line. r = {view, place, cat, mine, done, byTime, isNext, price, ginkgo, next}. */
@@ -236,8 +286,7 @@ export function initToday(app) {
           view, place, mine: isMine, next,
           isNext: Boolean(next) && next.item === view,
           cat: place ? categoryOf(place.category) : NO_PIN,
-          byTime: isMine && v.isToday && isPastByTime(view, at),
-          done: isMine && (v.isToday ? isStopDone(view, at, ticked, view.key) : ticked.has(view.key)),
+          ...stopState(view, { isToday: v.isToday, mine: isMine, at, ticked }), // byTime, done: the clock only counts on today
           ginkgo: Boolean(place && app.ginkgo.has(place.id)) || /^銀杏/.test(stripTime(view.text)), // on the 銀杏 tab, or written as a 「銀杏 - …」 stop
           price: view.time ? { text: view.time, time: true } : (() => { const t = place ? menuHours(place, at) : null; return t ? { text: t, time: false } : null; })(),
           status: hours?.tone === 'open' ? '營業中' : hours?.tone === 'closed' ? '已打烊' : '',
@@ -247,21 +296,14 @@ export function initToday(app) {
       return { at, trip, v, mine, ticked, live, next, rows, nowAt };
     }
 
-    /**
-     * What decides whether the page has to be built again: the data (signatureOf), what is ticked, and which lines are done / next /
-     * showing which hours, and where the pen sits. The clock's own minute is not in it: the pen's time and the 「N 分後」 are patched in place
-     * (tick), so a tap is never swallowed by a rebuild that changed nothing.
-     */
-    const viewSig = (m) => JSON.stringify([
-      state.date, signatureOf(app), [...m.ticked].sort(), m.v.status, m.live, m.nowAt,
-      m.rows.map((r) => [r.mine, r.isNext, r.byTime, r.done, r.price?.text ?? null, r.status]),
-    ]);
+    const viewSig = (m) => viewSignature(state.date, app.currentDate(), signatureOf(app), m);
 
     function render(keepScroll, built) {
       const top = scroll.scrollTop;
       const m = built ?? build(new Date());
       const { at, trip, v, mine, live, next, rows, nowAt } = m;
       renderMeta(v, mine.length);
+      renderStrip(trip, v);
       renderHead(v);
       board.setAttribute('aria-label', `${app.me ?? ''} 的${v.isToday ? '今日' : ''}菜單 ${v.title}`.trim());
 

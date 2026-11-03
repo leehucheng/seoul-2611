@@ -14,7 +14,7 @@ import { hasCoords, isHidden, toCoord } from './place-view.js';
 export const LOBE_DEFAULTS = Object.freeze({ minPlaces: 3, maxRadiusM: 1200, padM: 320 });
 /** The 4 px ginkgo coast around a lobe (the fills are CSS: --ginkgo-pale from zoom 16, --lobe-far below it). */
 export const LOBE_STYLE = Object.freeze({ coast: '#F3C10A', coastPx: 4 });
-const NOT_AREAS = new Set(['', 'Seoul']);
+export const NOT_AREAS = new Set(['', 'Seoul']);
 const M_PER_DEG = 111_320;
 const CIRCLE_POINTS = 16; // corners of the circle drawn around each place
 const SMOOTH_ROUNDS = 2;
@@ -68,6 +68,7 @@ export const AREA_KR = Object.freeze({
   聖水: '성수동', 弘大: '홍대', 狎鷗亭: '압구정',漢南洞: '한남동', 安國: '안국동', 梨泰院: '이태원', '鐘路3街': '종로3가', 明洞: '명동',
   江南: '강남', 東大門: '동대문', 仁寺洞: '인사동', 三清洞: '삼청동', 北村: '북촌', 益善洞: '익선동', 延南洞: '연남동', 望遠洞: '망원동',
   龍山: '용산', 光化門: '광화문', 蠶室: '잠실', 新村: '신촌', 建大: '건대', 首爾林: '서울숲',
+  景福宮: '경복궁', 西村: '서촌', 市廳: '시청', 成均館大學: '성균관대', 惠化: '혜화', 德壽宮: '덕수궁',
 });
 
 /**
@@ -88,6 +89,20 @@ export function areaKorean(area, translations) {
     out += (out ? parts[i - 1].trim() : '') + kr;
   }
   return out;
+}
+
+/**
+ * The Korean name of an area, for a search query (not for display, so no Chinese name is needed beside it): Korean as written, or
+ * AREA_KR's name of the Chinese / English one. Of a name with several parts ('東大門/청구') the first part that has one. '' when none.
+ */
+export function areaKoreanName(area) {
+  for (const part of String(area ?? '').split(/[/＆&]/)) {
+    const t = part.trim();
+    if (t === '') continue;
+    const kr = hasHangul(t) ? t : AREA_KR[AREA_ZH[t.toLowerCase()] ?? t] ?? '';
+    if (kr !== '') return kr;
+  }
+  return '';
 }
 
 /** The lobe (of areaLobes(): {polygon: [[lat, lng]...]}) a point [lat, lng] lies in, the one with the most places when several do; null when none. */

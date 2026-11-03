@@ -11,7 +11,8 @@ export const MSG = Object.freeze({
   noPermission: '這個網址沒有新增權限，請用分享給你的完整網址',
   unresolved: '讀不到這個連結的位置，改用店名搜尋',
   unsupported: '只支援 Google Map 和 Naver Map 的連結',
-  noResults: '找不到，換個關鍵字，或用定位／點地圖',
+  noResults: '找不到，換個關鍵字，或貼 Google Map 連結，或用定位／點地圖', // the name already had a district in it
+  noResultsAddArea: '找不到。店名後面加地區再搜（例如「olive young 성수」），或貼 Google Map 連結，或用定位／點地圖',
   addNetwork: '可能已經存了，先重新整理再看看，不要重複送出',
   lookupNetwork: '連不上伺服器，等一下再試，或用定位／點地圖',
   emptyInput: '貼上連結，或打店名再按搜尋',
@@ -42,6 +43,14 @@ export function errorMessage(action, err) {
   }
   if (action === 'add' && code === 'network') return MSG.addNetwork;
   return `出了點問題（${code}）`;
+}
+
+/**
+ * What to tell the person when a name search (both texts of planSearch, put together) found nothing: a chain's name alone finds nothing
+ * in an address lookup, so unless the text already had a district in it (`plan.hadArea`) the advice is to add one.
+ */
+export function noResultsMessage(plan) {
+  return plan?.hadArea ? MSG.noResults : MSG.noResultsAddArea;
 }
 
 const SHARE_KEYS = ['share_title', 'share_text', 'share_url'];
@@ -167,6 +176,46 @@ export function buildPayload({ name, category, note, loc, me, aliases, pick = nu
       aliases: clean(aliases),
     },
   };
+}
+
+export const QUOTE_GUARD = 'quote-guard'; // the entry of the snapshot's `features` that says the server keeps = / ' texts as typed
+const QUOTED_FIELDS = ['name_zh', 'name_kr', 'address_zh', 'address_kr', 'note', 'aliases', 'added_by'];
+const startsQuoted = (v) => typeof v === 'string' && (v.startsWith('=') || v.startsWith('\''));
+
+/**
+ * The payload as it goes over the wire. Sheets evaluates a text that starts with `=` and drops a leading `'` (its quote
+ * prefix), so one more `'` in front keeps the text as typed. A server that lists `quote-guard` in the snapshot's `features`
+ * adds that apostrophe itself (doing both would double it); an older one, or no snapshot at all, does not, so the app adds it
+ * to every text field that starts with `=` or `'`. `payload` is not modified.
+ */
+export function payloadForServer(payload, features) {
+  if (!payload || (Array.isArray(features) && features.includes(QUOTE_GUARD))) return payload;
+  const out = { ...payload };
+  for (const k of QUOTED_FIELDS) if (startsQuoted(out[k])) out[k] = `'${out[k]}`;
+  return out;
+}
+
+/**
+ * What the addPlace request carries for `payload`: {place: payloadForServer(...), quoted}. `quoted` is true when the app really
+ * put an extra `'` in front of some field; the request then says `quoted: true`, so that a server that has quote-guard by the
+ * time the request arrives (the redeploy happened after the app's last snapshot) takes that one apostrophe off again instead of
+ * doubling it. A server from before quote-guard ignores the unknown field.
+ */
+export function quotedForServer(payload, features) {
+  const place = payloadForServer(payload, features);
+  return { place, quoted: Boolean(payload) && QUOTED_FIELDS.some((k) => place[k] !== payload[k]) };
+}
+
+/**
+ * The place the server answered with, shown as the person typed it: a field the older server echoed with the added
+ * apostrophe (`'=1+1` for the typed `=1+1`) gets it taken off again; one the newer server echoed as typed is left alone.
+ * `typed` is the payload before payloadForServer. `place` is not modified.
+ */
+export function placeAsTyped(place, typed) {
+  if (!place || !typed) return place;
+  const out = { ...place };
+  for (const k of QUOTED_FIELDS) if (startsQuoted(typed[k]) && out[k] === `'${typed[k]}`) out[k] = typed[k];
+  return out;
 }
 
 /**
