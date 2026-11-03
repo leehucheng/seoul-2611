@@ -763,6 +763,123 @@ ol, ul { list-style: none; }
 .pc-zh { font: 800 clamp(24px, 7vw, 36px)/1.3 var(--sans); }
 .pc-rr { margin-bottom: auto; font: 600 clamp(17px, 4.6vw, 22px)/1.35 var(--sans); color: var(--ink-2); }
 
+/* 行李清單 (ui/packing.js): a card on the 今天 page on the first and the last trip day, and the screen it opens over the page (above the
+   tab bar like .pc, z-index 30). The screen is cream with paper sheets; the ticks are ink circles, a full group's count turns ginkgo. */
+.pk-card { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin: 8px 0 4px; padding: 8px 14px 8px 10px; border-radius: 30px; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); text-align: left; }
+.pk-card:active { background: var(--ginkgo-pale); }
+.pk-card > .ico { width: 20px; height: 20px; }
+.pk-card-main { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.pk-card-title { font: 800 15.5px/1.2 var(--sans); }
+.pk-card-title .num { font-weight: 900; }
+.pk-card-line { font: 600 13px/1.35 var(--sans); color: var(--ink-2); }
+
+.pk {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; width: 100%; max-width: 600px; margin: 0 auto;
+  display: flex; flex-direction: column; padding-top: var(--safe-top);
+  background: var(--cream); color: var(--ink); animation: pc-in .28s var(--ease);
+}
+.pk:focus { outline: none; }
+.pk-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px calc(12px + var(--safe-right)) 6px calc(20px + var(--safe-left)); }
+.pk-title { min-width: 0; font: 900 clamp(28px, 8.6vw, 34px)/1 var(--sans); letter-spacing: -.025em; }
+.pk-close { flex: none; width: 48px; height: 48px; }
+.pk-scroll {
+  flex: 1; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  padding: 6px calc(20px + var(--safe-right)) calc(56px + var(--safe-bottom)) calc(20px + var(--safe-left));   /* 20px gutters: the tape on a sheet's corners reaches ~16px outside it */
+}
+.pk-lead { font: 600 15px/1.45 var(--sans); }
+.pk a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.pk-paper { position: relative; padding: 14px 16px; background: var(--paper); border-radius: 2px; box-shadow: var(--paper-sh); --tw: 40px; --th: 13px; }
+.pk-small { font: 500 12.5px/1.55 var(--sans); color: var(--ink-2); }
+.pk-small b { font-weight: 800; color: var(--ink); }
+
+.pk-prog { margin-top: 18px; }
+.pk-progrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.pk-total { display: flex; align-items: baseline; font: 900 40px/1 "Archivo", sans-serif; letter-spacing: -.015em; font-variant-numeric: tabular-nums; }
+.pk-total-of { margin-left: 2px; font-size: 22px; color: var(--ink-3); }
+.pk-left { flex: 1 1 auto; min-width: 5em; font: 800 15.5px/1.1 var(--sans); }
+.pk-bar { height: 16px; margin-top: 12px; border: 1.5px solid var(--ink); border-radius: 8px; background: var(--cream); overflow: hidden; }
+.pk-fill { display: block; height: 100%; background: var(--ginkgo); transform-origin: left center; transform: scaleX(var(--p, 0)); transition: transform .3s var(--ease); }
+.pk-btn { min-height: 44px; padding: 0 18px; border-radius: 22px; box-shadow: inset 0 0 0 2px var(--ink); font: 800 15px/1 var(--sans); text-align: center; }
+.pk-btn--primary { background: var(--ginkgo); }
+.pk-btn:active { transform: scale(.97); }
+.pk-confirm { margin-top: 12px; padding: 12px; border: 2px dashed var(--ink); border-radius: 16px; background: var(--ginkgo-pale); }
+.pk-confirm p { font: 700 14.5px/1.35 var(--sans); }
+.pk-crow { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.pk-note { margin-top: 10px; font: 700 13px/1.35 var(--sans); color: var(--danger); }
+.pk-key { margin-top: 10px; font: 600 12.5px/1.9 var(--sans); color: var(--ink-2); }
+.pk-key-row { display: block; }
+.pk-tag { display: inline-block; margin-left: 6px; padding: 0 7px; border: 1.5px solid var(--ink); border-radius: 10px; font: 800 11px/1.5 var(--sans); vertical-align: 2px; white-space: nowrap; color: var(--ink); }
+.pk-tag--m { background: var(--ginkgo-pale); }
+.pk-tag--r { border-style: dashed; }
+.pk-key .pk-tag { margin: 0 6px 0 0; }
+
+.pk-sec, .pk-grp { margin-top: 28px; }
+.pk-groups { margin-top: 4px; }
+.pk-h2 { font: 900 22px/1.15 var(--sans); letter-spacing: -.01em; }
+.pk-h2--group { font-size: 19px; }
+.pk-h3 { font: 900 16px/1.3 var(--sans); }
+
+.pk-days { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; margin-top: 12px; }
+.pk-day { min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 8px 8px 7px; border: 1.5px solid var(--ink); border-radius: 12px; background: var(--white); }
+.pk-day--cold { background: var(--ginkgo-pale); }
+.pk-day--avg { border-style: dashed; background: transparent; color: var(--ink-2); }
+.pk-dd { font: 800 13px/1.15 "Archivo", var(--sans); font-variant-numeric: tabular-nums; }
+.pk-dd span { margin-left: 4px; font-weight: 600; color: var(--ink-2); }
+.pk-hl { display: flex; align-items: baseline; gap: 3px; font-variant-numeric: tabular-nums; }
+.pk-hl i { font: 600 11px/1 var(--sans); font-style: normal; color: var(--ink-2); }
+.pk-hl b { font: 900 20px/1.1 "Archivo", sans-serif; letter-spacing: -.02em; white-space: nowrap; }
+.pk-hl--lo b { font-size: 16px; color: var(--ink-2); }
+.pk-day--rng .pk-hl b { font-size: 16px; letter-spacing: -.04em; }
+.pk-day--avg .pk-hl b { color: var(--ink-2); }
+.pk-cue { margin-top: 3px; font: 600 12px/1.3 var(--sans); }
+.pk-src { margin-top: auto; padding-top: 3px; font: 800 10.5px/1.2 var(--sans); color: var(--ink-2); }
+.pk-legend { margin-top: 10px; }
+.pk-wxnote { margin-top: 12px; }
+.pk-side { font: 600 14px/1.5 var(--sans); }
+.pk-side p + p { margin-top: 6px; }
+.pk-side b { font-weight: 900; }
+.pk-side .pk-h3 { margin-bottom: 2px; }
+
+.pk-gh { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.pk-hint { margin-top: 3px; font: 500 12.5px/1.3 var(--sans); color: var(--ink-2); }
+.pk-gcount { flex: none; min-width: 52px; padding: 6px 12px; border-radius: 20px; background: var(--white); box-shadow: inset 0 0 0 1.5px var(--ink); text-align: center; font: 900 14px/1 "Archivo", sans-serif; font-variant-numeric: tabular-nums; }
+.pk-gcount.is-full { background: var(--ginkgo); }
+.pk-items { margin-top: 18px; padding: 0; }   /* the rows run edge to edge so the whole row is the tap target; no overflow: hidden, the tape sticks out of the corners */
+.pk-sec > .pk-paper { margin-top: 18px; }   /* room for the tape above a sheet that follows a heading */
+.pk-item { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 16px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.pk-item + .pk-item { border-top: 1px solid var(--tape-edge); }
+.pk-item:active { background: var(--ginkgo-pale); }
+.pk-ck { -webkit-appearance: none; appearance: none; flex: none; width: 28px; height: 28px; margin: 0; display: grid; place-content: center; border-radius: 50%; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); cursor: pointer; }
+.pk-ck:checked { background: var(--ink); }
+.pk-ck:checked::after { content: ""; width: 7px; height: 13px; border: solid var(--cream); border-width: 0 3px 3px 0; transform: translateY(-1px) rotate(45deg); }
+.pk-txt { min-width: 0; }
+.pk-nm { display: block; font: 800 15.5px/1.3 var(--sans); }
+.pk-why { display: block; margin-top: 1px; font: 500 13px/1.3 var(--sans); color: var(--ink-2); }
+.pk-item.is-done .pk-nm { color: var(--ink-3); text-decoration: line-through; text-decoration-thickness: 2px; }
+.pk-item.is-done .pk-why { color: var(--ink-3); }
+
+.pk-facts li { position: relative; padding: 9px 0 9px 20px; font: 500 14px/1.5 var(--sans); }
+.pk-facts li + li { border-top: 1px solid var(--tape-edge); }
+.pk-facts li::before { content: ""; position: absolute; left: 2px; top: 17px; width: 9px; height: 9px; border-radius: 50%; background: var(--ginkgo); box-shadow: 0 0 0 1.5px var(--ink); }
+.pk-facts b { font-weight: 800; }
+.pk-rule { padding: 12px 0; }
+.pk-rule:first-child { padding-top: 0; }
+.pk-rule:last-child { padding-bottom: 0; }
+.pk-rule + .pk-rule { border-top: 1px solid var(--tape-edge); }
+.pk-rh { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.pk-rh b { font: 900 16px/1.2 var(--sans); }
+.pk-st { padding: 3px 10px; border: 1.5px solid var(--ink); border-radius: 12px; font: 800 12px/1.3 var(--sans); }
+.pk-st--ok { background: var(--ginkgo-pale); }
+.pk-st--chk { border-style: dashed; }
+.pk-rule p { margin-top: 6px; font: 500 14px/1.5 var(--sans); }
+.pk-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.pk-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 22px; background: var(--white); box-shadow: inset 0 0 0 1.5px var(--ink); text-decoration: none; font: 800 13px/1.2 var(--sans); }
+.pk-foot { margin-top: 28px; }
+.pk-foot p + p { margin-top: 8px; }
+@media (hover: hover) {
+  .pk-btn:hover, .pk-links a:hover { filter: brightness(.94); }
+}
+
 /* 未上地圖: names in the plan tabs that have no pin yet */
 .up-hint { margin: 0 4px; color: var(--ink-2); font: 600 14px/1.45 var(--sans); }
 .up-group { margin-top: 4px; }

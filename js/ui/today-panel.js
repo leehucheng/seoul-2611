@@ -16,6 +16,8 @@
 // day, else on the nearest end of the trip (today-view.js panelStartDate). Time only matters on today: on any other day a stop is done only
 // when ticked for that day, and nothing is the next stop. Before the trip and after the flight home the banner and the flight reminder of
 // the Sheet show first. Every Korean string has a smaller Chinese line.
+// On the first and the last trip day a 「行李清單 N/46」 card sits under the banner / flight reminder, above the board's lines; a tap opens the
+// packing screen over this page (ui/packing.js: it holds its own back-stack entry, this page stays open under it).
 //
 // initToday(app) sets app.actions.today and app.openToday(dateISO?). Text from the Sheet only goes in through dom.js (textContent).
 import { hasHan, hasHangul } from '../i18n.js';
@@ -25,6 +27,7 @@ import { categoryOf, hoursCard, menuHours } from '../place-view.js';
 import { TRIP_FIRST, TRIP_LAST, dayStrip, isISODate, loadTripData, panelStartDate, stopState, todayView } from '../today-view.js';
 import { naverLink } from './card.js';
 import { append, clear, famStyle, h, icon, leaf } from './dom.js';
+import { openPacking, packingCard } from './packing.js';
 import { createPanel, textWithZh } from './panel.js';
 import { showMeButton } from './person.js';
 
@@ -116,8 +119,14 @@ export function initToday(app) {
     const board = h('article', { class: 'board' },
       h('span', { class: 'tape tl' }), h('span', { class: 'tape tr' }), h('span', { class: 'tape bl' }), h('span', { class: 'tape br' }), bh, scroll);
     const offs = [];
-    const panel = createPanel({ cls: 'panel--today', label: '今天', view: 'today', onClose: () => offs.forEach((off) => off()) });
+    let packingScreen = null; // the packing screen that is open over this page, if any
+    const panel = createPanel({ cls: 'panel--today', label: '今天', view: 'today', onClose: () => { offs.forEach((off) => off()); packingScreen?.close(); } });
     append(panel.dialog, [meta, days, board]);
+    const packing = packingCard(app, (trigger) => { // built once: a redraw of the page puts the same button back, so focus can return to it
+      packingScreen?.close();
+      packingScreen = openPacking(app, { behind: [panel.dialog, document.getElementById('tabbar')], trigger, onClose: () => { packingScreen = null; } });
+    });
+    offs.push(app.on('packing', packing.paint));
 
     const go = (date) => {
       if (!date) return;
@@ -317,6 +326,7 @@ export function initToday(app) {
         parts.push(h('div', { class: 'td-flight' }, icon('i-plane'),
           h('p', { class: 'td-flight-text' }, h('span', { class: 'td-when' }, v.flight.when), ' ', v.flight.text)));
       }
+      if (packing.sync(v.date)) parts.push(packing.element); // only on TRIP_FIRST and TRIP_LAST
 
       clear(lines);
       rows.forEach((r, i) => {

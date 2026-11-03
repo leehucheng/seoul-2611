@@ -21,6 +21,7 @@
 //             app.doneSet(date) -> Set of the item keys ticked on this phone for that date; app.toggleDone(date, key) flips one and
 //             emits 'done' (the 下一站 strip, the 今天 page and the card follow); app.ginkgo -> Set of the places on the 銀杏 tab;
 //             app.switchPerson() opens the who-am-I picker
+//             app.packing -> the 行李清單 ticks of this phone (packing-ticks.js createPacking: count(), toggle(id), reset()); emits 'packing'
 // Sync: startPolling(app.cfg, applySnapshot) runs from boot; a place saved here stays on the map until a snapshot has it.
 import { fetchSnapshot, startPolling } from './api.js';
 import { parseShareParams } from './add-place-logic.js';
@@ -45,6 +46,7 @@ import { append, clear, famStyle, h, icon } from './ui/dom.js';
 import { initHotel } from './ui/hotel-card.js';
 import { initMap } from './ui/map.js';
 import { describeNext, initNextBar } from './ui/nextbar.js';
+import { initPacking } from './ui/packing.js';
 import { closeView, currentView, onViewChange } from './ui/panel.js';
 import { pickPerson, showMeButton } from './ui/person.js';
 import { showSetup } from './ui/setup.js';
@@ -471,6 +473,7 @@ async function boot() {
   document.addEventListener('focusout', () => setTimeout(() => cardGate.flush(), 400));
   initAddPlace(app); // replaces app.actions.add
   initUnmapped(app); // app.openUnmapped, app.unmappedCount
+  initPacking(app); // app.packing: what is ticked on the 行李清單 (the 今天 page's card on the first and last trip day)
   initToday(app); // replaces app.actions.today
   initHotel(app); // replaces app.actions.hotel
   initTabbar(app); // the bottom tab bar calls the hooks above
