@@ -348,10 +348,6 @@ ol, ul { list-style: none; }
 .tab .ico { width: 22px; height: 22px; }
 .tlabel { font: 700 12px/1 var(--sans); white-space: nowrap; }
 .tab[aria-current="page"] .tlabel { font-weight: 900; }
-.tab-badge {
-  position: absolute; top: -3px; left: 24px; height: 18px; min-width: 26px; padding: 0 6px; border-radius: 9px; text-align: center;
-  background: var(--coral); color: var(--ink); font: 800 11px/18px "Archivo", sans-serif; font-variant-numeric: tabular-nums; box-shadow: 0 0 0 2px var(--cream);
-}
 .add {
   flex: none; height: 50px; display: flex; align-items: center; gap: 9px; padding: 0 5px 0 17px; border-radius: 25px; background: var(--ginkgo);
   font: 900 16px/1 var(--sans); letter-spacing: .02em; transition: transform .4s var(--over);
@@ -575,7 +571,7 @@ ol, ul { list-style: none; }
 .as-pick-text { flex: 1; min-width: 0; font: 800 15px/1.35 var(--sans); }
 .as-pick-cancel { width: auto; min-width: 72px; margin-top: 0; }
 
-/* ---- full-height views above the map, below the tab bar: 今天, 今晚住, 未上地圖 -------------------------------------------- */
+/* ---- full-height views above the map, below the tab bar: 今天, 今晚住, 清單, 未上地圖 ------------------------------------- */
 .panel {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 24; width: 100%; max-width: 600px; height: auto; max-height: none; margin: 0 auto;
   padding: 0 0 var(--tab-h);   /* its content ends where the tab bar starts; its ground runs on under the bar */
@@ -797,13 +793,19 @@ body:has(.update-bar) .board-scroll, body:has(.update-bar) .panel-body { padding
 
 /* 行李清單 (ui/packing.js): a card on the 今天 page on the first and the last trip day, and the screen it opens over the page (above the
    tab bar like .pc, z-index 30). The screen is cream with paper sheets; the ticks are ink circles, a full group's count turns ginkgo. */
-.pk-card, .sp-card { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin: 8px 0 4px; padding: 8px 14px 8px 10px; border-radius: 30px; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); text-align: left; }
-.pk-card:active, .sp-card:active { background: var(--ginkgo-pale); }
-.pk-card > .ico, .sp-card > .ico { width: 20px; height: 20px; }
-.pk-card-main, .sp-card-main { flex: 1; min-width: 0; display: grid; gap: 2px; }
-.pk-card-title, .sp-card-title { font: 800 15.5px/1.2 var(--sans); }
+.pk-card, .sp-card, .up-card { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin: 8px 0 4px; padding: 8px 14px 8px 10px; border-radius: 30px; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); text-align: left; }
+.pk-card:active, .sp-card:active, .up-card:active { background: var(--ginkgo-pale); }
+.pk-card > .ico, .sp-card > .ico, .up-card > .ico { width: 20px; height: 20px; }
+.pk-card-main, .sp-card-main, .up-card-main { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.pk-card-title, .sp-card-title, .up-card-title { font: 800 15.5px/1.2 var(--sans); }
 .pk-card-title .num { font-weight: 900; }
-.pk-card-line, .sp-card-line { font: 600 13px/1.35 var(--sans); color: var(--ink-2); }
+.pk-card-line, .sp-card-line, .up-card-line { font: 600 13px/1.35 var(--sans); color: var(--ink-2); }
+
+/* 清單 (ui/lists.js): the 5th tab's view, three of those cards one under the other (.up-card is the 未上地圖 one); 「← 清單」 heads the 未上地圖 view opened from it */
+.ls-rows { display: grid; gap: 12px; }
+.ls-rows > * { margin: 0; }
+.ls-back { flex: none; min-width: 44px; min-height: 44px; padding: 0 16px; border-radius: 22px; background: var(--cream); box-shadow: inset 0 0 0 2px var(--ink); font: 800 15px/1 var(--sans); white-space: nowrap; }
+.ls-back:active { background: var(--ginkgo-pale); }
 
 .pk, .sp {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; width: 100%; max-width: 600px; margin: 0 auto;

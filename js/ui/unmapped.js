@@ -1,9 +1,13 @@
-// "還沒上地圖": the names in the Sheet's plan tabs that have no pin yet. It is the 未上地圖 tab: a full-height view above the
-// map and below the tab bar. Tapping a name opens the add form with that name searched, and the Sheet's wording stored as an
-// alias of the new pin.
+// "還沒上地圖": the names in the Sheet's plan tabs that have no pin yet. It is a full-height view above the map and below the tab
+// bar, the third row of the 清單 view (ui/lists.js). Tapping a name opens the add form with that name searched, and the Sheet's
+// wording stored as an alias of the new pin.
 //
 // renderUnmapped(entries, onPick, {translations}) -> element   (a list grouped by where the name came from)
-// initUnmapped(app)  sets app.openUnmapped() (opens the list) and app.unmappedCount() (the number on the 未上地圖 tab)
+// unmappedLine(n) -> 「N 個」, or 「都上地圖了」 for 0
+// unmappedCard(app, onOpen) -> {element, paint()}: the row 「未上地圖」 of the 清單 view, with unmappedLine under it. paint() redraws the line.
+//     A tap calls onOpen(button).
+// initUnmapped(app)  sets app.openUnmapped({from}) (opens the list; from: 'lists' puts 「← 清單」 first in its head, and Back / Esc / that
+//     button go back to the 清單 view instead of the map) and app.unmappedCount() (the number on the 清單 view's row)
 import { hasHangul, zhOf } from '../i18n.js';
 import { unmappedEntries } from '../plan-names.js';
 import { append, clear, h, icon } from './dom.js';
@@ -46,10 +50,28 @@ export function renderUnmapped(entries, onPick, { translations = {} } = {}) {
   return box;
 }
 
+export const unmappedLine = (n) => (n > 0 ? `${n} 個` : '都上地圖了');
+
+export function unmappedCard(app, onOpen) {
+  const line = h('span', { class: 'up-card-line' });
+  const btn = h('button', { class: 'up-card', type: 'button' },
+    h('span', { class: 'chip-ink' }, icon('i-pin')),
+    h('span', { class: 'up-card-main' }, h('span', { class: 'up-card-title' }, '未上地圖'), line),
+    icon('i-chevron-right'));
+  btn.addEventListener('click', () => onOpen(btn));
+  const paint = () => {
+    let n = null;
+    if (app.snapshot) { try { n = Number(app.unmappedCount()) || 0; } catch { n = null; } } // no data yet, or the tabs cannot be read: no number to claim
+    line.textContent = n === null ? '正在讀資料…' : unmappedLine(n);
+  };
+  paint();
+  return { element: btn, paint };
+}
+
 export function initUnmapped(app) {
   const compute = () => unmappedEntries(app.snapshot?.tabs ?? {}, app.places, app.config?.ignore_names ?? []);
 
-  function open() {
+  function open({ from } = {}) {
     if (!app.snapshot) {
       app.showToast('資料還沒載入好，等一下再按一次');
       return null;
@@ -60,8 +82,14 @@ export function initUnmapped(app) {
     const hint = h('p', { class: 'up-hint' }, '表上有寫、地圖上還沒有 pin 的名字。點一個，搜尋後加到地圖。');
     const list = h('div', { class: 'up-wrap' });
     const body = h('div', { class: 'panel-body' }, hint, list);
-    const panel = createPanel({ cls: 'panel--list', label: '還沒上地圖', view: 'list', onClose: () => offs.forEach((off) => off()) });
-    append(panel.dialog, [h('header', { class: 'panel-head' }, closeButton(panel), title), body]);
+    const toLists = from === 'lists' && typeof app.openLists === 'function';
+    const backToLists = () => { panel.close(); app.openLists({ focusRow: 'unmapped' }); };
+    const panel = createPanel({
+      cls: 'panel--list', label: '還沒上地圖', view: 'list', onClose: () => offs.forEach((off) => off()), onBack: toLists ? backToLists : undefined,
+    });
+    // from the 清單 view the first control is 「← 清單」 (it takes the place of ×; the 地圖 tab shows the map)
+    const lead = toLists ? h('button', { class: 'ls-back', type: 'button', onclick: backToLists }, '← 清單') : closeButton(panel);
+    append(panel.dialog, [h('header', { class: 'panel-head' }, lead, title), body]);
 
     const pick = (entry) => {
       panel.close(); // back to the map: the add form needs it to pick a spot

@@ -2,8 +2,8 @@
 //
 // initPacking(app) -> app.packing = {total, saved, has(id), count(), toggle(id), reset()}; every change emits app.emit('packing').
 // packingCard(app, onOpen) -> {element, sync(date), paint()}: the card on the 今天 page, 「行李清單 N/46」 with a short line under it. It
-//     belongs on the first and the last trip day only: sync(date) puts that day's line on it and says whether it shows that day (the
-//     caller adds it to the page then). paint() redraws the count (the caller calls it on app.on('packing')). A tap calls onOpen(button).
+//     belongs on the first and the last trip day only: sync(date) puts that day's line on it (no line: the line is empty and hidden) and
+//     says whether it shows that day (the caller adds it to the page then). The 清單 view (ui/lists.js) shows the same card on every day. paint() redraws the count (the caller calls it on app.on('packing')). A tap calls onOpen(button).
 // openPacking(app, {behind, trigger, onClose}) -> {element, close}: the screen, an overlay of its own as the phrase card is (phrase-cards.js):
 //     the 今天 page stays open under it and `behind` (the page, the tab bar) goes inert. It holds one back-stack entry: Back (the phone's),
 //     Esc and the × close it and show the 今天 page again, with focus back on `trigger`. It is built once and then patched in place.
@@ -35,7 +35,8 @@ export function packingCard(app, onOpen) {
     element: btn,
     sync(date) {
       const text = packingCardLine(date);
-      if (text !== null) line.textContent = text;
+      line.textContent = text ?? ''; // a day without a line leaves the line empty (the 清單 view shows the card on every day)
+      line.hidden = text === null;
       paint();
       return text !== null;
     },

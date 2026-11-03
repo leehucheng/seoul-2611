@@ -12,10 +12,11 @@
 //   ui        app.openPlace(id) / app.openPlaceCard(place) / app.closeCard(); app.showToast(text);
 //             app.mapMode (set a string while picking a spot on the map so a tap on the map is not treated as
 //             "dismiss the card"); app.on('snapshot'|'me'|'card'|'view', fn)
-//             app.openAddPlace({mode, presetName, presetQuery, presetAlias, presetText}); app.openUnmapped() (the 未上地圖 view)
+//             app.openAddPlace({mode, presetName, presetQuery, presetAlias, presetText}); app.openUnmapped({from}) (the 未上地圖 view; from: 'lists'
+//             adds 「← 清單」); app.openLists({focusRow}) (the 清單 view, the 5th tab: 代購, 行李, 未上地圖; ui/lists.js)
 //             app.coverBottom() - px of the bottom of the screen a sheet other than the card covers (map insets)
-//             app.currentView() -> 'map' | 'today' | 'hotel' | 'list' (the full-height view above the map, ui/panel.js);
-//             app.closeView() shows the map; app.unmappedCount() is the number on the 未上地圖 tab
+//             app.currentView() -> 'map' | 'today' | 'hotel' | 'lists' | 'list' (the full-height view above the map, ui/panel.js; 'list' is the 未上地圖 view);
+//             app.closeView() shows the map; app.unmappedCount() is the number on the 未上地圖 row of the 清單 view
 //   today     app.todayStops() -> my stops today (today-view.js item views of the lines that are mine; [] when I am not in Korea or the
 //             Sheet has none);
 //             app.doneSet(date) -> Set of the item keys ticked on this phone for that date; app.toggleDone(date, key) flips one and
@@ -49,6 +50,7 @@ import { initAddPlace } from './ui/add-place.js';
 import { cardPlaceId, cardVisibleHeight, closeCard, openCard } from './ui/card.js';
 import { append, clear, famStyle, h, icon } from './ui/dom.js';
 import { initHotel } from './ui/hotel-card.js';
+import { initLists } from './ui/lists.js';
 import { initMap } from './ui/map.js';
 import { describeNext, initNextBar } from './ui/nextbar.js';
 import { initPacking } from './ui/packing.js';
@@ -485,6 +487,7 @@ async function boot() {
   initUnmapped(app); // app.openUnmapped, app.unmappedCount
   initPacking(app); // app.packing: what is ticked on the 行李清單 (the 今天 page's card on the first and last trip day)
   initShopping(app); // app.shopping: the 代購清單 items (snapshot.shopping + what this phone saved) and the calls that write them
+  initLists(app); // app.openLists: the 清單 tab's view (代購清單, 行李清單, 未上地圖)
   initToday(app); // replaces app.actions.today
   initHotel(app); // replaces app.actions.hotel
   initTabbar(app); // the bottom tab bar calls the hooks above

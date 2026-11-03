@@ -1,17 +1,18 @@
-// A full-height view above the map and below the tab bar (the 今天 page, the 今晚住 hotel card, the 未上地圖 list): a <dialog> the caller fills
+// A full-height view above the map and below the tab bar (the 今天 page, the 今晚住 hotel card, the 清單 hub, the 未上地圖 list): a <dialog> the caller fills
 // with a head and a body. It is opened non-modally (show(), not showModal()): a modal dialog would sit in the browser's top layer
 // and cover the tab bar, and the tab bar has to stay visible and tappable. The map, chips and 定位 button behind it are made
 // inert by main.js while a view is open (app.on('view')).
 //
 // One view at a time: opening another closes the one that is open. Esc closes it. The phone's Back button closes it too
-// (back-stack.js). Closing hands focus back to what had it before.
+// (back-stack.js). Closing hands focus back to what had it before. A view that has somewhere to go back to (the 未上地圖 list opened from the
+// 清單 hub) passes onBack: Esc, the browser's own close request and the phone's Back call it instead of closing, and it closes the view itself.
 import { holdBack } from '../back-stack.js';
 import { h, icon } from './dom.js';
 
 let current = null;
 const watchers = new Set();
 
-/** The id of the open view ('today' | 'hotel' | 'list'), or 'map' when none is open. */
+/** The id of the open view ('today' | 'hotel' | 'lists' | 'list'), or 'map' when none is open. */
 export const currentView = () => current?.view ?? 'map';
 
 /** Call fn(view) whenever the open view changes (a view opened, closed, or replaced by another). -> off() */
@@ -30,8 +31,8 @@ function announce() {
 /** Close whatever view is open (the 地圖 tab). */
 export const closeView = () => current?.close();
 
-/** createPanel({cls, label, view, onClose}) -> {dialog, view, close}. `close` can be called more than once. */
-export function createPanel({ cls = '', label = '', view = 'panel', onClose } = {}) {
+/** createPanel({cls, label, view, onClose, onBack}) -> {dialog, view, close}. `close` can be called more than once. */
+export function createPanel({ cls = '', label = '', view = 'panel', onClose, onBack } = {}) {
   current?.close();
   const dialog = h('dialog', { class: `panel ${cls}`.trim(), 'aria-label': label, tabindex: '-1' });
   let closed = false;
@@ -55,14 +56,15 @@ export function createPanel({ cls = '', label = '', view = 'panel', onClose } = 
       prevFocus = null;
     },
   };
-  function onKey(e) { if (e.key === 'Escape') { e.stopPropagation(); panel.close(); } }
+  const dismiss = () => { if (onBack) onBack(); else panel.close(); }; // Esc, a browser's close request, the phone's Back
+  function onKey(e) { if (e.key === 'Escape') { e.stopPropagation(); dismiss(); } }
   dialog.addEventListener('keydown', onKey);
-  dialog.addEventListener('cancel', (e) => { e.preventDefault(); panel.close(); }); // a browser's own close request
+  dialog.addEventListener('cancel', (e) => { e.preventDefault(); dismiss(); }); // a browser's own close request
   document.body.append(dialog);
   current = panel;
   if (typeof dialog.show === 'function') dialog.show(); else dialog.setAttribute('open', '');
   dialog.focus({ preventScroll: true });
-  releaseBack = holdBack(() => panel.close());
+  releaseBack = holdBack(dismiss);
   announce();
   return panel;
 }
