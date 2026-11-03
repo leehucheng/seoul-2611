@@ -3,7 +3,7 @@
 // a shop assistant) covers it.
 //
 // 地圖 closes the place card and whichever full-height view is open and shows the map. 今天, 韓文卡 (tonight's hotel card, then the phrase cards) and 清單
-// (代購, 行李, 未上地圖: ui/lists.js) open their view above the map and below this bar; the tab of the open view is the ink circle with the yellow
+// (代購, 行李, 未上地圖, 熱門必買: ui/lists.js) open their view above the map and below this bar; the tab of the open view is the ink circle with the yellow
 // icon (清單 is lit for the 未上地圖 view too, which is opened from it). 新增 closes an open view first (the add form needs the map to pick a spot
 // on) and opens the add form. The tabs call the hooks other modules set on `app`:
 // app.actions.today / .hotel / .add, app.openLists, app.closeView, app.closeCard; they follow app.on('view').
@@ -14,7 +14,7 @@ export const TABS = Object.freeze([
   { id: 'today', label: '今天', icon: 'i-calendar', aria: '今天的行程' },
   { id: 'add', label: '新增', icon: 'i-plus', primary: true, aria: '新增地點' },
   { id: 'hotel', label: '韓文卡', icon: 'i-id', aria: '韓文卡，今晚住的飯店和給店員看的句子' },
-  { id: 'lists', label: '清單', icon: 'i-list', aria: '清單：代購、行李、未上地圖' },
+  { id: 'lists', label: '清單', icon: 'i-list', aria: '清單：代購、行李、未上地圖、熱門必買' },
 ]);
 
 /** The app events after which the tabs are redrawn: a view opened or closed. */

@@ -1,8 +1,10 @@
-// Client for the Apps Script web app (GET ?action=all, POST addPlace / searchPlace / resolveLink / saveShopping / deleteShopping / setBought) with an offline snapshot cache.
+// Client for the Apps Script web app (GET ?action=all, POST addPlace / searchPlace / resolveLink / saveShopping / deleteShopping / setBought / saveDay / resetDay) with an offline snapshot cache.
 // `cfg` is what readConfig() returns: {api, writeKey}. `fetchFn`, `storage`, `now` and `doc` are
 // injectable so everything here runs in Node tests; defaults are the browser globals.
 import { placeAsTyped, quotedForServer } from './add-place-logic.js';
-import { SHOP_FIELDS } from './fields.js';
+import { SCHEDULE_FIELDS, SHOP_FIELDS } from './fields.js';
+import { MAX_BY_LEN, MAX_DAY_STOPS, STOP_ID_RE, cutText, dayVersion } from './schedule-edit.js';
+import { inTrip } from './trip-dates.js';
 
 export const SNAP_KEY = 'seoul.snap';
 
@@ -223,6 +225,77 @@ export async function setBought(cfg, { id, owner, bought }, { fetchFn = defaultF
   if (cfg.api === 'mock') return { id, owner, bought: bought ? 'TRUE' : '', updated_at: new Date().toISOString() }; // what changed, as above
   if (!cfg.writeKey) throw new Error('bad_key');
   return shopRowOf(await postAction(cfg, { action: 'setBought', key: cfg.writeKey, id, owner, bought: Boolean(bought) }, fetchFn, timeoutMs));
+}
+
+// ---- the itinerary the app keeps its own copy of (the backend's saveDay / resetDay; schedule-edit.js is the model) ---------------------------
+// Both throw Error(code) like the shopping calls: the server's own code on ok:false (stale: somebody saved the day since `base`; bad_request;
+// missing_tab:App_Schedule; busy; ...), else not_configured / bad_key (no local key) / network / bad_response. With api=mock nothing reaches a
+// Sheet: the days are kept in memory (per cfg object, for the life of the page) and the answers are built here by the same rules.
+
+const DAY_TIMEOUT_MS = 30_000; // like a place: aborting a POST client-side does not undo it server-side
+const mockDays = new WeakMap(); // cfg -> Map date -> the day's rows as the mock stored them
+
+/** The mock's saveDay: the backend's checks (bad_request, stale) and caps (500 characters a text field, 40 for `by`), ids, pos and one new version, kept in memory. */
+function mockSaveDay(cfg, { date, base, stops, by }) {
+  const day = String(date ?? '').trim();
+  if (!inTrip(day) || !Array.isArray(stops) || stops.length > MAX_DAY_STOPS || (base != null && typeof base !== 'string')) throw new Error('bad_request');
+  const text = (v) => String(v ?? '').trim();
+  const checked = stops.map((st) => {
+    if (st === null || typeof st !== 'object' || Array.isArray(st)) throw new Error('bad_request');
+    const deleted = st.deleted ?? '';
+    if (deleted !== 'TRUE' && deleted !== '') throw new Error('bad_request');
+    const s = { id: text(st.id), deleted };
+    for (const k of ['text', 'detail', 'note', 'place_id', 'sheet_text', 'sheet_note', 'sheet_detail']) s[k] = cutText(text(st[k]));
+    if ((deleted === '' && s.text === '') || (deleted === 'TRUE' && s.sheet_text === '')) throw new Error('bad_request');
+    return s;
+  });
+  const days = mockDays.get(cfg) ?? mockDays.set(cfg, new Map()).get(cfg);
+  const old = days.get(day) ?? [];
+  const cur = dayVersion(old, day);
+  if (text(base) !== cur) throw new Error('stale');
+  const now = new Date().toISOString();
+  const version = cur !== '' && now <= cur ? new Date(Date.parse(cur) + 1).toISOString() : now;
+  const used = new Set([...days].filter(([d]) => d !== day).flatMap(([, rows]) => rows.map((r) => r.id)));
+  const rows = checked.map((s, i) => {
+    const kept = STOP_ID_RE.test(s.id) && !used.has(s.id) ? s.id : '';
+    const id = kept || `st-${Date.now()}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}-${i}`;
+    used.add(id);
+    const before = kept ? old.find((r) => r.id === id) : null;
+    return { ...Object.fromEntries(SCHEDULE_FIELDS.map((k) => [k, s[k] ?? ''])), id, date: day, pos: String(i), added_by: before ? before.added_by : cutText(text(by), MAX_BY_LEN), updated_at: version };
+  });
+  if (rows.length > 0) days.set(day, rows);
+  else days.delete(day);
+  return { date: day, version: rows.length > 0 ? version : '', rows: rows.map((r) => ({ ...r })) };
+}
+
+/**
+ * Save one day: `stops` replace every row of `date`, in the given order. `base` is the version the phone edited from (schedule-edit.js dayVersion; ''
+ * when the day was not app-owned), `by` who is saving (app.me). -> {date, version, rows: the rows as stored}; with no row left the day is the Sheet's
+ * again and version is ''. A day somebody saved meanwhile throws Error('stale') and nothing is written.
+ */
+export async function saveDay(cfg, { date, base = '', stops, by = '' }, { fetchFn = defaultFetch, timeoutMs = DAY_TIMEOUT_MS } = {}) {
+  if (!cfg?.api) throw new Error('not_configured');
+  if (cfg.api === 'mock') return mockSaveDay(cfg, { date, base, stops, by });
+  if (!cfg.writeKey) throw new Error('bad_key');
+  const data = await postAction(cfg, { action: 'saveDay', key: cfg.writeKey, date, base, stops, by }, fetchFn, timeoutMs);
+  if (typeof data.date !== 'string' || typeof data.version !== 'string' || !Array.isArray(data.rows)) throw new Error('bad_response');
+  return { date: data.date, version: data.version, rows: data.rows };
+}
+
+/** Delete every row of `date`: the day shows the Sheet's lines again. `base` as for saveDay (a stale one throws Error('stale')). -> {date}. */
+export async function resetDay(cfg, { date, base = '' }, { fetchFn = defaultFetch, timeoutMs = DAY_TIMEOUT_MS } = {}) {
+  if (!cfg?.api) throw new Error('not_configured');
+  if (cfg.api === 'mock') {
+    const day = String(date ?? '').trim();
+    if (!inTrip(day) || (base != null && typeof base !== 'string')) throw new Error('bad_request');
+    const rows = mockDays.get(cfg)?.get(day) ?? [];
+    if (String(base ?? '').trim() !== dayVersion(rows, day)) throw new Error('stale');
+    mockDays.get(cfg)?.delete(day);
+    return { date: day };
+  }
+  if (!cfg.writeKey) throw new Error('bad_key');
+  const data = await postAction(cfg, { action: 'resetDay', key: cfg.writeKey, date, base }, fetchFn, timeoutMs);
+  return { date: typeof data.date === 'string' ? data.date : date };
 }
 
 // Pulls a snapshot every intervalMs while the page is visible, and once immediately when it becomes

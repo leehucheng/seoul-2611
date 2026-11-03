@@ -13,8 +13,13 @@ import { safeHttpsUrl } from './place-view.js';
 
 export const OTHER_GROUP = '其他';
 export const SAVE_FAILED = '沒存到，連上網路再試一次';
+/** The price_source of an item added from the 熱門必買 screen: its price is a reference read from the news or a blog, not the official site's. */
+export const REFERENCE_SOURCE = '熱門必買';
 
 const clean = (v) => String(v ?? '').trim();
+
+/** What a price is called: 「參考價」 for an item from 熱門必買, 「官網價」 for every other. */
+export const priceLabel = (source) => (clean(source) === REFERENCE_SOURCE ? '參考價' : '官網價');
 
 /** 'TRUE' (any case) is true; bought and hidden are 'TRUE' or ''. */
 export const isTrue = (v) => clean(v).toUpperCase() === 'TRUE';
@@ -74,7 +79,7 @@ export const metaLine = (item) => [item.brand, item.spec].filter(Boolean).join('
 
 /**
  * count: items; bought: how many are ticked; total: the sum of price x quantity over the items that have a price; unpriced: how many have none.
- * (The brief says 「官網價合計」: a ×3 item counts three times.)
+ * (The total is 「價格合計」, official and reference prices together: a ×3 item counts three times.)
  */
 export function summarize(items) {
   let total = 0;
@@ -87,7 +92,7 @@ export function summarize(items) {
   return { count: items.length, bought: items.filter((it) => isTrue(it.bought)).length, total, unpriced };
 }
 
-export const summaryText = (s) => `${s.count} 項・已買 ${s.bought}・官網價合計 ${formatKrw(s.total)}`;
+export const summaryText = (s) => `${s.count} 項・已買 ${s.bought}・價格合計 ${formatKrw(s.total)}`;
 export const unpricedText = (s) => (s.unpriced > 0 ? `另有 ${s.unpriced} 項沒有價格` : '');
 
 /** The card's second line: 「我的 N 項・已買 M」 over my own visible items. */
@@ -104,12 +109,27 @@ export const FORM_FIELDS = [
   ['price_krw', '官網價 ₩'], ['where', '在哪買'], ['official_url', '官網連結'], ['image_url', '圖片連結'], ['note', '備註'],
 ];
 
-/** What the form shows for an item (null: a new one, quantity 1). */
-export function formValues(item) {
+/**
+ * What the form shows for an item (null: a new one, quantity 1). `prefill` (a new item only; the 熱門必買 screen's 「加到我的代購」) is
+ * {form field: text, price_source, price_date}: the form fields it has are filled in; price_source and price_date are not form fields, checkForm
+ * sends them along with the price they describe.
+ */
+export function formValues(item, prefill = null) {
   const out = {};
   for (const [k] of FORM_FIELDS) out[k] = item ? item[k] ?? '' : '';
-  if (!item) out.qty = '1';
+  if (!item) {
+    out.qty = '1';
+    if (prefill) for (const [k] of FORM_FIELDS) if (clean(prefill[k]) !== '') out[k] = clean(prefill[k]);
+  }
   return out;
+}
+
+/** The two cells of a price that are not form fields: where it was read and when (a prefill carries them, see checkForm). */
+export const PREFILL_PRICE_FIELDS = ['price_source', 'price_date'];
+
+/** The label of a form field: the price field says 「參考價 ₩」 when the form is a prefilled one from 熱門必買 or edits an item that came from there. */
+export function fieldLabel([key, label], { item = null, prefill = null } = {}) {
+  return key === 'price_krw' ? `${priceLabel(prefill ? prefill.price_source : item?.price_source)} ₩` : label;
 }
 
 /**
@@ -120,8 +140,10 @@ export function formValues(item) {
  *    checked either), plus price_date / price_source / price_note as '' when the price is one of the changed fields (they described the old
  *    price). Nothing else of the item is sent: no actual_krw, no bought.
  * A price may be typed as ₩12,500; a link must be https; the quantity is 1-99.
+ * `prefill` (a new item only, as in formValues) adds its price_source and price_date to the item while the price typed is still the prefill's
+ * own price (they describe that price: a changed or emptied price goes without them, as an edited price does).
  */
-export function checkForm(values, { owner, item = null } = {}) {
+export function checkForm(values, { owner, item = null, prefill = null } = {}) {
   const typed = {};
   for (const [k] of FORM_FIELDS) typed[k] = clean(values[k]);
   if (clean(owner) === '') return { ok: false, field: 'name_zh', error: '先選好你是誰' };
@@ -137,7 +159,7 @@ export function checkForm(values, { owner, item = null } = {}) {
       v = String(Number(v));
     } else if (k === 'price_krw') {
       v = v.replace(/[₩,\s]/g, '');
-      if (v !== '' && !/^\d{1,9}$/.test(v)) return { ok: false, field: 'price_krw', error: '官網價只填數字，例如 12500' };
+      if (v !== '' && !/^\d{1,9}$/.test(v)) return { ok: false, field: 'price_krw', error: `${priceLabel(prefill ? prefill.price_source : item?.price_source)}只填數字，例如 12500` };
       v = v === '' ? '' : String(Number(v));
     } else if ((k === 'official_url' || k === 'image_url') && v !== '' && safeHttpsUrl(v) === null) {
       return { ok: false, field: k, error: `${k === 'official_url' ? '官網連結' : '圖片連結'}要用 https:// 開頭` };
@@ -145,6 +167,10 @@ export function checkForm(values, { owner, item = null } = {}) {
     out[k] = v;
   }
   if (item && 'price_krw' in out) Object.assign(out, { price_date: '', price_source: '', price_note: '' });
+  const prefilled = clean(prefill?.price_krw).replace(/[₩,\s]/g, '');
+  if (!item && prefilled !== '' && out.price_krw === String(Number(prefilled))) {
+    for (const k of PREFILL_PRICE_FIELDS) if (clean(prefill[k]) !== '') out[k] = clean(prefill[k]);
+  }
   return { ok: true, item: out };
 }
 

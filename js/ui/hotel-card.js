@@ -43,7 +43,7 @@ export function initHotel(app) {
 
     function render() {
       const scroll = body.scrollTop;
-      const trip = loadTripData(app.snapshot?.tabs);
+      const trip = loadTripData(app.snapshot?.tabs, app.schedule?.rows());
       const stay = buildToday(trip, app.me, date).hotel;
       const v = hotelCardView({ stay, places: app.places, translations: app.translations });
       const tonight = date === app.currentNightDate();

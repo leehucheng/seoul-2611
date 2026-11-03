@@ -55,3 +55,25 @@ export const SHOP_FIELDS = [
   'added_by',
   'updated_at',
 ];
+
+// Column order of the Google Sheet tab `App_Schedule` (the itinerary the app keeps its own copy of): one row per stop of an app-owned day. Every
+// column is plain text. `date` is 'YYYY-MM-DD' inside the trip, `pos` the 0-based order inside the day, `sheet_text` the Sheet line a stop came
+// from ('' for a stop added in the app), `deleted` 'TRUE' (a tombstone) or '', `updated_at` the same on every row of one save = the day's version,
+// `sheet_note` / `sheet_detail` the Sheet line's note / detail at copy / import time (the baseline for the Sheet's later changes of them).
+// Append-only like PLACE_FIELDS (gas/Code.template.gs has the same list). Nobody edits this tab by hand (no columns, formulas or notes): a save
+// rewrites its rows by value.
+export const SCHEDULE_FIELDS = [
+  'id',
+  'date',
+  'pos',
+  'text',
+  'detail',
+  'note',
+  'place_id',
+  'sheet_text',
+  'deleted',
+  'added_by',
+  'updated_at',
+  'sheet_note',
+  'sheet_detail',
+];

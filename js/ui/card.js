@@ -4,7 +4,8 @@
 //
 // openCard(place, ctx) / closeCard()
 // ctx = { person, purchases, config, translations, starred, toggleStar(placeId) -> boolean, onClose?, now?, platform?, navigate?,
-//         strip?, here?, openStop? }
+//         strip?, here?, openStop?, addToSchedule? }
+//   addToSchedule(place, button)  the 「加入行程」 button under the Naver / Google row calls it (main.js opens the day picker, ui/day-picker.js)
 // (`platform` and `navigate(url)` exist so tests can pick the iOS path and observe a page change without leaving the page)
 //   strip     {index, total, time, prev, next} when the place is one of my stops today (prev / next: {name, time, placeId}): the
 //             前一站 / 今天第 N 站 / 下一站 strip. openStop(placeId) opens a neighbour (its card, or the 今天 page when it has no pin).
@@ -276,13 +277,22 @@ export function naverShopLink(place, ctx, cls, ...children) {
   return naverAnchor(naverShopTarget(place, platformOf(ctx), areaKoreanName(place?.area)), ctx, cls, children);
 }
 
-/** The Naver / Google capsules with their hint (place card and hotel card): both open the place's own page, neither starts a route. */
+/**
+ * The Naver / Google capsules with their hint (place card and hotel card): both open the place's own page, neither starts a route. With `ctx.addToSchedule`
+ * (the place card's context; the hotel card has none) a 「加入行程」 button sits under the row: it calls addToSchedule(place, button), which opens the day picker.
+ */
 export function buildNav(place, ctx = {}) {
   const chip = h('span', { class: 'chip-ink' }, icon('i-arrow'));
   const naverBtn = naverShopLink(place, ctx, 'navbtn naver', 'Naver 地點', chip);
   const googleBtn = h('a', { class: 'navbtn google', href: googleUrl(place, areaKoreanName(place?.area)), target: '_blank', rel: 'noopener noreferrer' }, 'Google 地點');
+  let addBtn = null;
+  if (typeof ctx.addToSchedule === 'function') {
+    addBtn = h('button', { class: 'navbtn nav-add', type: 'button' }, icon('i-plus'), '加入行程');
+    addBtn.addEventListener('click', () => ctx.addToSchedule(place, addBtn));
+  }
   return h('div', { class: 'nav-block' },
     h('div', { class: 'go' }, naverBtn, googleBtn),
+    addBtn,
     h('p', { class: 'nav-hint' }, '兩個都開地點頁：照片、營業時間、評論', h('br'), '要導航，再按裡面的 길찾기／路線'),
     hasCoords(place) ? null : h('p', { class: 'nav-hint nav-hint--warn' }, '這家的位置還沒確認，按鈕用店名搜尋，可能先看到別家分店。'));
 }

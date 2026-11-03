@@ -5,9 +5,11 @@
 //     api.setBought({id, owner, bought}); api.js by default, anything else in a test). Every change emits app.emit('shopping').
 // shoppingCard(app, onOpen) -> {element, paint()}: the card 「代購清單」 on the 全程總覽 page and on every day page, with 「我的 N 項・已買 M」 under it.
 //     paint() redraws the line (the caller calls it on app.on('shopping')). A tap calls onOpen(button).
-// openShopping(app, {behind, trigger, onClose}) -> {element, close}: the screen, an overlay of its own as the packing screen is (ui/packing.js): the
+// openShopping(app, {behind, trigger, onClose, prefill}) -> {element, close}: the screen, an overlay of its own as the packing screen is (ui/packing.js): the
 //     今天 page stays open under it and `behind` goes inert. It holds one back-stack entry: Back (the phone's), Esc and the × close it, with focus
 //     back on `trigger`. While the add / edit form is open, Back and Esc close the form first.
+//     `prefill` ({name_zh, name_ko, brand, where, price_krw, price_source, price_date, note}, shopping.js formValues) opens it straight into the add
+//     form for me with those values (the 熱門必買 screen's 「加到我的代購」); saving or leaving that form closes the screen too, with focus on `trigger`.
 //     Top to bottom: person chips (「我的」, then everyone else who has an item), 「這是 <name> 的清單，只能看」 on somebody else's list, the numbers,
 //     「＋ 新增想買的」, the items grouped by 「在哪買」. Somebody else's list has no button that changes anything. A write that fails says
 //     「沒存到，連上網路再試一次」: a tick goes back, the form stays open.
@@ -17,8 +19,8 @@ import { holdBack } from '../back-stack.js';
 import { hasHangul } from '../i18n.js';
 import { safeHttpsUrl } from '../place-view.js';
 import {
-  FORM_FIELDS, SAVE_FAILED, cardLine, checkForm, createShopping, formValues, formatKrw, groupByWhere, isTrue, itemsOf, metaLine, ownersOf, priceDateLabel, priceOf,
-  qtyOf, summarize, summaryText, unpricedText,
+  FORM_FIELDS, SAVE_FAILED, cardLine, checkForm, createShopping, fieldLabel, formValues, formatKrw, groupByWhere, isTrue, itemsOf, metaLine, ownersOf, priceDateLabel,
+  priceLabel, priceOf, qtyOf, summarize, summaryText, unpricedText,
 } from '../shopping.js';
 import { append, clear, h, icon } from './dom.js';
 
@@ -80,10 +82,11 @@ const INPUTS = {
   image_url: { maxlength: '500', inputmode: 'url', placeholder: 'https://' }, note: { maxlength: '300' },
 };
 
-export function openShopping(app, { behind = [], trigger = null, onClose } = {}) {
+export function openShopping(app, { behind = [], trigger = null, onClose, prefill = null } = {}) {
   const store = app.shopping;
   const api = store.api;
   const state = { owner: app.me ?? '', form: null, saving: false };
+  let direct = false; // opened straight into the add form (prefill): leaving the form leaves the screen
   const keyed = new Map(); // data-key -> element, so focus can go back to the same thing after the list is drawn again
   const busy = new Set(); // ids of the items whose tick is on its way
   let lastSig = '';
@@ -147,7 +150,7 @@ export function openShopping(app, { behind = [], trigger = null, onClose } = {})
       sub ? h('span', { class: 'sp-zh' }, sub) : null,
       meta ? h('span', { class: 'sp-meta' }, meta) : null,
       h('span', { class: 'sp-line' }, h('b', { class: 'sp-qty' }, `×${qtyOf(item)}`), item.for_whom ? h('span', { class: 'sp-for' }, `給 ${item.for_whom}`) : null),
-      price === null ? null : h('span', { class: 'sp-price' }, h('b', { class: 'num' }, formatKrw(price)), h('i', null, `官網價${date ? `・${date}` : ''}`)));
+      price === null ? null : h('span', { class: 'sp-price' }, h('b', { class: 'num' }, formatKrw(price)), h('i', null, `${priceLabel(item.price_source)}${date ? `・${date}` : ''}`)));
     const pic = imgUrl ? picture(imgUrl) : null;
     const open = mine
       ? mark(h('button', { class: 'sp-open', type: 'button', 'aria-label': `編輯：${main}`, onclick: () => openForm(item) }, pic, text), `open:${item.id}`)
@@ -229,6 +232,7 @@ export function openShopping(app, { behind = [], trigger = null, onClose } = {})
     ui = null;
     clear(formBox);
     formBox.hidden = true;
+    if (direct) { screen.close(); return; }
     scroll.hidden = false;
     render();
     (keyed.get(item ? `open:${item.id}` : 'add') ?? keyed.get('add'))?.focus({ preventScroll: true });
@@ -237,7 +241,7 @@ export function openShopping(app, { behind = [], trigger = null, onClose } = {})
   async function save() {
     if (state.saving || !state.form) return;
     const { item } = state.form;
-    const r = checkForm(Object.fromEntries(Object.entries(ui.inputs).map(([k, input]) => [k, input.value])), { owner: app.me ?? '', item });
+    const r = checkForm(Object.fromEntries(Object.entries(ui.inputs).map(([k, input]) => [k, input.value])), { owner: app.me ?? '', item, prefill: state.form.prefill });
     if (!r.ok) { setError(r.error, r.field); return; }
     setError('');
     const form = ui; // the form may be closed (and another opened) while the write is on its way: only touch it while it is still this one
@@ -273,13 +277,14 @@ export function openShopping(app, { behind = [], trigger = null, onClose } = {})
     }
   }
 
-  /** `item` is one of my items to change, or null for a new one. */
-  function openForm(item) {
+  /** `item` is one of my items to change, or null for a new one; `from` (a new one only) is the prefill. */
+  function openForm(item, from = null) {
     if (state.form || (app.me ?? '') === '') return;
-    state.form = { item };
-    const values = formValues(item);
+    state.form = { item, prefill: from };
+    const values = formValues(item, from);
     const inputs = {};
-    const fields = FORM_FIELDS.map(([k, label]) => {
+    const fields = FORM_FIELDS.map(([k, name]) => {
+      const label = fieldLabel([k, name], { item, prefill: from }); // the price says 「參考價 ₩」 for an item from 熱門必買
       const id = `sp-f-${k}`;
       const input = k === 'note' ? h('textarea', { class: 'field sp-text', id, rows: '3', ...INPUTS[k] }) : h('input', { class: 'field', id, type: 'text', autocomplete: 'off', ...INPUTS[k] });
       input.value = values[k];
@@ -300,11 +305,11 @@ export function openShopping(app, { behind = [], trigger = null, onClose } = {})
     ui = { inputs, error, save: saveBtn, ask, del };
     append(clear(formBox), [
       h('h2', { class: 'sp-h2 sp-formh' }, item ? '編輯' : '新增想買的'),
-      h('p', { class: 'sp-hint' }, '中文名和韓文名至少填一個。韓文名可以直接拿給店員看。'),
+      h('p', { class: 'sp-hint' }, from ? '從「熱門必買」帶過來的。確認一下，按儲存就加進你的清單；價格以現場為準。' : '中文名和韓文名至少填一個。韓文名可以直接拿給店員看。'),
       fields, error, saveBtn, cancel, del, ask]);
     scroll.hidden = true;
     formBox.hidden = false;
-    inputs.name_zh.focus({ preventScroll: true });
+    (from ? el : inputs.name_zh).focus({ preventScroll: true }); // a prefilled form needs no typing: focus on a field would open the keyboard over the 儲存 button
   }
 
   // ---- closing ----
@@ -344,9 +349,13 @@ export function openShopping(app, { behind = [], trigger = null, onClose } = {})
   document.body.append(el);
   el.focus({ preventScroll: true });
   release = holdBack(() => {
-    if (state.form) { closeForm(); return 'stay'; } // Back first closes the form, then the screen
+    if (state.form) { closeForm(); return closed ? undefined : 'stay'; } // Back first closes the form, then the screen (a prefilled form closes both at once)
     screen.close();
     return undefined;
   });
+  if (prefill) {
+    openForm(null, prefill);
+    direct = state.form !== null; // no form (nobody picked yet): the screen is just the list
+  }
   return screen;
 }

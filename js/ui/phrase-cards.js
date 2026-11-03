@@ -6,6 +6,11 @@
 //     very large on taped paper, the Chinese under it, the romanization smaller. It is an overlay of its own, not a panel: the 韓文卡 panel
 //     stays open under it, and it sits above the tab bar (app.css .pc, z-index 30). `behind` are the elements that go inert while it is open.
 //     It holds one back-stack entry: Back (the phone's), Esc and the × all close it and show the list again, with focus back on `trigger`.
+//     A phrase without `rr` has no third line. {item: true} (the 熱門必買 screen's 「給店員看」: the Korean name of a thing to buy, the Chinese name
+//     under it) lets a tap anywhere on the card close it too and sets the Chinese name smaller, so a long Korean name stays the biggest thing on the card.
+//     {image: 'https://…'} (the caller has checked it is https) puts that photo above the Korean text, contained in a box 40% of the screen
+//     high from the start (the text does not jump when the photo arrives); a photo that does not load is taken away with its box, once, and the text is as it
+//     was (no referrer is sent with it, and it is loaded only when the card opens).
 import { holdBack } from '../back-stack.js';
 import { PHRASE_GROUPS } from '../phrases.js';
 import { h, icon } from './dom.js';
@@ -47,10 +52,19 @@ export function phraseSection(onOpen) {
       h('ul', { class: 'pc-items' }, g.phrases.map((p) => row(p, onOpen))))));
 }
 
-export function openPhraseCard(phrase, { behind = [], trigger = null, onClose } = {}) {
+/** The photo above the Korean text: gone altogether (no broken-image icon) when the file does not load. */
+function photo(src) {
+  const box = h('div', { class: 'pc-photo' });
+  const img = h('img', { src, alt: '', decoding: 'async', referrerpolicy: 'no-referrer' });
+  img.addEventListener('error', () => box.remove());
+  box.append(img);
+  return box;
+}
+
+export function openPhraseCard(phrase, { behind = [], trigger = null, onClose, item = false, image = '' } = {}) {
   const ko = h('p', { class: 'pc-ko kr', lang: 'ko' }, phrase.ko);
   ko.style.setProperty('--pc-k', String(cardScale(phrase.ko)));
-  const el = h('div', { class: 'pc', role: 'dialog', 'aria-modal': 'true', 'aria-label': `韓文卡：${phrase.zh}`, tabindex: '-1' });
+  const el = h('div', { class: item ? 'pc pc--item' : 'pc', role: 'dialog', 'aria-modal': 'true', 'aria-label': `韓文卡：${phrase.zh}`, tabindex: '-1' });
   let closed = false;
   let release = () => {};
   const behindEls = behind.filter(Boolean);
@@ -74,10 +88,12 @@ export function openPhraseCard(phrase, { behind = [], trigger = null, onClose } 
     h('section', { class: 'pc-sheet' },
       h('span', { class: 'tape tl' }), h('span', { class: 'tape tr' }),
       h('div', { class: 'pc-text' }, // the scrolling part: the tape sits on the sheet's corners, outside it
+        image ? photo(image) : null,
         ko,
         h('p', { class: 'pc-zh' }, phrase.zh),
-        h('p', { class: 'pc-rr' }, phrase.rr))));
+        phrase.rr ? h('p', { class: 'pc-rr' }, phrase.rr) : null)));
   el.addEventListener('keydown', onKey);
+  if (item) el.addEventListener('click', () => card.close());
   for (const b of behindEls) b.inert = true;
   document.body.append(el);
   el.focus({ preventScroll: true });

@@ -1,0 +1,3210 @@
+{
+  "made": "2026-11-03",
+  "window": "2026-08-03..2026-11-03",
+  "items": [
+    {
+      "id": "tr-cvs-01",
+      "group": "cvs",
+      "sub": "泡麵",
+      "name_zh": "CU 치트키 蝦湯麵／奶油辣雞炒麵",
+      "name_ko": "치트키 진한 새우탕면 / 치트키 리얼 크림 불닭맛",
+      "brand": "CU 自家品牌泡麵",
+      "where": "CU",
+      "price_krw": 2100,
+      "price_note": "진한 새우탕면 2,100；11 月 2+1（pyony 11/2）",
+      "why": "CU自家泡麵，單日銷量曾超過辛拉麵，累計約40萬個",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://view.asiae.co.kr/article/2026090723355256779",
+          "platform": "news",
+          "date": "2026-09-08",
+          "note": "累計 40 萬個、日均約 9,500 個"
+        },
+        {
+          "url": "https://pyony.com/brands/cu/products/59580/",
+          "platform": "pyony 價格資料庫",
+          "date": "2026-11-02",
+          "note": "11 月 CU 促銷清單仍列 2,100、2+1；僅佐證仍在賣"
+        }
+      ],
+      "image_url": "https://tqklhszfkvzk6518638.edge.naverncp.com/product/8801045811314.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-02",
+      "group": "cvs",
+      "sub": "泡麵",
+      "name_zh": "GS25 오모리 泡菜鍋麵（附真泡菜包）",
+      "name_ko": "오모리 김치찌개라면",
+      "brand": "GS25 自家品牌（오모리）",
+      "where": "GS25",
+      "price_krw": null,
+      "price_note": "同系列炒麵「오모리 김치즈볶음면」約 1,950（ddolmang 10/31）",
+      "why": "GS25限定自家泡麵，附酸泡菜包，台灣旅遊文常推薦",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/korea-convenient-store-food/",
+          "platform": "Funliday（台灣旅遊媒體）",
+          "date": "2026-10-07",
+          "note": "標示 GS25 限定；文中韓文名只寫「오모리」，完整韓文名取自其他報導"
+        },
+        {
+          "url": "https://www.ddolmang.com/1574/",
+          "platform": "blog",
+          "date": "2026-10-31",
+          "note": "PB 杯麵比較文：GS25 代表為 오모리 김치즈볶음면 1,950"
+        }
+      ]
+    },
+    {
+      "id": "tr-cvs-03",
+      "group": "cvs",
+      "sub": "泡麵",
+      "name_zh": "emart24 대박각 火味炒碼麵（杯麵）",
+      "name_ko": "대박각 불맛짬뽕라면",
+      "brand": "이마트24 × 대박각",
+      "where": "emart24",
+      "price_krw": 1800,
+      "price_note": "9 月 2+1 活動已結束；現價請到店確認",
+      "why": "一山中餐館聯名杯麵，emart24 杯麵銷量第2名",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://view.asiae.co.kr/article/2026090723355256779",
+          "platform": "news",
+          "date": "2026-09-08",
+          "note": "emart24 杯麵銷量第 2（次於 육개장）"
+        },
+        {
+          "url": "https://www.metroseoul.co.kr/article/20260901500306",
+          "platform": "news",
+          "date": "2026-09-01",
+          "note": "emart24 9 月泡麵活動新聞稿"
+        },
+        {
+          "url": "https://www.wikitree.co.kr/articles/1156468",
+          "platform": "news",
+          "date": "2026-09-01",
+          "note": "價格 1,800；8/29 上市"
+        }
+      ],
+      "image_url": "https://msave.emart24.co.kr/cmsbo/upload/nHq/plu_image/500x500/8800354750239.JPG",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-04",
+      "group": "cvs",
+      "sub": "泡麵",
+      "name_zh": "emart24 땅스部隊鍋杯麵",
+      "name_ko": "땅스부대찌개라면",
+      "brand": "이마트24 × 땅스부대찌개",
+      "where": "emart24",
+      "price_krw": 1800,
+      "price_note": "9 月 2+1 活動已結束；現價請到店確認",
+      "why": "部隊鍋名店聯名杯麵，火腿香腸加牛骨湯底，8/21上市",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.metroseoul.co.kr/article/20260901500306",
+          "platform": "news",
+          "date": "2026-09-01",
+          "note": "新品報導，無銷量"
+        },
+        {
+          "url": "https://www.wikitree.co.kr/articles/1156468",
+          "platform": "news",
+          "date": "2026-09-01",
+          "note": "價格 1,800、8/21 上市；同一份新聞稿"
+        }
+      ],
+      "image_url": "https://msave.emart24.co.kr/cmsbo/upload/nHq/plu_image/500x500/8800354751526.JPG",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-05",
+      "group": "cvs",
+      "sub": "甜點",
+      "name_zh": "韓貞仙優格麻糬（冷凍）",
+      "name_ko": "한정선 요거트 찹쌀떡",
+      "brand": "한정선 × 로로멜로",
+      "where": "GS25（獨家）",
+      "price_krw": 3900,
+      "price_note": "常缺貨；App 顯示有庫存但冷凍櫃可能是空的。同系列開心果版 10/30 被勒令回收停售（優格版查不到回收消息）",
+      "why": "聖水洞名店聯名冷凍麻糬，開賣四天賣26萬個，一貨難求",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.mydaily.co.kr/page/view/2026090318012740044",
+          "platform": "news",
+          "date": "2026-09-03",
+          "note": "發售新聞；預售 400 個瞬間完售"
+        },
+        {
+          "url": "https://www.inews24.com/view/wrlted/2007443",
+          "platform": "news",
+          "date": "2026-09-21",
+          "note": "親身排隊試吃評測；3,900 韓元；首日 10 萬、四天 26 萬個"
+        },
+        {
+          "url": "https://www.heraldk.com/article/2026100319302396075",
+          "platform": "news",
+          "date": "2026-10-03",
+          "note": "累計破 60 萬個；GS25 App 熱搜第二；各處常缺貨"
+        },
+        {
+          "url": "https://economist.co.kr/article/view/ecn202610160049",
+          "platform": "news",
+          "date": "2026-10-16",
+          "note": "報導開心果續作日營收 3.3 億韓元"
+        },
+        {
+          "url": "https://supple.kr/news/cmvukoysqeuic13paliv5s4hh",
+          "platform": "news",
+          "date": "2026-10-30",
+          "note": "開心果版回收停售報導（優格版未提）"
+        }
+      ],
+      "image_url": "https://img.mydaily.co.kr/photos/2026/09/03/2026090317590122748_l.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-06",
+      "group": "cvs",
+      "sub": "甜點",
+      "name_zh": "치로루巧克力麻糬（日本進口）",
+      "name_ko": "치로루초코 인절미모찌 / 치로루초코 초코모찌",
+      "brand": "치로루초코（日本進口）",
+      "where": "7-Eleven（獨家）",
+      "price_krw": 2500,
+      "price_note": "pyakmi 新品資料庫標 2 款 2,500；9/3 再上市",
+      "why": "日本進口巧克力麻糬九月再上市，七週賣出逾二十萬個",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.mydaily.co.kr/page/view/2026090318012740044",
+          "platform": "news",
+          "date": "2026-09-03",
+          "note": "再上市新聞；共 4 種口味（인절미、초코모찌、샤인머스캣 타르트、스위트포테이토）"
+        },
+        {
+          "url": "https://www.insight.co.kr/news/579151",
+          "platform": "news",
+          "date": "2026-10-26",
+          "note": "9/3–10/21 賣逾 20 萬個"
+        },
+        {
+          "url": "https://daily.hankooki.com/news/articleView.html?idxno=1418537",
+          "platform": "news",
+          "date": "2026-10-26",
+          "note": "同一份新聞稿的另一家報導"
+        },
+        {
+          "url": "https://pyakmi.com/new-products/monthly/2026-09/category/1",
+          "platform": "pyakmi 新品資料庫",
+          "date": "2026-09-03",
+          "note": "僅確認上市日與價格，非聲量來源"
+        }
+      ],
+      "image_url": "https://www.tirol-choco.com/lineup/images/2209_fkro_kinakomochi.png",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-07",
+      "group": "cvs",
+      "sub": "甜點",
+      "name_zh": "Ohayo 烤布蕾牛奶布丁（日本進口）",
+      "name_ko": "오하요 브륄레 밀크",
+      "brand": "오하요（日本進口）",
+      "where": "7-Eleven",
+      "price_krw": null,
+      "price_note": "",
+      "why": "日本進口烤布蕾牛奶布丁，上市40天賣出35萬個",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.dailian.co.kr/news/view/1674085/",
+          "platform": "news",
+          "date": "2026-08-04",
+          "note": "7/22 上市，10 天賣 20 萬個；日本甜點 4 款累計約 400 萬個"
+        },
+        {
+          "url": "https://www.mydaily.co.kr/page/view/2026090318012740044",
+          "platform": "news",
+          "date": "2026-09-03",
+          "note": "列為 7-Eleven 分批供貨的日本進口品"
+        },
+        {
+          "url": "https://view.asiae.co.kr/article/2026090723355256779",
+          "platform": "news",
+          "date": "2026-09-08",
+          "note": "40 天賣 35 萬個"
+        }
+      ],
+      "image_url": "https://www.ohayo-milk.co.jp/ice/15010_01.png",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-08",
+      "group": "cvs",
+      "sub": "甜點",
+      "name_zh": "日本進口生巧克力派",
+      "name_ko": "생초코파이",
+      "brand": "日本進口（7-Eleven 全球選品）",
+      "where": "7-Eleven",
+      "price_krw": null,
+      "price_note": "10/1 另有新款「생초코파이 가토 오 쇼콜라」4,000（pyakmi）",
+      "why": "去年底引進，首批兩週完售，累計約80萬個",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.dailian.co.kr/news/view/1674085/",
+          "platform": "news",
+          "date": "2026-08-04",
+          "note": "首批兩週完售，3 月擴大供貨後約 80 萬個"
+        },
+        {
+          "url": "https://www.mydaily.co.kr/page/view/2026090318012740044",
+          "platform": "news",
+          "date": "2026-09-03",
+          "note": "提及持續供貨"
+        },
+        {
+          "url": "https://pyakmi.com/new-products/monthly/2026-10/category/1",
+          "platform": "pyakmi 新品資料庫",
+          "date": "2026-10-01",
+          "note": "確認 10/1 新款 4,000，非聲量來源"
+        }
+      ],
+      "image_url": "https://www.lotte.co.jp/products/catalogue/chilled/01/product_file_lotte/product_file/SD_2604140004.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-09",
+      "group": "cvs",
+      "sub": "甜點",
+      "name_zh": "CU 生巧克力麻糬（原味／抹茶）",
+      "name_ko": "생초코 모찌 / 생초코 말차 모찌",
+      "brand": "CU",
+      "where": "CU",
+      "price_krw": 3200,
+      "price_note": "每款 3,200",
+      "why": "9/16 上市一個月賣逾40萬個，帶動CU年糕類銷量暴增",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.insight.co.kr/news/579151",
+          "platform": "news",
+          "date": "2026-10-26",
+          "note": "40 萬個；10/1–22 CU 年糕類銷量年增 158.9%"
+        },
+        {
+          "url": "https://daily.hankooki.com/news/articleView.html?idxno=1418537",
+          "platform": "news",
+          "date": "2026-10-26",
+          "note": "同一份 CU 新聞稿"
+        },
+        {
+          "url": "https://www.womentimes.co.kr/news/articleView.html?idxno=107430",
+          "platform": "news",
+          "date": "2026-10-29",
+          "note": "列出每款 3,200 韓元；同一份 CU 新聞稿"
+        }
+      ],
+      "image_url": "https://tqklhszfkvzk6518638.edge.naverncp.com/product/8801121289068_1.png",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-10",
+      "group": "cvs",
+      "sub": "甜點",
+      "name_zh": "杜拜Q餅（杜拜風味麻糬餅）",
+      "name_ko": "두바이쫀득쿠키",
+      "brand": "GS25 모모즈랩 等",
+      "where": "GS25、CU",
+      "price_krw": null,
+      "price_note": "各店價格不同，未在來源看到現價",
+      "why": "杜拜Q餅熱潮未退，GS25 華語客人銷量第3名",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://news.mtn.co.kr/news-detail/2026100109533237706",
+          "platform": "news",
+          "date": "2026-10-01",
+          "note": "GS25 1–8 月華語客人銷量：優格第1、杜拜Q餅第3"
+        },
+        {
+          "url": "https://www.funliday.com/posts/korea-convenient-store-food/",
+          "platform": "Funliday（台灣旅遊媒體）",
+          "date": "2026-10-07",
+          "note": "列為 CU 杜拜巧克力Q餅；文中沒有韓文名"
+        }
+      ],
+      "image_url": "https://image.woodongs.com/imgsvr/item/GD_8809984170318_001.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-11",
+      "group": "cvs",
+      "sub": "甜點",
+      "name_zh": "Yozm 希臘優格（藍莓）",
+      "name_ko": "요즘 그릭요거트(블루베리)",
+      "brand": "요즘（YOZM）",
+      "where": "GS25",
+      "price_krw": null,
+      "price_note": "",
+      "why": "GS25 華語客人銷量榜首，濃稠的藍莓希臘優格",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://news.mtn.co.kr/news-detail/2026100109533237706",
+          "platform": "news",
+          "date": "2026-10-01",
+          "note": "GS25 華語客人銷量第1名，超越香蕉牛奶"
+        },
+        {
+          "url": "https://www.funliday.com/posts/korea-convenient-store-food/",
+          "platform": "Funliday（台灣旅遊媒體）",
+          "date": "2026-10-07",
+          "note": "推薦 Yozm 優格（藍莓）；文中未指定超商"
+        }
+      ],
+      "image_url": "https://image.woodongs.com/imgsvr/item/GD_8809520490634_001.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-12",
+      "group": "cvs",
+      "sub": "甜點",
+      "name_zh": "CU 麻糬生巧克力（抹茶）",
+      "name_ko": "모찌 파베 초콜릿 말차맛",
+      "brand": "CU",
+      "where": "CU",
+      "price_krw": 4500,
+      "price_note": "",
+      "why": "10/22 新上市，Q彈麻糬包濃稠抹茶生巧克力，接棒生巧克力麻糬",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.insight.co.kr/news/579151",
+          "platform": "news",
+          "date": "2026-10-26",
+          "note": "10/22 上市；僅新品報導，無銷量"
+        },
+        {
+          "url": "https://www.womentimes.co.kr/news/articleView.html?idxno=107430",
+          "platform": "news",
+          "date": "2026-10-29",
+          "note": "價格 4,500；同一份 CU 新聞稿"
+        },
+        {
+          "url": "https://www.koreancenter.or.kr/news/articleView.html?idxno=1429620",
+          "platform": "news",
+          "date": "2026-10-26",
+          "note": "同一份新聞稿"
+        }
+      ],
+      "image_url": "https://tqklhszfkvzk6518638.edge.naverncp.com/product/8800402600059.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-13",
+      "group": "cvs",
+      "sub": "甜點",
+      "name_zh": "雪冰披薩年糕（冷凍）",
+      "name_ko": "설빙 피자설기",
+      "brand": "설빙 × GS25",
+      "where": "GS25（獨家）",
+      "price_krw": 3900,
+      "price_note": "130g（65g×2）；冷凍保存，微波加熱即食。10/26–10/31 App 預購已結束，11/5 起全國門市開賣",
+      "why": "雪冰聯名冷凍年糕，白年糕鋪披薩料，11/5全國開賣",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.specialtimes.co.kr/news/articleView.html?idxno=478302",
+          "platform": "news",
+          "date": "2026-10-26",
+          "note": "GS25 新聞稿：價格、規格、11/5 全國上市"
+        },
+        {
+          "url": "https://www.insight.co.kr/news/579151",
+          "platform": "news",
+          "date": "2026-10-26",
+          "note": "歸入便利商店年糕熱潮報導"
+        },
+        {
+          "url": "https://www.womentimes.co.kr/news/articleView.html?idxno=107430",
+          "platform": "news",
+          "date": "2026-10-29",
+          "note": "同一份新聞稿；尚無銷量"
+        }
+      ],
+      "image_url": "https://cdn.specialtimes.co.kr/news/photo/202610/478302_468137_3547.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-14",
+      "group": "cvs",
+      "sub": "甜點",
+      "name_zh": "Lala Sweet Q彈冰棒（哈密瓜等）",
+      "name_ko": "라라스윗 쫀득바",
+      "brand": "라라스윗",
+      "where": "GS25",
+      "price_krw": null,
+      "price_note": "",
+      "why": "5月底推出的Q彈冰棒，三個月賣逾400萬支，哈密瓜款最熱賣",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.youthdaily.co.kr/news/article.html?no=225828",
+          "platform": "news",
+          "date": "2026-08-27",
+          "note": "累計 400 萬支；哈密瓜款棒冰類第1；窗內僅此 1 篇，冬季門市庫存未確認"
+        }
+      ],
+      "image_url": "https://image.woodongs.com/imgsvr/item/GD_8809599361736_001.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-15",
+      "group": "cvs",
+      "sub": "甜點",
+      "name_zh": "冰鎮拔絲地瓜甜點",
+      "name_ko": "아이스고구마맛탕",
+      "brand": "이마트24",
+      "where": "emart24",
+      "price_krw": null,
+      "price_note": "可能對應 pyakmi 9/3「가을 고구마 아이스 디저트 2종」2,000（未確認）",
+      "why": "秋季地瓜甜點，上市10天登上App與外送熱搜第一",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://view.asiae.co.kr/article/2026090723355256779",
+          "platform": "news",
+          "date": "2026-09-08",
+          "note": "窗內僅此 1 篇；無銷量數字"
+        }
+      ],
+      "image_url": "https://msave.emart24.co.kr/cmsbo/upload/nHq/plu_image/500x500/8809659912182.JPG",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-16",
+      "group": "cvs",
+      "sub": "飲料",
+      "name_zh": "香蕉牛奶（甕形瓶）",
+      "name_ko": "바나나맛우유",
+      "brand": "빙그레",
+      "where": "全部便利商店",
+      "price_krw": null,
+      "price_note": "",
+      "why": "經典外國客伴手飲，近期被優格擠下GS25華語榜首，仍榜上有名",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://news.mtn.co.kr/news-detail/2026100109533237706",
+          "platform": "news",
+          "date": "2026-10-01",
+          "note": "窗內來源只提到「被 그릭요거트 超越」，未列確切名次"
+        },
+        {
+          "url": "https://view.asiae.co.kr/article/2026062609193988483",
+          "platform": "news",
+          "date": "2026-06-26",
+          "note": "窗外（僅佐證）：K-香蕉牛奶熱潮、加咖啡調成拿鐵的新喝法"
+        }
+      ],
+      "image_url": "https://www.bing.co.kr/upload/brand/2026/09/5c326bc1-1c8f-4302-8307-7279d57aef91.png",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-17",
+      "group": "cvs",
+      "sub": "零食",
+      "name_zh": "Kkokkalkon 夜攤系列（三家超商各一味）",
+      "name_ko": "꼬깔콘 야장시리즈 마성옥수수맛 / 워킹타코맛 / 버터구이오징어맛",
+      "brand": "롯데웰푸드",
+      "where": "GS25（마성옥수수맛）、CU（워킹타코맛）、7-Eleven（버터구이오징어맛）",
+      "price_krw": null,
+      "price_note": "",
+      "why": "三家超商各賣一味的玉米脆角，兩週賣80萬包，GS25款缺貨",
+      "limited": "夏季限定款，查不到停售日（11 月是否還在架上要到店確認）",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.wikitree.co.kr/articles/1151924",
+          "platform": "news",
+          "date": "2026-08-12",
+          "note": "季節限定；四味中三味分屬三家超商；兩週 80 萬包"
+        },
+        {
+          "url": "https://view.asiae.co.kr/article/2026090723355256779",
+          "platform": "news",
+          "date": "2026-09-08",
+          "note": "GS25 마성옥수수맛一個月 40 萬個、零食第1，每店每週僅配 1 箱"
+        }
+      ],
+      "image_url": "https://tqklhszfkvzk6518638.edge.naverncp.com/product/8802259034315.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-18",
+      "group": "cvs",
+      "sub": "零食",
+      "name_zh": "CU 松露火腿脆棒",
+      "name_ko": "트러플하몽스틱",
+      "brand": "CU",
+      "where": "CU",
+      "price_krw": 1900,
+      "price_note": "CU 限制各店訂貨量，可能買不到",
+      "why": "松露加西班牙火腿口味長條脆餅，10月上半月登CU零食冠軍",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.newspim.com/news/view/20261018000071",
+          "platform": "news",
+          "date": "2026-10-18",
+          "note": "10/1–15 零食銷量第1；系列 3 款累計 150 萬個"
+        },
+        {
+          "url": "https://view.asiae.co.kr/article/2026101817432198310",
+          "platform": "news",
+          "date": "2026-10-18",
+          "note": "只看到搜尋結果標題「감자칩 제치고 스낵 매출 1위」，未抓取內文；同一份 CU 新聞稿"
+        }
+      ],
+      "image_url": "https://img.newspim.com/news/2026/10/18/2610181351151570.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-19",
+      "group": "cvs",
+      "sub": "零食",
+      "name_zh": "Pepero Day 限定包裝（11/11）",
+      "name_ko": "빼빼로 더블리치 솔티바닐라 외 빼빼로데이 한정 패키지",
+      "brand": "롯데웰푸드",
+      "where": "全部便利商店（各家聯名周邊不同）",
+      "price_krw": null,
+      "price_note": "",
+      "why": "11/11 節日落在行程內，聯名包裝與贈品各超商不同",
+      "limited": "限定到 2026-11-11 前後（Pepero Day 當天為週三）",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://news.mtn.co.kr/news-detail/2026101411291266453",
+          "platform": "news",
+          "date": "2026-10-14",
+          "note": "樂天 10 款限定包裝：Stray Kids、Sanrio、가나디聯名；솔티바닐라回歸"
+        },
+        {
+          "url": "https://www.fnnews.com/news/202610160630561565",
+          "platform": "news",
+          "date": "2026-10-16",
+          "note": "GS25 무무씨、CU 寶可夢與 Tamagotchi 聯名周邊；7-Eleven 與 emart24 未列品名"
+        }
+      ],
+      "image_url": "https://files.mtn.co.kr/upload/article/2026/10/14/2026101411291266453_00_594.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-20",
+      "group": "cvs",
+      "sub": "零食",
+      "name_zh": "CU 烤地瓜",
+      "name_ko": "군고구마",
+      "brand": "CU",
+      "where": "CU",
+      "price_krw": null,
+      "price_note": "11 月與低脂滅菌牛奶同買折 500、與包裝白菜泡菜同買折 1,000",
+      "why": "冬季熱門熱食，外國客購買量今年增逾一倍，CU全年供應",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://m.sedaily.com/article/20107707",
+          "platform": "news",
+          "date": "2026-10-29",
+          "note": "外國客 군고구마購買量年增 126.9%"
+        },
+        {
+          "url": "https://www.wikitree.co.kr/articles/1170064",
+          "platform": "news",
+          "date": "2026-10-29",
+          "note": "1–9 月銷量年增 44.5%；同一份 CU 新聞稿"
+        }
+      ],
+      "image_url": "https://wimg.sedaily.com/news/cms/2026/10/29/news-p.v1.20261029.e3a7f2ed3a934f188b5cfa9b5a5f929f_Z1.png",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-21",
+      "group": "cvs",
+      "sub": "零食",
+      "name_zh": "춘식이 꼬북칩 地瓜糖葫蘆口味",
+      "name_ko": "춘식이 꼬북칩 고구마탕후루맛",
+      "brand": "꼬북칩 × 춘식이",
+      "where": "GS25",
+      "price_krw": null,
+      "price_note": "",
+      "why": "人氣脆片推出地瓜糖葫蘆新口味，一個月賣30萬包",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://view.asiae.co.kr/article/2026090723355256779",
+          "platform": "news",
+          "date": "2026-09-08",
+          "note": "窗內僅此 1 篇"
+        }
+      ],
+      "image_url": "https://file2.nocutnews.co.kr/newsroom/image/2026/08/02/202608021420315151_0.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-22",
+      "group": "cvs",
+      "sub": "麵包",
+      "name_zh": "숨결整條吐司（樂天自有品牌）",
+      "name_ko": "숨결통식빵",
+      "brand": "롯데 PB",
+      "where": "7-Eleven、樂天超市",
+      "price_krw": 2500,
+      "price_note": "400g 原價 2,500；報導稱 10/29–11/11 九折 2,250（未明說是否含 7-Eleven）",
+      "why": "PB吐司193天賣破100萬條，7-Eleven約佔33萬條",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://sateconomy.co.kr/news/view/1065575290535125",
+          "platform": "news",
+          "date": "2026-10-28",
+          "note": "10/25 累計破 100 萬；7-Eleven 約 33 萬、樂天約 67 萬"
+        },
+        {
+          "url": "https://mobile.newsis.com/view/NISX20260805_0003736626",
+          "platform": "news",
+          "date": "2026-08-05",
+          "note": "只看到搜尋結果標題「팝업 방문객 4만명…PB 베이커리 2위 안착」，未抓取內文"
+        },
+        {
+          "url": "https://pyony.com/search/?q=하트생크림빵",
+          "platform": "pyony 價格資料庫",
+          "date": "2026-11-02",
+          "note": "頁面側欄 11 月 7-Eleven 숨결통식빵 促銷板仍在更新，僅佐證仍在賣"
+        }
+      ],
+      "image_url": "https://img1.newsis.com/2026/08/05/NISI20260805_0002204524_web.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-23",
+      "group": "cvs",
+      "sub": "麵包",
+      "name_zh": "敲碎巧克力殼 延世愛心鮮奶油麵包",
+      "name_ko": "깨먹는 연세 하트 생크림빵",
+      "brand": "연세우유 × 하트티라미수",
+      "where": "CU",
+      "price_krw": null,
+      "price_note": "",
+      "why": "敲碎巧克力殼的提拉米蘇鮮奶油包，三個月賣110萬個，拍片熱門",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://view.asiae.co.kr/article/2026090723355256779",
+          "platform": "news",
+          "date": "2026-09-08",
+          "note": "窗內來源；3 個月 110 萬個，SNS 話題"
+        },
+        {
+          "url": "https://www.etnews.com/20260726000041",
+          "platform": "news",
+          "date": "2026-07-26",
+          "note": "窗外（僅佐證）：CU 原始發表，敲殼系列共 15 款"
+        }
+      ],
+      "image_url": "https://tqklhszfkvzk6518638.edge.naverncp.com/product/8801753116916.png",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-24",
+      "group": "cvs",
+      "sub": "麵包",
+      "name_zh": "太極堂聯名麵包（奶油／歐蘭多／迷你瑪姆斯）",
+      "name_ko": "태극당 버터크림빵 / 오란다빵 / 미니맘모스빵",
+      "brand": "태극당 × GS25",
+      "where": "GS25",
+      "price_krw": 2800,
+      "price_note": "버터크림빵 2,800；오란다빵、미니맘모스빵 3,200（pyakmi）",
+      "why": "首爾老字號太極堂與GS25聯名麵包，10/13、10/15陸續上市",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.mydailybyte.com/littlebit/news/6003e49a-4bd9-4e9f-b0d3-ee737a0e0c68",
+          "platform": "news",
+          "date": "2026-10-12",
+          "note": "搜尋結果摘要確認日期與內容（頁面抓取遇 429）；前作聯名冰淇淋累計約 270 萬個"
+        },
+        {
+          "url": "https://pyakmi.com/new-products/monthly/2026-10/category/1",
+          "platform": "pyakmi 新品資料庫",
+          "date": "2026-10-13",
+          "note": "上市日與價格，非聲量來源"
+        }
+      ],
+      "image_url": "https://pyakmi.com/storage/products/1792511722_6ad78eea85a51.webp",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-25",
+      "group": "cvs",
+      "sub": "麵包",
+      "name_zh": "CU BAKE405 大理石奶油麵包（4款）",
+      "name_ko": "BAKE405 마블크림빵",
+      "brand": "CU（自家烘焙品牌 BAKE405）",
+      "where": "CU",
+      "price_krw": 3200,
+      "price_note": "pyakmi 9/1 標價",
+      "why": "CU自家烘焙新品牌的扭紋奶油麵包，9月起陸續推四款",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.mydaily.co.kr/page/view/2026090318012740044",
+          "platform": "news",
+          "date": "2026-09-03",
+          "note": "新品報導，無銷量"
+        },
+        {
+          "url": "https://pyakmi.com/new-products/monthly/2026-09/category/1",
+          "platform": "pyakmi 新品資料庫",
+          "date": "2026-09-01",
+          "note": "上市日與價格"
+        }
+      ],
+      "image_url": "https://tqklhszfkvzk6518638.edge.naverncp.com/product/8809895791534.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-cvs-26",
+      "group": "cvs",
+      "sub": "麵包",
+      "name_zh": "CU 現炸玉米派／蘋果派",
+      "name_ko": "CU 콘파이 / CU 애플파이",
+      "brand": "CU",
+      "where": "CU",
+      "price_krw": 2000,
+      "price_note": "pyakmi 9/28 標價；10 月整月 2+1，11 月是否續辦未知",
+      "why": "店內現炸熱派，玉米派由限定轉為常態商品，天冷好買",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.metroseoul.co.kr/article/20261005500006",
+          "platform": "news",
+          "date": "2026-10-05",
+          "note": "CU 新聞稿：店內油炸機現做，玉米派轉常態"
+        },
+        {
+          "url": "https://pyakmi.com/new-products/monthly/2026-09/category/1",
+          "platform": "pyakmi 新品資料庫",
+          "date": "2026-09-28",
+          "note": "上市日與價格 2,000"
+        }
+      ],
+      "image_url": "https://tqklhszfkvzk6518638.edge.naverncp.com/product/2202000161837.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-01",
+      "group": "mart",
+      "sub": "泡麵",
+      "name_zh": "八道＆兩班 海帶湯麵",
+      "name_ko": "팔도&양반 미역국라면",
+      "brand": "八道 Paldo × 東遠兩班",
+      "where": "樂天超市（樂天獨家；首爾站 Zetaplex 店外國人買最多）",
+      "price_krw": null,
+      "price_note": "",
+      "why": "樂天獨家，外國遊客買最多的泡麵，首爾站店長期名列前茅",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.ziksir.com/news/articleView.html?idxno=150361",
+          "platform": "news",
+          "date": "2026-10-23",
+          "note": "列為樂天首爾站店泡麵銷量第一"
+        },
+        {
+          "url": "https://www.wikitree.co.kr/articles/1169276",
+          "platform": "news",
+          "date": "2026-10-26",
+          "note": "2026-09 前在 10 間外國人特化門市泡麵類營收第一"
+        },
+        {
+          "url": "https://bobbytravel.tw/korea-souvenirs/",
+          "platform": "blog",
+          "date": "2026-10-18",
+          "note": "清單更新日；寫作「八道蛤蜊海帶湯麵 新竄紅」"
+        }
+      ],
+      "image_url": "https://img.hankyung.com/photo/202606/AA.44718904.1.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-02",
+      "group": "mart",
+      "sub": "泡麵",
+      "name_zh": "不倒翁 東大門一隻雞刀切麵",
+      "name_ko": "오뚜기 동대문식 닭한마리 칼국수",
+      "brand": "不倒翁 Ottogi",
+      "where": "樂天超市（首爾站店袋麵銷量第一）等大型超市",
+      "price_krw": null,
+      "price_note": "",
+      "why": "7月新品，雞湯刀削風味，8月樂天首爾站袋麵銷量第一",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.segye.com/newsView/20261011504091",
+          "platform": "news",
+          "date": "2026-10-11",
+          "note": "7/13 上市，18 天賣破 50 萬個；8 月樂天首爾站袋麵第一"
+        },
+        {
+          "url": "https://www.funliday.com/posts/lottemart-ramen/",
+          "platform": "blog",
+          "date": "2026-09-17",
+          "note": "樂天超市 30 款泡麵清單第一項，標 2026 新品"
+        }
+      ],
+      "image_url": "https://www.otoki.com/pds/news/2607/640a433f865049e5b337a9a68327a762.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-03",
+      "group": "mart",
+      "sub": "泡麵",
+      "name_zh": "農心 辛拉麵 Tumba（奶油辣白醬）",
+      "name_ko": "농심 신라면 툼바",
+      "brand": "農心 Nongshim",
+      "where": "大型超市（樂天、Emart 等）",
+      "price_krw": null,
+      "price_note": "",
+      "why": "奶油辣白醬口味，明洞所在的中區大型超市銷量第二",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.segye.com/newsView/20261011504091",
+          "platform": "news",
+          "date": "2026-10-11",
+          "note": "中區（明洞/東大門/首爾站一帶）大型超市銷量第二；農心 POS 資料"
+        },
+        {
+          "url": "https://www.funliday.com/posts/lottemart-ramen/",
+          "platform": "blog",
+          "date": "2026-09-17",
+          "note": "文中寫作「辣白醬風味辛拉麵」"
+        }
+      ],
+      "image_url": "https://image.nongshim.com/non/pro/1728631475895.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-04",
+      "group": "mart",
+      "sub": "泡麵",
+      "name_zh": "農心 炸醬麵 Chapaghetti",
+      "name_ko": "농심 짜파게티",
+      "brand": "農心 Nongshim",
+      "where": "大型超市",
+      "price_krw": null,
+      "price_note": "",
+      "why": "首爾大型超市銷量前段班的炸醬泡麵，台灣清單也點名",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.segye.com/newsView/20261011504091",
+          "platform": "news",
+          "date": "2026-10-11",
+          "note": "與辛拉麵、너구리並列首爾大型超市銷量上位"
+        },
+        {
+          "url": "https://bobbytravel.tw/lotte-mart/",
+          "platform": "blog",
+          "date": "2026-08-13",
+          "note": "寫作「農心炸醬麵」"
+        }
+      ],
+      "image_url": "https://image.nongshim.com/brand/info/1647994014699.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-05",
+      "group": "mart",
+      "sub": "泡麵",
+      "name_zh": "農心 浣熊香辣海鮮烏龍麵",
+      "name_ko": "농심 얼큰한 너구리",
+      "brand": "農心 Nongshim",
+      "where": "大型超市",
+      "price_krw": null,
+      "price_note": "",
+      "why": "辣味海鮮烏龍麵，首爾大型超市銷量常在前段",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.segye.com/newsView/20261011504091",
+          "platform": "news",
+          "date": "2026-10-11",
+          "note": "列為首爾大型超市銷量上位"
+        },
+        {
+          "url": "https://www.funliday.com/posts/lottemart-ramen/",
+          "platform": "blog",
+          "date": "2026-09-17",
+          "note": "清單第 26 項，另有激辣版"
+        }
+      ],
+      "image_url": "https://image.nongshim.com/brand/info/1766964689841.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-06",
+      "group": "mart",
+      "sub": "泡麵",
+      "name_zh": "農心 辛拉麵 Gold（雞湯辣味）",
+      "name_ko": "농심 신라면 골드",
+      "brand": "農心 Nongshim",
+      "where": "大型超市（樂天、Emart 等）",
+      "price_krw": null,
+      "price_note": "",
+      "why": "雞湯加辣的新款，中區（明洞一帶）超市賣最好",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.segye.com/newsView/20261011504091",
+          "platform": "news",
+          "date": "2026-10-11",
+          "note": "今年 1 月上市，一個月賣 1,000 萬包；中區銷量第一。窗內僅此一篇，農心原始資料是 7/29 公布的上半年 POS"
+        }
+      ],
+      "image_url": "https://image.nongshim.com/non/pro/1769732801288.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-07",
+      "group": "mart",
+      "sub": "泡麵",
+      "name_zh": "不倒翁 牡蠣海帶湯麵（樂天獨家新品）",
+      "name_ko": "오뚜기 굴미역국라면",
+      "brand": "不倒翁 Ottogi × 樂天超市",
+      "where": "樂天超市／Lotte Super 全店（10/29 起）",
+      "price_krw": 4480,
+      "price_note": "上市紀念價 4,480 韓元，到 2026-11-11",
+      "why": "10/29 樂天獨家新品，牡蠣海帶湯頭，包裝是宮廷畫風",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.wikitree.co.kr/articles/1169276",
+          "platform": "news",
+          "date": "2026-10-26",
+          "note": "10/29 全店上市；價格 4,480 到 11/11"
+        },
+        {
+          "url": "https://www.koreancenter.or.kr/news/articleView.html?idxno=1429554",
+          "platform": "news",
+          "date": "2026-10-26",
+          "note": "與上則同為新品發布稿，非獨立聲量；瞄準外國觀光客與伴手禮需求"
+        }
+      ],
+      "image_url": "https://cdnweb01.wikitree.co.kr/webdata/editor/202610/26/img_20261026165130_c2014261.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-08",
+      "group": "mart",
+      "sub": "泡麵",
+      "name_zh": "不倒翁 皇家熱拉麵",
+      "name_ko": "오뚜기 로열라면",
+      "brand": "不倒翁 Ottogi",
+      "where": "樂天超市等大型超市",
+      "price_krw": null,
+      "price_note": "",
+      "why": "近年話題款，帶奶香的辣拉麵，台灣旅遊清單點名",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/lottemart-ramen/",
+          "platform": "blog",
+          "date": "2026-09-17",
+          "note": "文中稱近年話題爆款、乳製品口味；窗內僅此一個來源"
+        }
+      ],
+      "image_url": "https://www.otoki.com/pds/news/2606/98e4c2d5b7594ce880e10f617c41d5c4.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-09",
+      "group": "mart",
+      "sub": "泡麵",
+      "name_zh": "農心 玫瑰辛拉麵",
+      "name_ko": "농심 신라면 로제",
+      "brand": "農心 Nongshim",
+      "where": "樂天超市等大型超市",
+      "price_krw": null,
+      "price_note": "",
+      "why": "玫瑰醬版辛拉麵，台灣清單稱在社群上很熱",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/lottemart-ramen/",
+          "platform": "blog",
+          "date": "2026-09-17",
+          "note": "文中標示 SNS 熱門；窗內僅此一個來源"
+        }
+      ],
+      "image_url": "https://image.nongshim.com/non/pro/1781829117013.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-10",
+      "group": "mart",
+      "sub": "甜點",
+      "name_zh": "樂天 ZERO 巧克力系列（可可蛋糕／脆脆巧克力球／巧克力派）",
+      "name_ko": "롯데 ZERO 카카오케이크 / 크런치 초코볼",
+      "brand": "樂天 Lotte Wellfood",
+      "where": "樂天超市",
+      "price_krw": null,
+      "price_note": "",
+      "why": "無糖低卡甜點，外國人熱買，台灣部落格稱近期大賣",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.ziksir.com/news/articleView.html?idxno=150361",
+          "platform": "news",
+          "date": "2026-10-23",
+          "note": "ZERO 系列巧克力類在樂天首爾站店位居上位（未點名單品）"
+        },
+        {
+          "url": "https://bobbytravel.tw/lotte-mart/",
+          "platform": "blog",
+          "date": "2026-08-13",
+          "note": "寫作「樂天Zero巧克力派…近期大賣」；可可蛋糕、脆脆巧克力球的韓文名來自 7 月報導（窗外）"
+        }
+      ],
+      "image_url": "https://lotteblog.s3.ap-northeast-2.amazonaws.com/wp-content/uploads/2022/06/%EB%A1%AF%EB%8D%B0%EC%A7%80%EC%A3%BC_%EB%B8%94%EB%A1%9C%EA%B7%B8_%EB%A1%AF%EB%8D%B0%EC%A0%9C%EB%A1%9C02_220614.jpg",
+      "image_kind": "brand"
+    },
+    {
+      "id": "tr-mart-11",
+      "group": "mart",
+      "sub": "甜點",
+      "name_zh": "CW 巧克力麻糬餅乾",
+      "name_ko": "",
+      "brand": "CW 青宇食品",
+      "where": "樂天超市等大型超市",
+      "price_krw": null,
+      "price_note": "",
+      "why": "麻糬包巧克力豆的餅乾，近年台灣清單常出現",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://bobbytravel.tw/lotte-mart/",
+          "platform": "blog",
+          "date": "2026-08-13",
+          "note": "寫作「CW巧克力麻糬餅」，稱近年走紅"
+        },
+        {
+          "url": "https://bobbytravel.tw/korea-souvenirs/",
+          "platform": "blog",
+          "date": "2026-10-18",
+          "note": "同站另一篇；非獨立來源"
+        }
+      ],
+      "image_url": "https://cwfood.co.kr/wp-content/uploads/kboard_thumbnails/2/202404/660b7070d43e78192672.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-12",
+      "group": "mart",
+      "sub": "零食",
+      "name_zh": "好麗友 BICHOBI 夾心餅乾（韓國版）",
+      "name_ko": "비쵸비 대한민국",
+      "brand": "好麗友 Orion",
+      "where": "樂天超市（首爾站店最多）、機場、蠶室石村湖一帶店舖",
+      "price_krw": null,
+      "price_note": "",
+      "why": "外國遊客的必買餅乾，今年 1–8 月全國銷量年增 53%",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.hankyung.com/article/202609105274g",
+          "platform": "news",
+          "date": "2026-09-10",
+          "note": "稱為必買紀念品；有「韓國版」「國立中央博物館版」包裝"
+        },
+        {
+          "url": "https://www.ziksir.com/news/articleView.html?idxno=150361",
+          "platform": "news",
+          "date": "2026-10-23",
+          "note": "1–8 月營收年增 2 倍以上的 10 個重點店舖：首爾站、機場、濟州等"
+        }
+      ],
+      "image_url": "https://www.orionworld.com/upload/goods/4e3a94acf7418f4df7aae8caf485165c.png",
+      "image_kind": "brand"
+    },
+    {
+      "id": "tr-mart-13",
+      "group": "mart",
+      "sub": "零食",
+      "name_zh": "bibigo 海苔脆片（糯米／辣味／蝦味）",
+      "name_ko": "비비고 김부각",
+      "brand": "CJ 第一製糖 bibigo",
+      "where": "樂天超市（首爾站店等）、Emart、便利商店、Olive Young、Coupang",
+      "price_krw": null,
+      "price_note": "",
+      "why": "6月新品，免料理的海苔脆片，9月底累計賣近 50 萬包",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.segye.com/newsView/20261019505115",
+          "platform": "news",
+          "date": "2026-10-19",
+          "note": "3 種口味：찹쌀、매운맛、새우맛；外國人多的特化門市占銷量約 70%"
+        },
+        {
+          "url": "https://www.ziksir.com/news/articleView.html?idxno=150361",
+          "platform": "news",
+          "date": "2026-10-23",
+          "note": "同樣提到外國觀光客店舖銷量占比高"
+        }
+      ],
+      "image_url": "https://img.cjnews.cj.net/wp-content/uploads/2026/10/%EB%B9%84%EB%B9%84%EA%B3%A0-%EA%B9%80%EB%B6%80%EA%B0%81-3%EC%A2%85-%EC%BA%94%EA%B9%80-2%EC%A2%85-%EC%A0%9C%ED%92%88-%EC%9D%B4%EB%AF%B8%EC%A7%80.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-14",
+      "group": "mart",
+      "sub": "零食",
+      "name_zh": "樂天 ZERO 無糖水果軟糖",
+      "name_ko": "롯데 ZERO 후르츠젤리",
+      "brand": "樂天 Lotte Wellfood",
+      "where": "樂天超市（首爾站店外國人買氣前段班）",
+      "price_krw": null,
+      "price_note": "",
+      "why": "無糖水果軟糖，樂天超市外國人買氣前段，台灣清單必列",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.ziksir.com/news/articleView.html?idxno=150361",
+          "platform": "news",
+          "date": "2026-10-23",
+          "note": "寫作「제로 젤리·초콜릿 시리즈」，樂天首爾站店前段班"
+        },
+        {
+          "url": "https://bobbytravel.tw/lotte-mart/",
+          "platform": "blog",
+          "date": "2026-08-13",
+          "note": "樂天超市必買清單"
+        }
+      ],
+      "image_url": "https://lotteblog.s3.ap-northeast-2.amazonaws.com/wp-content/uploads/2022/06/%EB%A1%AF%EB%8D%B0%EC%A7%80%EC%A3%BC_%EB%B8%94%EB%A1%9C%EA%B7%B8_%EB%A1%AF%EB%8D%B0%EC%A0%9C%EB%A1%9C02_220614.jpg",
+      "image_kind": "brand"
+    },
+    {
+      "id": "tr-mart-15",
+      "group": "mart",
+      "sub": "零食",
+      "name_zh": "清淨園 酥脆海苔脆片（原味／山葵／起司）",
+      "name_ko": "청정원 바사삭 김부각",
+      "brand": "大象 Daesang 清淨園",
+      "where": "樂天超市首爾站店等外國人多的店，之後擴到全國大型超市",
+      "price_krw": null,
+      "price_note": "",
+      "why": "8月新品，山葵和起司口味主打外國人，包裝用民畫",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.segye.com/newsView/20261019505115",
+          "platform": "news",
+          "date": "2026-10-19",
+          "note": "2026-08 上市；原味與山葵有純素、無麩質認證"
+        }
+      ],
+      "image_url": "https://www.foodtoday.or.kr/data/photos/20260833/art_17865958487161_ceab66.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-mart-16",
+      "group": "mart",
+      "sub": "零食",
+      "name_zh": "HBAF 蜂蜜奶油杏仁果",
+      "name_ko": "HBAF 허니버터아몬드",
+      "brand": "HBAF",
+      "where": "樂天超市（也有明洞旗艦店）",
+      "price_krw": 4400,
+      "price_note": "單包約 4,400（明洞）；樂天 2 包 4,990（8/13 文章）",
+      "why": "台灣清單長年點名的杏仁果，蜂蜜奶油與跳跳糖口味最常被推",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://bobbytravel.tw/lotte-mart/",
+          "platform": "blog",
+          "date": "2026-08-13",
+          "note": "樂天超市必買第一項；韓文名取自較早的韓國新聞，窗內來源只有波比看世界（同站）"
+        },
+        {
+          "url": "https://bobbytravel.tw/korea-souvenirs/",
+          "platform": "blog",
+          "date": "2026-10-18",
+          "note": "同站另一篇，非獨立來源"
+        }
+      ],
+      "image_url": "https://cdn.imweb.me/thumbnail/20240216/604862a7e0bbe.png",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-01",
+      "group": "souvenir",
+      "sub": "伴手禮・小物",
+      "name_zh": "Seoul My Soul 繩結帽（Belt Cap）",
+      "name_ko": "서울마이소울 벨트캡",
+      "brand": "Seoul My Soul × ONGO（傳統繩結）",
+      "where": "Seoul My Soul 商店、DDP 設計商店線上商城",
+      "price_krw": 63000,
+      "price_note": "9/3 上市；日本網友 X 貼文破 270 萬次瀏覽，可能缺貨",
+      "why": "首爾市與繩結品牌合作，日本 X 貼文爆 270 萬瀏覽",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.wikitree.co.kr/articles/1161623",
+          "platform": "news",
+          "date": "2026-09-23",
+          "note": "價格 63,000；X 貼文 32,000 讚、7,900 轉發；未明列實體店販售點"
+        },
+        {
+          "url": "https://www.fnnews.com/news/202609231258388091",
+          "platform": "news",
+          "date": "2026-09-23",
+          "note": "首爾市資料；與 wikitree 同日，來源近似"
+        }
+      ],
+      "image_url": "https://cdnweb01.wikitree.co.kr/webdata/editor/202609/23/img_20260923141503_455a77a8.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-02",
+      "group": "souvenir",
+      "sub": "伴手禮・小物",
+      "name_zh": "DDP 設計商店 首爾貼紙／明信片／磁鐵",
+      "name_ko": "서울 스티커 콜렉션 50종",
+      "brand": "DDP 디자인스토어",
+      "where": "東大門設計廣場（DDP）設計商店",
+      "price_krw": null,
+      "price_note": "報導稱 1 萬韓元以下",
+      "why": "貼紙是線上線下銷量第一，明信片、磁鐵也在前段",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.fnnews.com/news/202609231258388091",
+          "platform": "news",
+          "date": "2026-09-23",
+          "note": "含四大門四大宮明信片、南山／光化門即可拍磁鐵"
+        },
+        {
+          "url": "https://www.fnnews.com/news/202609231603048080",
+          "platform": "news",
+          "date": "2026-09-23",
+          "note": "同站另一則；窗內只有 fnnews 一站"
+        }
+      ],
+      "image_url": "https://geistkorea1.cdn-nhncommerce.com/data/editor/goods/2025%20BRAND/first%20half/seoulstickershop/sticker_pack/1.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-03",
+      "group": "souvenir",
+      "sub": "伴手禮・小物",
+      "name_zh": "獬豸（Haechi）隨機公仔／磁鐵／原子筆",
+      "name_ko": "해치 랜덤피규어",
+      "brand": "Seoul My Soul",
+      "where": "Seoul My Soul 商店（鐘路、明洞、光化門、江南站、汝矣島漢江公園、首爾 Gallery）",
+      "price_krw": null,
+      "price_note": "報導稱 1 萬韓元出頭",
+      "why": "首爾吉祥物小物，隨機公仔與磁鐵、原子筆銷路好",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.fnnews.com/news/202609231603048080",
+          "platform": "news",
+          "date": "2026-09-23",
+          "note": "列為 Seoul My Soul 6 間店熱銷；窗內只有 fnnews 一站"
+        }
+      ],
+      "image_url": "https://geistkorea1.cdn-nhncommerce.com/data/editor/goods/HECHI&SEOUL_FRIENDS/Random%20character%20figure/1.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-04",
+      "group": "souvenir",
+      "sub": "伴手禮・小物",
+      "name_zh": "樂天超市首爾站「寶物」韓國文化商品館（筷組、螺鈿指甲剪）",
+      "name_ko": "한국문화상품관 보물",
+      "brand": "樂天超市",
+      "where": "樂天超市首爾站 Zetaplex 店內",
+      "price_krw": null,
+      "price_note": "",
+      "why": "樂天首爾站內的韓國文化小物區，賣筷組與螺鈿指甲剪",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.sidae.com/article/2026092111262515355",
+          "platform": "news",
+          "date": "2026-09-21",
+          "note": "還提到民畫與螺鈿設計商品；生肖巧克力是 1 月農曆新年款，不列入"
+        }
+      ]
+    },
+    {
+      "id": "tr-souvenir-05",
+      "group": "souvenir",
+      "sub": "伴手禮・飲品",
+      "name_zh": "NewMix 即溶咖啡（炒米／抹茶等口味）",
+      "name_ko": "뉴믹스커피",
+      "brand": "NewMix coffee",
+      "where": "聖水店、北村店（可試喝）",
+      "price_krw": null,
+      "price_note": "",
+      "why": "把三合一咖啡做成伴手禮，聖水與北村店能試喝",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/15-seoul-must-buy-korean-souvenirs/",
+          "platform": "blog",
+          "date": "2026-09-16",
+          "note": "稱最新爆紅；聖水 11:00–19:00、北村 10:00–18:00"
+        },
+        {
+          "url": "https://eastweek.stheadline.com/fun/20816/2026%E9%9F%93%E5%9C%8B%E6%89%8B%E4%BF%A1%E6%8E%A8%E4%BB%8B8%E5%AE%B6%E9%A6%96%E7%88%BE%E5%BF%85%E8%B2%B7%E4%BC%B4%E6%89%8B%E7%A6%AE%E6%98%8E%E6%98%9F%E5%90%8C%E6%AC%BE%E7%94%9C%E5%93%81%E9%AB%98%E8%B3%AA%E6%84%9F%E6%B2%99%E9%BE%8D%E9%A6%99%E6%B0%9B",
+          "platform": "blog",
+          "date": "2026-08-11",
+          "note": "香港東周刊；推薦炒米香與綜合禮盒"
+        }
+      ],
+      "image_url": "https://jrvntmgnjcshlfmjsmkd.supabase.co/storage/v1/object/public/products/mix-coffee/394a45e2-841c-4a1b-ad2d-3a3a1c15115d-1774586349920.webp",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-06",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "Golden Piece 藥果（精品禮盒）",
+      "name_ko": "골든피스",
+      "brand": "Golden Piece",
+      "where": "漢南洞店、樂天百貨本店 B1、The Hyundai Seoul、Galleria 名品館、仁川機場 T1 免稅店",
+      "price_krw": null,
+      "price_note": "",
+      "why": "傳統藥果做成精品禮盒，百貨與機場都買得到，多篇點名",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/15-seoul-must-buy-korean-souvenirs/",
+          "platform": "blog",
+          "date": "2026-09-16",
+          "note": "首爾 12 大伴手禮之一，附各店地址時間"
+        },
+        {
+          "url": "https://eastweek.stheadline.com/fun/20816/2026%E9%9F%93%E5%9C%8B%E6%89%8B%E4%BF%A1%E6%8E%A8%E4%BB%8B8%E5%AE%B6%E9%A6%96%E7%88%BE%E5%BF%85%E8%B2%B7%E4%BC%B4%E6%89%8B%E7%A6%AE%E6%98%8E%E6%98%9F%E5%90%8C%E6%AC%BE%E7%94%9C%E5%93%81%E9%AB%98%E8%B3%AA%E6%84%9F%E6%B2%99%E9%BE%8D%E9%A6%99%E6%B0%9B",
+          "platform": "blog",
+          "date": "2026-08-11",
+          "note": "香港東周刊；漢南洞店，推薦綜合藥果禮盒"
+        },
+        {
+          "url": "https://news.bizwatch.co.kr/article/consumer/2026/09/21/0032",
+          "platform": "news",
+          "date": "2026-09-22",
+          "note": "報導約 9/22 07:20（網址路徑 09/21）；藥果回熱，進駐 The Hyundai Seoul 與樂天百貨本店"
+        }
+      ],
+      "image_url": "https://assets.funliday.com/posts/wp-content/uploads/2025/04/22104848/%E8%97%A5%E6%9E%9C.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-07",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "Manna-dang（만나당）藥果",
+      "name_ko": "만나당",
+      "brand": "만나당",
+      "where": "新世界百貨江南店 Sweet Park；新世界免稅店「Taste of Shinsegae」明洞店、仁川機場店",
+      "price_krw": null,
+      "price_note": "",
+      "why": "藥果專賣，新世界百貨與免稅店主力品項，近期藥果回熱",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://news.bizwatch.co.kr/article/consumer/2026/09/21/0032",
+          "platform": "news",
+          "date": "2026-09-22",
+          "note": "新世界江南店 Sweet Park 有賣；藥果熱潮、有店家排隊"
+        },
+        {
+          "url": "https://www.ziksir.com/news/articleView.html?idxno=150361",
+          "platform": "news",
+          "date": "2026-10-23",
+          "note": "Taste of Shinsegae 主力商品之一（明洞店、仁川機場店）"
+        }
+      ],
+      "image_url": "https://cdn.imweb.me/thumbnail/20260209/47a6f4fc2a814.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-08",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "金玉堂 羊羹",
+      "name_ko": "금옥당",
+      "brand": "金玉堂",
+      "where": "鐘路・仁寺洞一帶（首爾約 8 間）；新世界免稅店 Taste of Shinsegae 明洞店、仁川機場店",
+      "price_krw": null,
+      "price_note": "",
+      "why": "傳統羊羹點心，免稅店主力伴手禮，旅遊清單也推",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/15-seoul-must-buy-korean-souvenirs/",
+          "platform": "blog",
+          "date": "2026-09-16",
+          "note": "文中地址與 BRICKSAND 仁寺洞店相同，出發前再核對"
+        },
+        {
+          "url": "https://www.ziksir.com/news/articleView.html?idxno=150361",
+          "platform": "news",
+          "date": "2026-10-23",
+          "note": "寫作「금옥당 양갱」，Taste of Shinsegae 主力商品"
+        }
+      ],
+      "image_url": "https://assets.funliday.com/posts/wp-content/uploads/2025/04/29171623/17-5.png",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-09",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "BRICKSAND 磚塊費南雪",
+      "name_ko": "브릭샌드",
+      "brand": "BRICKSAND",
+      "where": "明洞店、首爾站店、江南站店、仁寺洞站店",
+      "price_krw": null,
+      "price_note": "",
+      "why": "磚塊造型費南雪，單顆包裝好分送，明洞與首爾站有店",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/15-seoul-must-buy-korean-souvenirs/",
+          "platform": "blog",
+          "date": "2026-09-16",
+          "note": "首爾 12 大伴手禮之一"
+        },
+        {
+          "url": "https://eastweek.stheadline.com/fun/20816/2026%E9%9F%93%E5%9C%8B%E6%89%8B%E4%BF%A1%E6%8E%A8%E4%BB%8B8%E5%AE%B6%E9%A6%96%E7%88%BE%E5%BF%85%E8%B2%B7%E4%BC%B4%E6%89%8B%E7%A6%AE%E6%98%8E%E6%98%9F%E5%90%8C%E6%AC%BE%E7%94%9C%E5%93%81%E9%AB%98%E8%B3%AA%E6%84%9F%E6%B2%99%E9%BE%8D%E9%A6%99%E6%B0%9B",
+          "platform": "blog",
+          "date": "2026-08-11",
+          "note": "香港東周刊；明洞店位置（明洞8街8-10 1樓）、推薦原味磚與焦糖巧克力磚"
+        }
+      ],
+      "image_url": "https://assets.funliday.com/posts/wp-content/uploads/2025/04/29171541/13-9.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-10",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "Milky Shop 焦糖奶油夾心餅乾",
+      "name_ko": "",
+      "brand": "Milky Shop",
+      "where": "聖水洞（城東區演武場街 9-1 1 樓）",
+      "price_krw": null,
+      "price_note": "",
+      "why": "聖水洞奶油夾心餅乾，每日限量，常被列進首爾伴手禮",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/15-seoul-must-buy-korean-souvenirs/",
+          "platform": "blog",
+          "date": "2026-09-16",
+          "note": "稱熱銷快速售完；12:00–20:00"
+        },
+        {
+          "url": "https://eastweek.stheadline.com/fun/20816/2026%E9%9F%93%E5%9C%8B%E6%89%8B%E4%BF%A1%E6%8E%A8%E4%BB%8B8%E5%AE%B6%E9%A6%96%E7%88%BE%E5%BF%85%E8%B2%B7%E4%BC%B4%E6%89%8B%E7%A6%AE%E6%98%8E%E6%98%9F%E5%90%8C%E6%AC%BE%E7%94%9C%E5%93%81%E9%AB%98%E8%B3%AA%E6%84%9F%E6%B2%99%E9%BE%8D%E9%A6%99%E6%B0%9B",
+          "platform": "blog",
+          "date": "2026-08-11",
+          "note": "香港東周刊；每日限量"
+        }
+      ],
+      "image_url": "https://assets.funliday.com/posts/wp-content/uploads/2025/04/29171507/10-8.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-11",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "Olive Young Delight Project 貝果脆片／迷你可頌脆片",
+      "name_ko": "딜라이트 프로젝트 베이글칩",
+      "brand": "Olive Young Delight Project",
+      "where": "Olive Young（市區門市；仁川機場 T1／T2 B1F 也有）",
+      "price_krw": null,
+      "price_note": "",
+      "why": "Olive Young 自有健康零食，貝果脆片與新出可頌脆片最熱",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/2026-korea-oliveyoung/",
+          "platform": "blog",
+          "date": "2026-09-14",
+          "note": "60 款清單第 1 項「迷你可頌脆片」標新品爆紅；10/01 更新"
+        },
+        {
+          "url": "https://bobbytravel.tw/korea-souvenirs/",
+          "platform": "blog",
+          "date": "2026-10-18",
+          "note": "「Delight project貝果餅乾 蒜味 Olive Young熱銷」"
+        },
+        {
+          "url": "https://www.funliday.com/posts/incheon-seoul-mustbuy/",
+          "platform": "blog",
+          "date": "2026-09-14",
+          "note": "機場必買第 1 項"
+        }
+      ],
+      "image_url": "https://assets.funliday.com/posts/wp-content/uploads/2025/10/12162454/%E5%A4%A7%E8%92%9C%E5%A5%B6%E6%B2%B9%E8%B2%9D%E6%9E%9C%E8%84%86%E7%89%87.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-12",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "Sand 100 草莓夾心餅乾（XOCOSILOK）",
+      "name_ko": "쇼코실록",
+      "brand": "XOCOSILOK 쇼코실록",
+      "where": "仁川機場 T1／T2 食品免稅店（出境後才買得到）",
+      "price_krw": null,
+      "price_note": "免稅店部分標美元價",
+      "why": "草莓夾心餅乾，社群討論度高，仁川機場免稅店買得到",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/incheon-seoul-mustbuy/",
+          "platform": "blog",
+          "date": "2026-09-14",
+          "note": "仁川機場必買 10 選之一，11/01 更新"
+        },
+        {
+          "url": "https://www.funliday.com/posts/15-seoul-must-buy-korean-souvenirs/",
+          "platform": "blog",
+          "date": "2026-09-16",
+          "note": "同站；另有濃巧克力、提拉米蘇口味。窗內只有 Funliday 一站"
+        }
+      ],
+      "image_url": "https://assets.funliday.com/posts/wp-content/uploads/2025/05/08151458/%E6%88%AA%E5%9C%96-2025-04-22-%E5%87%8C%E6%99%A81.13.06-600x576-1.png",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-13",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "巴黎貝甜「仁川你好」奶油夾心餅乾（機場限定）",
+      "name_ko": "인천안녕",
+      "brand": "Paris Baguette",
+      "where": "仁川機場 T1 3F（出境前 G 櫃檯、30／118 號登機口）、T2 3F",
+      "price_krw": null,
+      "price_note": "",
+      "why": "只在仁川機場賣的奶油夾心餅乾，出境前順手買",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/incheon-seoul-mustbuy/",
+          "platform": "blog",
+          "date": "2026-09-14",
+          "note": "機場限定；11/01 更新"
+        },
+        {
+          "url": "https://www.funliday.com/posts/15-seoul-must-buy-korean-souvenirs/",
+          "platform": "blog",
+          "date": "2026-09-16",
+          "note": "同站，首爾 12 大伴手禮第 1 項。窗內只有 Funliday 一站"
+        }
+      ],
+      "image_url": "https://assets.funliday.com/posts/wp-content/uploads/2025/05/08153430/paris.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-14",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "Olive Young 蜂蜜藥果（小包裝）",
+      "name_ko": "딜라이트 프로젝트 벌꿀약과",
+      "brand": "Olive Young Delight Project",
+      "where": "Olive Young；仁川機場 T1／T2 B1F",
+      "price_krw": null,
+      "price_note": "",
+      "why": "蜂蜜藥果小包裝，Olive Young 買得到，新出雪花口味",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/2026-korea-oliveyoung/",
+          "platform": "blog",
+          "date": "2026-09-14",
+          "note": "60 款清單第 35 項，標新「snow」口味"
+        },
+        {
+          "url": "https://www.funliday.com/posts/incheon-seoul-mustbuy/",
+          "platform": "blog",
+          "date": "2026-09-14",
+          "note": "機場必買第 1 項「傳統蜂蜜藥果」；窗內只有 Funliday 一站，韓文名取自 CJ 舊稿（2023）"
+        }
+      ],
+      "image_url": "https://assets.funliday.com/posts/wp-content/uploads/2025/03/26173626/5-3.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-15",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "無印良品韓國限定 迷你藥果",
+      "name_ko": "",
+      "brand": "無印良品 Muji Korea",
+      "where": "韓國無印良品門市",
+      "price_krw": 4900,
+      "price_note": "同頁：即食白菜泡菜 2,900、麵茶拿鐵 4,900",
+      "why": "韓國限定的迷你藥果與即食泡菜，單價不到 5,000 韓元",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/mujikorea-mustbuy/",
+          "platform": "blog",
+          "date": "2026-09-09",
+          "note": "9/22 更新；頁內有幾處仍寫 2025，價格以現場為準"
+        }
+      ],
+      "image_url": "https://assets.funliday.com/posts/wp-content/uploads/2025/06/10112152/%E8%BF%B7%E4%BD%A0%E8%97%A5%E6%9E%9C.png",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-16",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "풍심당（Pungsimdang）首爾點心米餅",
+      "name_ko": "풍심당 서울간식 라이스칩",
+      "brand": "풍심당 × 首爾市",
+      "where": "Seoul My Soul 商店（6 間）、DDP 設計商店",
+      "price_krw": 6400,
+      "price_note": "一盒 5 包 6,400（6 月新聞價，窗外）",
+      "why": "首爾市官方聯名米餅，包裝有首爾意象，賣得穩定",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.fnnews.com/news/202609231603048080",
+          "platform": "news",
+          "date": "2026-09-23",
+          "note": "寫作「풍심당 서울간식 라이스칩 4종 선물세트」銷售良好"
+        },
+        {
+          "url": "https://www.heraldk.com/article/2026060514150071489",
+          "platform": "news",
+          "date": "2026-06-05",
+          "note": "窗外，僅用來取價格與販售點"
+        }
+      ],
+      "image_url": "https://geistkorea1.cdn-nhncommerce.com/data/editor/goods/2026%20BRAND/poongsimdang/GIFT%20SET/thumbnail-re.png",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-17",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "Isaac Toast 吐司醬",
+      "name_ko": "이삭토스트 소스",
+      "brand": "Isaac Toast",
+      "where": "新世界免稅店 Taste of Shinsegae 明洞店、仁川機場店",
+      "price_krw": null,
+      "price_note": "",
+      "why": "連鎖吐司店醬料變伴手禮，新世界免稅店主力商品之一",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.ziksir.com/news/articleView.html?idxno=150361",
+          "platform": "news",
+          "date": "2026-10-23",
+          "note": "與 만나당 藥果、금옥당 羊羹並列主力商品；窗內只有這一站"
+        }
+      ],
+      "image_url": "https://image.fnnews.com/resource/media/image/2026/06/26/202606261448263786_l.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-souvenir-18",
+      "group": "souvenir",
+      "sub": "伴手禮・點心",
+      "name_zh": "Jangin Hangwa（장인한과）迷你藥果（emart24 獨家）",
+      "name_ko": "장인한과 미니약과",
+      "brand": "장인한과",
+      "where": "emart24（迷你藥果獨家）；首爾林・聖水一帶店",
+      "price_krw": null,
+      "price_note": "",
+      "why": "排隊藥果店的迷你版，便利商店買得到，好帶好分",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://news.bizwatch.co.kr/article/consumer/2026/09/21/0032",
+          "platform": "news",
+          "date": "2026-09-22",
+          "note": "못난이 약과／삼각이 약과 5–8 月在首爾林、聖水店麵包類前兩名；窗內只有這一站"
+        }
+      ],
+      "image_url": "https://www.youthdaily.co.kr/data/photos/20260937/art_17889106192502_a02fa4.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-fashion-01",
+      "group": "fashion",
+      "sub": "包包",
+      "name_zh": "Salomon Trailblazer 背包（10／20／30L）",
+      "name_ko": "살로몬 트레일블레이저 10/20/30",
+      "brand": "살로몬 (Salomon)",
+      "where": "Musinsa Store／Musinsa Kicks（Salomon 專門店未確認）",
+      "price_krw": null,
+      "price_note": "價格查不到",
+      "why": "8月 Musinsa 包款週榜第2，前12名有 8 個是背包",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.musinsa.com/content/1534434003934785068",
+          "platform": "Musinsa",
+          "date": "2026-08-14",
+          "note": "8/4–8/10 包款銷售榜第2名；非韓國品牌"
+        },
+        {
+          "url": "https://www.koreajoongangdaily.com/business/kkicksnbspforeign-tourists-flock-to-seoul-shoe-stores-for-deals-and-rare-releases/12841949",
+          "platform": "news",
+          "date": "2026-08-28",
+          "note": "僅提到 Salomon 為外國客愛買的品牌（鞋類），未提背包"
+        }
+      ],
+      "image_url": "https://image.msscdn.net/images/goods_img/20250530/5160043/5160043_17540258682523_500.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-fashion-02",
+      "group": "fashion",
+      "sub": "包包",
+      "name_zh": "ADER ERROR Prato 皮革包（26FW 新版）",
+      "name_ko": "",
+      "brand": "아더에러 (ADER ERROR)",
+      "where": "ADER ERROR 新沙 Space 1F（도산대로11길 31）",
+      "price_krw": null,
+      "price_note": "價格查不到",
+      "why": "經典 Prato 包 26FW 換新，有肩背與托特兩款",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.khan.co.kr/article/202609071100018",
+          "platform": "news",
+          "date": "2026-09-07",
+          "note": "Prato 2022 年首發，26FW 版為皮革肩背／斜背包與皮革托特；單一來源（PAP 另提黑色肩背包但未點名 Prato）"
+        }
+      ],
+      "image_url": "https://d31flwjaqugbgy.cloudfront.net/s3-cloud-bucket-ader-user/pcs/BP01FWBA0601BK/BP01FWBA0601BK_P_1.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-fashion-03",
+      "group": "fashion",
+      "sub": "衣服",
+      "name_zh": "Musinsa Standard 輕量連帽羽絨外套（City Leisure）",
+      "name_ko": "[시티 레저] 후디드 라이트 다운 재킷",
+      "brand": "무신사 스탠다드 (MUSINSA STANDARD)",
+      "where": "Musinsa Standard 明洞中央店／聖水／弘大／江南",
+      "price_krw": null,
+      "price_note": "價格查不到；10/23–11/1 的 FW 超級特賣已結束，現價以店內為準",
+      "why": "品牌銷量榜第一，輕量羽絨正好應付入冬換季",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.musinsa.com/content/1554016118313228568?contentCategoryCode=001001",
+          "platform": "Musinsa",
+          "date": "2026-10-08",
+          "note": "9月月榜：Musinsa Standard 第1，話題單品為此款（另有女版 우먼즈 시어 후디드 라이트 다운 재킷，非本項）"
+        },
+        {
+          "url": "https://www.apparelnews.co.kr/news/news_view/?cat=CAT330&idx=228297",
+          "platform": "news",
+          "date": "2026-10-18",
+          "note": "榜單基準日 10/11：外套類只有 Musinsa Standard 輕量羽絨與 미쏘 短大衣上榜"
+        },
+        {
+          "url": "https://zdnet.co.kr/view/?no=20261023094857",
+          "platform": "news",
+          "date": "2026-10-23",
+          "note": "特賣主打品含 City Leisure Hooded All-Round Padding Jacket；全國 44 間店"
+        },
+        {
+          "url": "https://www.musinsa.com/content/1534814210912317047",
+          "platform": "Musinsa",
+          "date": "2026-08-21",
+          "note": "8/11–8/18 外套銷售榜第4名（후디드 라이트 다운 재킷）"
+        }
+      ],
+      "image_url": "https://image.msscdn.net/images/goods_img/20240822/4356794/4356794_17890558965193_500.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-fashion-04",
+      "group": "fashion",
+      "sub": "衣服",
+      "name_zh": "ADER ERROR 26FW「Time After Time」（刺繡羽絨外套、襯衫、針織）",
+      "name_ko": "아더에러 26FW Time After Time",
+      "brand": "아더에러 (ADER ERROR)",
+      "where": "ADER ERROR 新沙 Space 1F（도산대로11길 31）；聖水 Space",
+      "price_krw": null,
+      "price_note": "三篇來源皆未列價格（Seoul Off Script 只說中高價位）",
+      "why": "變友碩代言的 FW 新系列，9/10 起韓國門市開賣、男女皆可穿",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.khan.co.kr/article/202609071100018",
+          "platform": "news",
+          "date": "2026-09-07",
+          "note": "9/9 線上、9/10 韓國門市上架；新沙 Space 1F 快閃區；含 Prato 皮革包 26FW"
+        },
+        {
+          "url": "https://www.pap-magazine.com/article/byeon-wooseok-adererror-fw26-collection-pap-try-on",
+          "platform": "magazine",
+          "date": "2026-09-08",
+          "note": "試穿陶瓷刺繡黑色羽絨外套；另有藍襯衫、格紋襯衫、針織與黑色肩背包；新沙 Space 1F 地址"
+        },
+        {
+          "url": "https://www.seouloffscript.com/article/korean-streetwear-sneakers",
+          "platform": "blog",
+          "date": "2026-09",
+          "note": "只標 Last verified Sep 2026；稱 ADER Error 為無性別設計，聖水有店"
+        }
+      ],
+      "image_url": "https://d31flwjaqugbgy.cloudfront.net/s3-cloud-bucket-ader-user/pcs/BP01FWJK1401BK/BP01FWJK1401BK_Z_1.jpg",
+      "image_kind": "brand"
+    },
+    {
+      "id": "tr-fashion-05",
+      "group": "fashion",
+      "sub": "衣服",
+      "name_zh": "thisisneverthat 街頭服飾（聯名款）",
+      "name_ko": "디스이즈네버댓",
+      "brand": "thisisneverthat",
+      "where": "弘大旗艦店（잔다리로 32，1F 101 號）",
+      "price_krw": null,
+      "price_note": "價格查不到",
+      "why": "弘大必逛街頭牌，與 New Balance、Dickies 聯名常見",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/seoul-hongdae-shopping-brand-top-10/",
+          "platform": "blog",
+          "date": "2026-09-10",
+          "note": "Funliday「男生女生都可以買」弘大 10 間之一；頁面另標更新日 2026-09-22"
+        },
+        {
+          "url": "https://www.seouloffscript.com/article/korean-streetwear-sneakers",
+          "platform": "blog",
+          "date": "2026-09",
+          "note": "只標 Last verified Sep 2026；列為首爾街頭服飾代表（90 年代至 2000 年代初美式街頭風）"
+        }
+      ],
+      "image_url": "https://image.msscdn.net/images/goods_img/20261026/7616948/7616948_17930828276478_500.jpg",
+      "image_kind": "brand"
+    },
+    {
+      "id": "tr-fashion-06",
+      "group": "fashion",
+      "sub": "衣服",
+      "name_zh": "Covernat 校園休閒連帽衫／帽子／包",
+      "name_ko": "커버낫",
+      "brand": "COVERNAT",
+      "where": "Covernat 弘大旗艦店（잔다리로 24，1F 與 B1）；聖水也有店",
+      "price_krw": null,
+      "price_note": "價格查不到",
+      "why": "弘大校園風基本款主力牌，帽子與包也一起買",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/seoul-hongdae-shopping-brand-top-10/",
+          "platform": "blog",
+          "date": "2026-09-10",
+          "note": "弘大旗艦店地址；校園休閒、帽子與包；頁面標更新日 2026-09-22"
+        },
+        {
+          "url": "https://www.seouloffscript.com/article/korean-streetwear-sneakers",
+          "platform": "blog",
+          "date": "2026-09",
+          "note": "只標 Last verified Sep 2026；稱 Covernat 走工裝風，聖水可找到"
+        }
+      ],
+      "image_url": "https://image.msscdn.net/images/goods_img/20260915/7335714/7335714_17897057637492_500.jpg",
+      "image_kind": "brand"
+    },
+    {
+      "id": "tr-fashion-07",
+      "group": "fashion",
+      "sub": "衣服",
+      "name_zh": "HAZZYS 明洞旗艦店 Space H Seoul",
+      "name_ko": "헤지스 스페이스H 서울",
+      "brand": "헤지스 (HAZZYS / LF)",
+      "where": "HAZZYS Space H Seoul（明洞）；樂天免稅店明洞本店專櫃",
+      "price_krw": null,
+      "price_note": "兩篇報導都沒列出具體商品與價格；來源未說明男女裝占比",
+      "why": "9月下旬外國客占七成，其中約七成是中國與台灣客",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.fnnews.com/news/202610020922303763",
+          "platform": "news",
+          "date": "2026-10-02",
+          "note": "9/21–9/30 外國客營收年增 40%；未點名單品"
+        },
+        {
+          "url": "https://biz.heraldcorp.com/article/10891495",
+          "platform": "news",
+          "date": "2026-10-02",
+          "note": "確認 Space H Seoul 與樂天免稅店明洞本店；未點名單品"
+        }
+      ],
+      "image_url": "https://image.fnnews.com/resource/media/image/2026/10/02/202610020924492117_e.jpg",
+      "image_kind": "store"
+    },
+    {
+      "id": "tr-fashion-08",
+      "group": "fashion",
+      "sub": "衣服",
+      "name_zh": "Musinsa Standard 羊毛針織（Victoria Wool 系列）",
+      "name_ko": "[빅토리아 울] 미니멀 리브드 크롭 니트",
+      "brand": "무신사 스탠다드 (MUSINSA STANDARD)",
+      "where": "Musinsa Standard 明洞中央店／聖水／弘大／江南",
+      "price_krw": null,
+      "price_note": "價格查不到",
+      "why": "8月品牌榜第一的話題單品，入秋針織需求暴增",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.musinsa.com/content/1544171479741930124",
+          "platform": "Musinsa",
+          "date": "2026-09-07",
+          "note": "8月月榜 Musinsa Standard 第1，話題單品為此針織（女版為 우먼즈 크루 넥 니트，非本項；此款名稱含「크롭」，版型請現場確認）"
+        },
+        {
+          "url": "https://www.sweetlazy.com/2026/09/blog-post_25.html",
+          "platform": "blog",
+          "date": "2026-09-25",
+          "note": "只有搜尋結果摘要可見（頁面抓取回 404）：轉述 Musinsa 數據，9/1–9/10 針織與毛衣交易額年增 95%；日期取自網址路徑"
+        }
+      ],
+      "image_url": "https://image.msscdn.net/images/goods_img/20260626/6736315/6736315_17876236252341_500.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-fashion-09",
+      "group": "fashion",
+      "sub": "衣服",
+      "name_zh": "LMC 街頭服飾（以男裝與中性款為主）",
+      "name_ko": "",
+      "brand": "LMC",
+      "where": "LMC 弘大旗艦店（잔다리로 27；合井站 3 號出口步行約 7 分鐘）",
+      "price_krw": null,
+      "price_note": "價格查不到",
+      "why": "弘大男裝與中性街頭牌的招牌店，當季服飾掛滿整間",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/seoul-hongdae-shopping-brand-top-10/",
+          "platform": "blog",
+          "date": "2026-09-10",
+          "note": "單一來源；頁面標更新日 2026-09-22"
+        }
+      ],
+      "image_url": "https://image.msscdn.net/images/goods_img/20251002/5566037/5566037_17603427928329_500.jpg",
+      "image_kind": "brand"
+    },
+    {
+      "id": "tr-fashion-10",
+      "group": "fashion",
+      "sub": "配件",
+      "name_zh": "emis Logo 棒球帽／帆布包",
+      "name_ko": "이미스",
+      "brand": "이미스 (emis)",
+      "where": "emis 聖水旗艦店（서울숲6길 10）、明洞旗艦店（明洞2街 32-5）",
+      "price_krw": null,
+      "price_note": "價格查不到",
+      "why": "帽子是招牌，8月又有豹紋燈芯絨包上 Musinsa 話題榜",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.elle.com.hk/fashion/south-korea-seoul-seongsu-shopping",
+          "platform": "media",
+          "date": "2026-09-18",
+          "note": "聖水店地址，Logo 帽"
+        },
+        {
+          "url": "https://www.elle.com.hk/fashion/myeong-dong-shopping-apr-update",
+          "platform": "media",
+          "date": "2026-09-18",
+          "note": "明洞店地址；頁面日期不確定（網址含 apr-update）；同為 Elle HK，非獨立來源"
+        },
+        {
+          "url": "https://www.harpersbazaar.co.kr/article/1907726",
+          "platform": "magazine",
+          "date": "2026-08-08",
+          "note": "Musinsa 品牌推薦：이미스 豹紋燈芯絨環保包與三折傘"
+        },
+        {
+          "url": "https://www.seouloffscript.com/article/korean-streetwear-sneakers",
+          "platform": "blog",
+          "date": "2026-09",
+          "note": "只標 Last verified Sep 2026；稱 emis 以帽子與配件為主，聖水可找到"
+        }
+      ],
+      "image_url": "https://image.msscdn.net/images/goods_img/20240927/4473933/4473933_17906591111293_500.jpg",
+      "image_kind": "brand"
+    },
+    {
+      "id": "tr-fashion-11",
+      "group": "fashion",
+      "sub": "配件",
+      "name_zh": "Gentle Monster 太陽眼鏡",
+      "name_ko": "",
+      "brand": "Gentle Monster",
+      "where": "Gentle Monster 弘大店（독막로7길 54）",
+      "price_krw": null,
+      "price_note": "Funliday 稱退稅後約為原價六成，未列韓元價",
+      "why": "弘大旗艦店可退稅，墨鏡價差被當成購物亮點",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/seoul-hongdae-shopping-brand-top-10/",
+          "platform": "blog",
+          "date": "2026-09-10",
+          "note": "單一來源；頁面標更新日 2026-09-22"
+        }
+      ],
+      "image_url": "https://gm-prd-resource.gentlemonster.com/catalog/product/0P0M4JBD5F0JC/e5a9056f-ebd8-4aa2-92e2-67e2c76c4ad7/11004969_FRONT.jpg",
+      "image_kind": "brand"
+    },
+    {
+      "id": "tr-fashion-12",
+      "group": "fashion",
+      "sub": "配件",
+      "name_zh": "Blue Elephant 平價墨鏡／眼鏡",
+      "name_ko": "",
+      "brand": "Blue Elephant",
+      "where": "Blue Elephant 聖水旗艦店；明洞也有店（可開放試戴）",
+      "price_krw": null,
+      "price_note": "Elle HK 標示約 ₩40,000–60,000（區間，非單一價）",
+      "why": "聖水與明洞都有店，一副不到六萬韓元的平價墨鏡",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.elle.com.hk/fashion/south-korea-seoul-seongsu-shopping",
+          "platform": "media",
+          "date": "2026-09-18",
+          "note": "價位區間與聖水旗艦"
+        },
+        {
+          "url": "https://www.elle.com.hk/fashion/myeong-dong-shopping-apr-update",
+          "platform": "media",
+          "date": "2026-09-18",
+          "note": "明洞店可開放試戴；頁面日期不確定；同為 Elle HK，非獨立來源"
+        }
+      ],
+      "image_url": "https://image.msscdn.net/images/goods_img/20260929/7415113/7415113_17906510432187_500.jpg",
+      "image_kind": "brand"
+    },
+    {
+      "id": "tr-fashion-13",
+      "group": "fashion",
+      "sub": "配件",
+      "name_zh": "EBBETS FIELD（EBFD）棒球帽",
+      "name_ko": "",
+      "brand": "EBBETS FIELD (EBFD)",
+      "where": "EBBETS FIELD 弘大店（독막로7길 27）",
+      "price_krw": null,
+      "price_note": "價格查不到；Funliday 稱偶有明顯折扣",
+      "why": "弘大美式運動休閒牌，棒球帽與運動風單品是主力",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/seoul-hongdae-shopping-brand-top-10/",
+          "platform": "blog",
+          "date": "2026-09-10",
+          "note": "單一來源；頁面標更新日 2026-09-22"
+        }
+      ],
+      "image_url": "https://assets.funliday.com/posts/wp-content/uploads/2023/06/08151503/337187850_1330317004193024_7434677260806264571_n.jpg",
+      "image_kind": "store"
+    },
+    {
+      "id": "tr-fashion-14",
+      "group": "fashion",
+      "sub": "鞋",
+      "name_zh": "Musinsa Kicks 球鞋專門店（聖水／弘大）",
+      "name_ko": "무신사 킥스",
+      "brand": "무신사 (MUSINSA)",
+      "where": "Musinsa Kicks 聖水（3 層）、Musinsa Kicks 弘大；現場退稅門檻 ₩15,000",
+      "price_krw": null,
+      "price_note": "JoongAng 引業界說法：遊客多買 1–2 雙，每雙約 ₩100,000–200,000",
+      "why": "外國客占七成，Salomon、Nike、Adidas、Asics 最搶手",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.koreajoongangdaily.com/business/kkicksnbspforeign-tourists-flock-to-seoul-shoe-stores-for-deals-and-rare-releases/12841949",
+          "platform": "news",
+          "date": "2026-08-28",
+          "note": "7月外國客約占 70%，聖水累計 69%、弘大 61%；Salomon、Nike、Adidas、Asics 受歡迎"
+        },
+        {
+          "url": "https://www.newstomato.com/readnews.aspx?no=1312170",
+          "platform": "news",
+          "date": "2026-09-01",
+          "note": "上半年外國客占比：Kicks 聖水 67.6%、Kicks 弘大 59.3%"
+        },
+        {
+          "url": "https://www.elle.com.hk/fashion/south-korea-seoul-seongsu-shopping",
+          "platform": "media",
+          "date": "2026-09-18",
+          "note": "Kicks 3 層旗艦，2026-03-19 開幕，從跑鞋到皮鞋；未附地址"
+        }
+      ],
+      "image_url": "https://image.msscdn.net/thumbnails/cms/v2/content/file_1773975121843_442135600_rnlqct.jpg?w=1080",
+      "image_kind": "store"
+    },
+    {
+      "id": "tr-fashion-15",
+      "group": "fashion",
+      "sub": "鞋",
+      "name_zh": "Nike Zoom Skyline 11 男款運動鞋",
+      "name_ko": "나이키 줌 스카이론 11 M",
+      "brand": "나이키 (Nike)",
+      "where": "Musinsa Kicks 聖水／弘大、Nike 門市（此型號現貨未確認）",
+      "price_krw": null,
+      "price_note": "價格查不到",
+      "why": "8月 Musinsa 品牌榜 Nike 的話題單品，男款上榜",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.musinsa.com/content/1544171479741930124",
+          "platform": "Musinsa",
+          "date": "2026-09-07",
+          "note": "8月月榜 Nike 第4，話題單品為此款；單一來源（非韓國品牌）"
+        }
+      ],
+      "image_url": "https://image.msscdn.net/images/goods_img/20260619/6702477/6702477_17829843979588_500.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-01",
+      "group": "beauty",
+      "sub": "男士底妝",
+      "name_zh": "Obje 自然遮瑕素顏霜 Natural Cover Lotion（50g）",
+      "name_ko": "오브제 내추럴 커버 로션 50g 단품/기획(+미니어처 10ml)",
+      "brand": "오브제 (OBgE)",
+      "where": "Olive Young（各門市）",
+      "price_krw": 27900,
+      "price_note": "OY 10/26–11/1 週榜標價（附 10ml 迷你瓶）；含防曬",
+      "why": "男士底妝榜首，一條代替粉底，藝人推薦的素顏霜",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/men-makeup",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 男士彩妝第1名，標示第1名遮瑕乳"
+        },
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/42/men-makeup",
+          "platform": "OY 榜單彙整",
+          "date": "2026-10-18",
+          "note": "週榜 10/12–18 第2名"
+        },
+        {
+          "url": "https://www.marieclaire.com.tw/beauty/skin-care/95702",
+          "platform": "media",
+          "date": "2026-09-03",
+          "note": "「MEN'S EDIT」男士專區推薦（自然遮瑕素顏霜）"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-olive-young-men-must-buy/",
+          "platform": "blog",
+          "date": "2026-10-01",
+          "note": "清單之一（OBGE 遮瑕防曬 BB 乳液）"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0020/A00000020497522ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-02",
+      "group": "beauty",
+      "sub": "男士底妝",
+      "name_zh": "B.READY 男士遮瑕潤色乳 True Tone Cover Lotion 24H（另有藍色粉底、藍色氣墊）",
+      "name_ko": "비레디 트루톤 커버로션 24H 40ml",
+      "brand": "비레디 (B.READY)",
+      "where": "Olive Young（各門市）",
+      "price_krw": 27900,
+      "price_note": "OY 10/26–11/1 週榜標價（附 10ml 加贈）；9月月榜標價 ₩26,900",
+      "why": "男士底妝榜前段常客，粉底與氣墊也有藍色男款",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/men-makeup",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 男士彩妝第4名；Blue Foundation（標示男生粉底第1）第10名、Blue 氣墊第7名"
+        },
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/42/men-makeup",
+          "platform": "OY 榜單彙整",
+          "date": "2026-10-18",
+          "note": "週榜 10/12–18 第1名"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-olive-young-men-must-buy/",
+          "platform": "blog",
+          "date": "2026-10-01",
+          "note": "清單第1項（B.READY 男士防曬粉底乳液）與第23項（藍色氣墊）"
+        },
+        {
+          "url": "https://www.marieclaire.com.tw/beauty/skin-care/95702",
+          "platform": "media",
+          "date": "2026-09-03",
+          "note": "「MEN'S EDIT」推薦藍色氣墊與防汗防曬乳"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0026/A00000026799505ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-03",
+      "group": "beauty",
+      "sub": "身體",
+      "name_zh": "Obje 變色護唇膏（男生護唇第一名）",
+      "name_ko": "오브제 무드체인지 립밤 3g 3종 택1",
+      "brand": "오브제 (OBgE)",
+      "where": "Olive Young（各門市）",
+      "price_krw": 10700,
+      "price_note": "OY 10/26–11/1 週榜標價；10/12–18 週榜標價 ₩10,200",
+      "why": "男生護唇膏榜首，自然潤色，藝人推薦帶動買氣",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/men-makeup",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 男士彩妝第3名，標示男生護唇第1"
+        },
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/42/men-makeup",
+          "platform": "OY 榜單彙整",
+          "date": "2026-10-18",
+          "note": "週榜 10/12–18 第5名"
+        },
+        {
+          "url": "https://www.marieclaire.com.tw/beauty/skin-care/95702",
+          "platform": "media",
+          "date": "2026-09-03",
+          "note": "「MEN'S EDIT」男士專區推薦第1項（心情按鈕護唇膏）"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-olive-young-men-must-buy/",
+          "platform": "blog",
+          "date": "2026-10-01",
+          "note": "清單之一（OBGE 變色潤唇膏）"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0016/A00000016100716ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-04",
+      "group": "beauty",
+      "sub": "身體",
+      "name_zh": "FORMENT 去背痘香氛沐浴乳 500ml（Cotton Hug／Cotton Baby）",
+      "name_ko": "포맨트 아크네 퍼퓸샤워 500ml",
+      "brand": "포맨트 (FORMENT)",
+      "where": "Olive Young（各門市）",
+      "price_krw": 19000,
+      "price_note": "OY 10/26–11/1 週榜標價（兩種香味擇一）",
+      "why": "身體清潔榜首，主打背部痘痘，棉花香味",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/men-bodycare",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 男士身體保養第1名（另有一款 Cotton Hug 沐浴乳第4名）；單一來源"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0026/A00000026134921ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-05",
+      "group": "beauty",
+      "sub": "防曬",
+      "name_zh": "Obje 控油防曬棒 Pore Zero",
+      "name_ko": "오브제 포어 제로 오일 컨트롤 선스틱 18g 단품/기획",
+      "brand": "오브제 (OBgE)",
+      "where": "Olive Young（各門市）",
+      "price_krw": 18900,
+      "price_note": "OY 10/26–11/1 週榜標價；9月月榜同為 ₩18,900",
+      "why": "防曬棒類第一名，男生補擦不黏手，可吸油",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/men-skincare",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 男士保養第6名，標示第1名吸油防曬棒"
+        },
+        {
+          "url": "https://beauticslab.com/marketing/monthly-rankings/2026/9",
+          "platform": "OY 榜單彙整",
+          "date": "2026-09-30",
+          "note": "2026年9月月榜防曬棒類第1名（Objet Pore Zero Sun Stick）；頁面只標期間"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-olive-young-men-must-buy/",
+          "platform": "blog",
+          "date": "2026-10-01",
+          "note": "清單之一（OBGE 控油防曬棒）"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023881609ko.png?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-06",
+      "group": "beauty",
+      "sub": "防曬",
+      "name_zh": "Round Lab 白樺樹保濕防曬",
+      "name_ko": "라운드랩 자작나무 수분 선크림 50ml",
+      "brand": "라운드랩 (Round Lab)",
+      "where": "Olive Young（各門市）",
+      "price_krw": 24500,
+      "price_note": "OY 10/26–11/1 週榜標價（50ml 1+1 組合）；9月月榜同價",
+      "why": "防曬榜常年前段，男女共用、清爽型，1+1 組合常見",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/sunscreen",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 防曬第2名（9月月榜為第1名）"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-oliveyoung-ranking/",
+          "platform": "blog",
+          "date": "2026-09-14",
+          "note": "防曬類第1名；頁面標更新日 2026-10-07"
+        },
+        {
+          "url": "https://www.marieclaire.com.tw/beauty/make-up/92599",
+          "platform": "media",
+          "date": "2026-09-07",
+          "note": "熱賣 TOP5"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0026/A00000026351008ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-07",
+      "group": "beauty",
+      "sub": "保養",
+      "name_zh": "IDEAL FOR MEN 男士全效合一乳液（Perfect All-in-One）",
+      "name_ko": "아이디얼포맨 퍼펙트 올인원 150ml",
+      "brand": "아이디얼포맨 (IDEAL FOR MEN)",
+      "where": "Olive Young（各門市，男士專區）",
+      "price_krw": 18900,
+      "price_note": "OY 10/26–11/1 週榜標價（單品／組合）；10/12–18 週榜同款標 ₩9,900，隨檔期變動",
+      "why": "男士保養榜連年第一，一瓶搞定化妝水加乳液",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/men-skincare",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 男士保養第2、第9、第12名，標示 7 年連續第1"
+        },
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/42/men-skincare",
+          "platform": "OY 榜單彙整",
+          "date": "2026-10-18",
+          "note": "週榜 10/12–18 第4名，標示 8 年連續第1"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-olive-young-men-must-buy/",
+          "platform": "blog",
+          "date": "2026-10-01",
+          "note": "男士保養 25 款清單之一（IDEAL 男士水乳精華三合一）"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-oliveyoung-ranking/",
+          "platform": "blog",
+          "date": "2026-09-14",
+          "note": "男士乳液類第1名（IDEAL FOR MEN 全效合一乳液）；頁面標更新日 2026-10-07"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022822875ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-08",
+      "group": "beauty",
+      "sub": "保養",
+      "name_zh": "Round Lab 男士 1025 獨島全效合一凝膠乳液",
+      "name_ko": "라운드랩 포 맨 1025 독도 올인원 젤로션 200ml+200ml",
+      "brand": "라운드랩 (Round Lab)",
+      "where": "Olive Young（各門市，男士專區）",
+      "price_krw": 33000,
+      "price_note": "OY 10/26–11/1 週榜標價（200ml 兩瓶組）；另有白樺樹水分乳液（포 맨 자작나무 수분 로션 200ml）₩17,900",
+      "why": "出油肌男生的清爽凝膠，兩瓶組比較划算",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/men-skincare",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 男士保養第10名；同品牌 포 맨 자작나무 수분 로션 第13名"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-olive-young-men-must-buy/",
+          "platform": "blog",
+          "date": "2026-10-01",
+          "note": "清單內 Round Lab 男士獨島系列有 3 項（化妝水、乳液、全效合一保濕乳）"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0019/A00000019773913ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-09",
+      "group": "beauty",
+      "sub": "保養",
+      "name_zh": "Dr.G 男士紅色舒緩全效合一乳液（Red Blemish For Men）",
+      "name_ko": "닥터지 레드 블레미쉬 포 맨 진정 올인원 150ml",
+      "brand": "닥터지 (Dr.G)",
+      "where": "Olive Young（各門市，男士專區）",
+      "price_krw": 24000,
+      "price_note": "OY 10/26–11/1 週榜標價（2 款，單品／贈品組合）",
+      "why": "刮鬍後與痘痘肌的舒緩乳液，週榜前十",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/men-skincare",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 男士保養第7名，標示刮鬍後與痘痘肌用"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-olive-young-men-must-buy/",
+          "platform": "blog",
+          "date": "2026-10-01",
+          "note": "清單之一（Dr.G 男士舒緩多效乳液）"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022378115ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-10",
+      "group": "beauty",
+      "sub": "洗面",
+      "name_zh": "Beplain 綠豆溫和洗面乳",
+      "name_ko": "비플레인 녹두 약산성 클렌징폼 160ml",
+      "brand": "비플레인 (Beplain)",
+      "where": "Olive Young（各門市）",
+      "price_krw": 18600,
+      "price_note": "OY 10/26–11/1 週榜標價（160ml＋40ml 組合）；9月月榜標價 ₩23,900",
+      "why": "洗面乳榜首，弱酸性、清毛孔，男女都買",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/cleansing-foam",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 洗面乳第1名，標示「國民洗面乳」"
+        },
+        {
+          "url": "https://www.cosmorning.com/news/article.html?no=53474",
+          "platform": "news",
+          "date": "2026-09-07",
+          "note": "OY 官網9/1 洗面瀏覽量第2名（160ml 雙入組）"
+        },
+        {
+          "url": "https://www.marieclaire.com.tw/beauty/make-up/92599",
+          "platform": "media",
+          "date": "2026-09-07",
+          "note": "熱賣 TOP10 綠豆潔面乳"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0018/A00000018747916ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-11",
+      "group": "beauty",
+      "sub": "洗面",
+      "name_zh": "innisfree 火山岩毛孔洗面乳",
+      "name_ko": "이니스프리 화산송이 바하 모공 클렌징폼 130g",
+      "brand": "이니스프리 (innisfree)",
+      "where": "Olive Young；innisfree 門市",
+      "price_krw": 12000,
+      "price_note": "OY 10/26–11/1 週榜標價（130g 雙入組）",
+      "why": "標示累計 5000 萬條的老牌，出油男生的清潔首選",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/men-skincare",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 男士保養榜第4名（標示 5000 萬個）"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-olive-young-men-must-buy/",
+          "platform": "blog",
+          "date": "2026-10-01",
+          "note": "清單之一（innisfree 火山岩毛孔潔面乳）"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023291378ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-12",
+      "group": "beauty",
+      "sub": "面膜",
+      "name_zh": "Mediheal 面膜 10+1 片組（Essential 系列）",
+      "name_ko": "메디힐 에센셜 마스크팩 10+1매 기획 7종 골라담기",
+      "brand": "메디힐 (Mediheal)",
+      "where": "Olive Young（各門市）",
+      "price_krw": 10000,
+      "price_note": "OY 10/26–11/1 週榜標價（10 片＋1 片，7 款擇一）",
+      "why": "面膜榜常勝軍，男女共用，10+1 片組合最划算",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/sheet-mask",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 面膜第1名"
+        },
+        {
+          "url": "https://www.cosmorning.com/news/article.html?no=53474",
+          "platform": "news",
+          "date": "2026-09-07",
+          "note": "OY 官網9/1 面膜瀏覽量前十中 Mediheal 占多席"
+        },
+        {
+          "url": "https://www.marieclaire.com.tw/beauty/make-up/92599",
+          "platform": "media",
+          "date": "2026-09-07",
+          "note": "熱賣 TOP1、TOP7 皆為 Mediheal 面膜"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A000000223414125ko.png?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-13",
+      "group": "beauty",
+      "sub": "面膜",
+      "name_zh": "Mediheal 鎮靜化妝棉片 Derma Toner Pad（100+100 片）",
+      "name_ko": "메디힐 더마 토너패드 100+100매 7종 골라담기",
+      "brand": "메디힐 (Mediheal)",
+      "where": "Olive Young（各門市）",
+      "price_krw": 28900,
+      "price_note": "OY 10/26–11/1 週榜標價（200 片，7 款擇一）",
+      "why": "棉片榜第一，也被點名放進男士專區必買清單",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/facial-pad",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 棉片類第1名，標示 10月 올영픽"
+        },
+        {
+          "url": "https://www.marieclaire.com.tw/beauty/skin-care/95702",
+          "platform": "media",
+          "date": "2026-09-03",
+          "note": "「MEN'S EDIT」男士專區 8 款推薦之一（積雪草棉片）；頁面標 2026/09/03 更新"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-oliveyoung-ranking/",
+          "platform": "blog",
+          "date": "2026-09-14",
+          "note": "棉片類第1名（Mediheal 積雪草痕跡修護棉片，與本款為同品牌不同系列）；頁面標更新日 2026-10-07"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0026/A000000267747245ko.png?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-14",
+      "group": "beauty",
+      "sub": "髮品",
+      "name_zh": "Dashu 男士造型系列（超強定型噴霧；另有髮蠟）",
+      "name_ko": "다슈 데일리 프리미엄 메가 홀드 슈퍼 스프레이 250ml",
+      "brand": "다슈 (Dashu)",
+      "where": "Olive Young（各門市）",
+      "price_krw": 15000,
+      "price_note": "OY 10/26–11/1 週榜標價（噴霧 250ml）；髮蠟價格查不到",
+      "why": "男士髮型定型牌，噴霧上週榜，髮蠟也被點名",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/hair-styling",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 造型類第6名（超強固定）"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-olive-young-men-must-buy/",
+          "platform": "blog",
+          "date": "2026-10-01",
+          "note": "清單內 DASHU 有男士髮蠟、打底蓬鬆水、捲度護髮乳、髮根蓬鬆夾 4 項（未寫韓文品名）"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0001/A00000001291017ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-15",
+      "group": "beauty",
+      "sub": "髮品",
+      "name_zh": "清美精 昆布洗髮精 500ml（頭皮護理）",
+      "name_ko": "청미정 다시마 샴푸 500ml",
+      "brand": "청미정",
+      "where": "Olive Young（各門市）",
+      "price_krw": 22700,
+      "price_note": "OY 10/26–11/1 週榜標價（單品／組合，附章魚造型刮痧板贈品）",
+      "why": "洗髮精榜首，10月 OY 精選的頭皮保養款",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/shampoo-conditioner",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 洗髮第1名，標示 10月 올영픽"
+        },
+        {
+          "url": "https://www.cosmorning.com/news/article.html?no=53474",
+          "platform": "news",
+          "date": "2026-09-07",
+          "note": "OY 官網9/1 護髮類瀏覽量第1名"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0021/A00000021326160ko.png?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-beauty-16",
+      "group": "beauty",
+      "sub": "髮品",
+      "name_zh": "LABO-H 頭皮強化洗髮精（脫髮症狀緩解）",
+      "name_ko": "라보에이치 두피강화샴푸 750ML+100ML [탈모증상완화]",
+      "brand": "라보에이치 (LABO-H)",
+      "where": "Olive Young（各門市）",
+      "price_krw": 25900,
+      "price_note": "OY 10/26–11/1 週榜標價（750ml＋100ml 組合）",
+      "why": "掉髮族洗髮精代表，週榜第二，10月 OY 精選",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/shampoo-conditioner",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 洗髮第2名，標示 10月 올영픽"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-oliveyoung-ranking/",
+          "platform": "blog",
+          "date": "2026-09-14",
+          "note": "洗髮類第1名（LABO-H 頭皮強化脫髮緩解洗髮精）；頁面標更新日 2026-10-07"
+        },
+        {
+          "url": "https://www.cosmorning.com/news/article.html?no=53422",
+          "platform": "news",
+          "date": "2026-08-31",
+          "note": "報導點名 Lab H 頭皮滾珠為外國客熱門"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0014/A00000014950190ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-perfume-01",
+      "group": "perfume",
+      "sub": "居家香氛",
+      "name_zh": "Hetras 大容量擴香 510ml 2 入組",
+      "name_ko": "헤트라스 프리미엄 대용량 디퓨저 510ml 2개입 기획세트",
+      "brand": "헤트라스 (Hetras)",
+      "where": "Olive Young（單獨企劃組）；Hetras 聖水店（擴香、織品噴霧）",
+      "price_krw": 18500,
+      "price_note": "OY 10/26–11/1 週榜標價；9月月榜標價 ₩18,100",
+      "why": "標示 OY 擴香第一，大瓶兩入組價格友善",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/home-fragrance",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 居家香氛第10名；同榜固體除臭劑第2名標示為缺貨熱門款"
+        },
+        {
+          "url": "https://beauticslab.com/marketing/monthly-rankings/2026/9/home-fragrance",
+          "platform": "OY 榜單彙整",
+          "date": "2026-09-30",
+          "note": "2026年9月月榜第6名"
+        },
+        {
+          "url": "https://www.funliday.com/posts/seongsu/",
+          "platform": "blog",
+          "date": "2026-09-22",
+          "note": "聖水店主賣擴香、織品噴霧（頁面標發布 2026-07-10、更新 2026-09-22）"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0021/A00000021931014ko.png?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-perfume-02",
+      "group": "perfume",
+      "sub": "居家香氛",
+      "name_zh": "BiBiANG 小眾織品香水 100ml（Walnut Creek Green：綠葉、泥土）",
+      "name_ko": "비비앙 니치 섬유향수 100ml",
+      "brand": "비비앙 (BiBiANG)",
+      "where": "Olive Young；BiBiANG 聖水店（성동구 연무장7길 6）",
+      "price_krw": 15900,
+      "price_note": "OY 10/26–11/1 週榜標價；9月月榜標價 ₩14,700",
+      "why": "織品噴霧榜單前十，聖水也有同名專門店",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/44/home-fragrance",
+          "platform": "OY 榜單彙整",
+          "date": "2026-11-01",
+          "note": "週榜 10/26–11/1 居家香氛第7名（標示偶像推薦）"
+        },
+        {
+          "url": "https://beauticslab.com/marketing/monthly-rankings/2026/9/home-fragrance",
+          "platform": "OY 榜單彙整",
+          "date": "2026-09-30",
+          "note": "2026年9月月榜第5名"
+        },
+        {
+          "url": "https://www.funliday.com/posts/korea-perfume-brand/",
+          "platform": "blog",
+          "date": "2026-09-15",
+          "note": "品牌代表香 Walnut Creek Green（碎綠葉、泥土）；聖水店地址；頁面標更新日 2026-09-21"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0018/A00000018051550ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-perfume-03",
+      "group": "perfume",
+      "sub": "居家香氛",
+      "name_zh": "Knock 蠟燭、擴香與個人香水",
+      "name_ko": "노크",
+      "brand": "노크 (Knock)",
+      "where": "Knock 聖水店（성동구 연무장길 102）",
+      "price_krw": null,
+      "price_note": "價格查不到",
+      "why": "聖水香氛選物店之一，蠟燭擴香與香水一次逛",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/seongsu/",
+          "platform": "blog",
+          "date": "2026-09-22",
+          "note": "單一來源；頁面標發布 2026-07-10、更新 2026-09-22，以更新日計"
+        }
+      ]
+    },
+    {
+      "id": "tr-perfume-04",
+      "group": "perfume",
+      "sub": "香水",
+      "name_zh": "FORMENT Signature 香水「Cotton Hug」50ml",
+      "name_ko": "포맨트 시그니처 퍼퓸 코튼허그 50ml",
+      "brand": "포맨트 (FORMENT)",
+      "where": "Olive Young（各門市）",
+      "price_krw": 37000,
+      "price_note": "OY 10/19–25 週榜標價（單品／組合）；主香調來源未列",
+      "why": "OY 香水週榜前二常客，棉被皂感、價位親民",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/43/perfume",
+          "platform": "OY 榜單彙整",
+          "date": "2026-10-25",
+          "note": "週榜 10/19–10/25 香水第2名（Signature 系列第1、第5名亦為 FORMENT）"
+        },
+        {
+          "url": "https://beauticslab.com/marketing/monthly-rankings/2026/9/perfume",
+          "platform": "OY 榜單彙整",
+          "date": "2026-09-30",
+          "note": "2026年9月月榜 FORMENT 第1與第3名"
+        },
+        {
+          "url": "https://www.funliday.com/posts/2026-oliveyoung-ranking/",
+          "platform": "blog",
+          "date": "2026-09-14",
+          "note": "香水類第1名（FORMENT Cotton Hug 香水）；頁面標更新日 2026-10-07"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022167586ko.png?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-perfume-05",
+      "group": "perfume",
+      "sub": "香水",
+      "name_zh": "Tamburins CHAMO（洋甘菊、蜂蜜、木質調）",
+      "name_ko": "탬버린즈 카모",
+      "brand": "탬버린즈 (TAMBURINS)",
+      "where": "Tamburins 聖水店（성동구 연무장5길 8）、新沙、三清",
+      "price_krw": null,
+      "price_note": "Seoul Off Script 稱品牌 50ml 約 ₩160,000–230,000（區間）",
+      "why": "品牌代表香，9月又推 4 款香味的 O 護手霜",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/korea-perfume-brand/",
+          "platform": "blog",
+          "date": "2026-09-15",
+          "note": "Chamo：洋甘菊、蜂蜜、木質；聖水店地址；頁面標更新日 2026-09-21"
+        },
+        {
+          "url": "https://www.seouloffscript.com/article/korean-fragrance-brands",
+          "platform": "blog",
+          "date": "2026-09",
+          "note": "頁面只標 Last verified Sep 2026，無確切日；店點新沙／聖水／三清與價位區間"
+        },
+        {
+          "url": "https://www.gokorea.kr/news/articleView.html?idxno=878753",
+          "platform": "news",
+          "date": "2026-09-17",
+          "note": "O 護手霜 9/17 上市，4 款香味含 카모、이브닝글로우、보타리、화이트다즐링"
+        }
+      ],
+      "image_url": "https://web-resource.tamburins.com/catalog/product/1662462471/1779b4f9-991e-4665-b332-3c28f1cd601f/thumbnail_50ml_Perfume_Chamo.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-perfume-06",
+      "group": "perfume",
+      "sub": "香水",
+      "name_zh": "Hetras 手作香水 50ml（5 款擇一；香草與木質調）",
+      "name_ko": "헤트라스 핸드메이드 퍼퓸 50ml 5종 택 1",
+      "brand": "헤트라스 (Hetras)",
+      "where": "Olive Young；Hetras 聖水店（성동구 연무장길 68）",
+      "price_krw": 57800,
+      "price_note": "OY 10/19–25 週榜標價",
+      "why": "OY 香水週榜前15，聖水另有專門店",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/43/perfume",
+          "platform": "OY 榜單彙整",
+          "date": "2026-10-25",
+          "note": "週榜 10/19–10/25 第14名"
+        },
+        {
+          "url": "https://www.funliday.com/posts/korea-perfume-brand/",
+          "platform": "blog",
+          "date": "2026-09-15",
+          "note": "香調：草本與木質；頁面標更新日 2026-09-21"
+        },
+        {
+          "url": "https://www.funliday.com/posts/seongsu/",
+          "platform": "blog",
+          "date": "2026-09-22",
+          "note": "聖水店（頁面標發布 2026-07-10、更新 2026-09-22）"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023849216ko.png?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-perfume-07",
+      "group": "perfume",
+      "sub": "香水",
+      "name_zh": "After Blow 香水（柔和粉感、乾淨調）",
+      "name_ko": "애프터블로우 오 드 퍼퓸 15종 택1",
+      "brand": "애프터블로우 (After Blow)",
+      "where": "Olive Young；After Blow 聖水店（성수동2가 316-6 B1）",
+      "price_krw": 35910,
+      "price_note": "9月月榜標價",
+      "why": "聖水年輕人愛用的小眾香，9月 OY 月榜擠進前15",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/monthly-rankings/2026/9/perfume",
+          "platform": "OY 榜單彙整",
+          "date": "2026-09-30",
+          "note": "2026年9月月榜第14名（標示藝人推薦）"
+        },
+        {
+          "url": "https://www.funliday.com/posts/korea-perfume-brand/",
+          "platform": "blog",
+          "date": "2026-09-15",
+          "note": "香調描述：柔和、粉感、乾淨；聖水店地址；頁面標更新日 2026-09-21"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023132815ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-perfume-08",
+      "group": "perfume",
+      "sub": "香水",
+      "name_zh": "Pleuvoir 淡香精 30ml（8 款擇一；泥土濕潤植物調）",
+      "name_ko": "플르부아 오 드 퍼퓸 EDP 30mL 8종 중 택1",
+      "brand": "플르부아 (PLEUVOIR)",
+      "where": "Olive Young；PLEUVOIR 聖水店（성수동2가 315-10）",
+      "price_krw": 36550,
+      "price_note": "OY 10/19–25 週榜標價",
+      "why": "週榜前15的平價小眾香，雨後泥土植物感",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://beauticslab.com/marketing/weekly-rankings/2026/43/perfume",
+          "platform": "OY 榜單彙整",
+          "date": "2026-10-25",
+          "note": "週榜 10/19–10/25 第11名"
+        },
+        {
+          "url": "https://www.funliday.com/posts/korea-perfume-brand/",
+          "platform": "blog",
+          "date": "2026-09-15",
+          "note": "香調：泥土、潮濕、植物；聖水店地址；頁面標更新日 2026-09-21"
+        }
+      ],
+      "image_url": "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0020/A00000020253972ko.jpg?l=ko&QT=85&SF=webp&sharpen=1x0.5",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-perfume-09",
+      "group": "perfume",
+      "sub": "香水",
+      "name_zh": "Nonfiction 香水（無花果雪松／肉豆蔻檀香）",
+      "name_ko": "논픽션",
+      "brand": "논픽션 (NONFICTION)",
+      "where": "Nonfiction 聖水店（성동구 연무장길 8-1）、漢南店；仁川機場免稅店有部分香味",
+      "price_krw": null,
+      "price_note": "Seoul Off Script 稱 50ml 約 ₩150,000–200,000（區間）",
+      "why": "中性極簡的韓系小眾香代表，聖水與漢南都有店",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/korea-perfume-brand/",
+          "platform": "blog",
+          "date": "2026-09-15",
+          "note": "香調：肉豆蔻與檀香、無花果與雪松（未指明對應哪一款）；聖水店地址；頁面標更新日 2026-09-21"
+        },
+        {
+          "url": "https://www.seouloffscript.com/article/korean-fragrance-brands",
+          "platform": "blog",
+          "date": "2026-09",
+          "note": "只標 Last verified Sep 2026；店點漢南／聖水、價位區間、機場免稅店"
+        }
+      ],
+      "image_url": "https://cafe24img.poxo.com/nonfiction4096/web/product/big/202610/d6c176d7dfc2a4101e503aac102fe58d.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-perfume-10",
+      "group": "perfume",
+      "sub": "香水",
+      "name_zh": "Borntostandout 香水（辛香大膽調）",
+      "name_ko": "",
+      "brand": "BORNTOSTANDOUT",
+      "where": "Borntostandout 梨泰院店（이태원로55길 43-1，1F）；漢南也有店",
+      "price_krw": null,
+      "price_note": "Seoul Off Script 稱 50ml 約 ₩200,000–260,000（區間）",
+      "why": "個性強烈的小眾香，價位偏高但常被點名",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/korea-perfume-brand/",
+          "platform": "blog",
+          "date": "2026-09-15",
+          "note": "香調描述為辛香、大膽；梨泰院店地址；頁面標更新日 2026-09-21"
+        },
+        {
+          "url": "https://www.seouloffscript.com/article/korean-fragrance-brands",
+          "platform": "blog",
+          "date": "2026-09",
+          "note": "只標 Last verified Sep 2026；價位區間、漢南店"
+        }
+      ],
+      "image_url": "https://borntostandout.com/cdn/shop/files/50-CORN_PORN_bottle.jpg?v=1793174078",
+      "image_kind": "brand"
+    },
+    {
+      "id": "tr-perfume-11",
+      "group": "perfume",
+      "sub": "香水",
+      "name_zh": "GRANHAND Lumberjack（丁香芽、雪松）",
+      "name_ko": "그랑핸드",
+      "brand": "그랑핸드 (GRANHAND)",
+      "where": "GRANHAND 弘大店（마포구 와우산로37길 9）；全首爾約 8 間，含北村",
+      "price_krw": null,
+      "price_note": "Seoul Off Script 稱 50ml 約 ₩90,000–150,000（區間）",
+      "why": "被稱為韓國版 Aesop，壁爐威士忌感的秋冬香",
+      "limited": "",
+      "buzz": "high",
+      "sources": [
+        {
+          "url": "https://www.seouloffscript.com/article/korean-fragrance-brands",
+          "platform": "blog",
+          "date": "2026-09",
+          "note": "只標 Last verified Sep 2026；Lumberjack 丁香芽與雪松、Susie Salmon 為水果感；店點與價位"
+        },
+        {
+          "url": "https://www.funliday.com/posts/korea-perfume-brand/",
+          "platform": "blog",
+          "date": "2026-09-15",
+          "note": "品牌香調：茶與廣藿香；弘大店地址；頁面標更新日 2026-09-21"
+        }
+      ],
+      "image_url": "https://cafe24img.poxo.com/granhand9/web/product/big/202510/f72905089e2df4488b9623ef51f39d14.jpg",
+      "image_kind": "product"
+    },
+    {
+      "id": "tr-perfume-12",
+      "group": "perfume",
+      "sub": "香水",
+      "name_zh": "Youssoful Saint Moritz（香草、麝香）",
+      "name_ko": "",
+      "brand": "Youssoful",
+      "where": "Youssoful 延禧洞店（마포구 연희로1길 28）",
+      "price_krw": null,
+      "price_note": "價格查不到",
+      "why": "延南洞一帶的平價小眾牌，香草麝香調好入門",
+      "limited": "",
+      "buzz": "medium",
+      "sources": [
+        {
+          "url": "https://www.funliday.com/posts/korea-perfume-brand/",
+          "platform": "blog",
+          "date": "2026-09-15",
+          "note": "單一來源；頁面標更新日 2026-09-21"
+        }
+      ],
+      "image_url": "https://ecimg.cafe24img.com/pg1247b64892169015/youssoful24/web/product/big/20260806/8d19c0ea8ab3cfb51d017b776500f72b.jpg",
+      "image_kind": "product"
+    }
+  ]
+}

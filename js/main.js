@@ -17,7 +17,8 @@
 //   ui        app.openPlace(id) / app.openPlaceCard(place) / app.closeCard(); app.showToast(text);
 //             app.mapMode (set a string while picking a spot on the map so a tap on the map is not treated as
 //             "dismiss the card"); app.on('snapshot'|'me'|'card'|'view', fn)
-//             app.openAddPlace({mode, presetName, presetQuery, presetAlias, presetText}); app.openUnmapped({from}) (the 未上地圖 view; from: 'lists'
+//             app.openAddPlace({mode, presetName, presetQuery, presetAlias, presetText, onAdded(place), onClose()}); app.revealMap(on) (the 今天 page's
+//             editor asks for the map while it has the add form open); app.openUnmapped({from}) (the 未上地圖 view; from: 'lists'
 //             adds 「← 清單」); app.openLists({focusRow}) (the 清單 view, the 5th tab: 代購, 行李, 未上地圖; ui/lists.js)
 //             app.coverBottom() - px of the bottom of the screen a sheet other than the card covers (map insets)
 //             app.currentView() -> 'map' | 'today' | 'hotel' | 'lists' | 'list' (the full-height view above the map, ui/panel.js; 'list' is the 未上地圖 view);
@@ -30,6 +31,11 @@
 //             app.packing -> the 行李清單 ticks of this phone (packing-ticks.js createPacking: count(), toggle(id), reset()); emits 'packing'
 //           app.getVersion() -> Promise of the running build (sw.js BUILD), null without a worker or an answer; the 今天 page shows it
 //           app.shopping -> the 代購清單 (ui/shopping.js initShopping): items(), mine(), apply(row), api; emits 'shopping' when the items change
+//           app.trending -> the 熱門必買 list (ui/trending.js initTrending): load() reads data/trending.json the first time its screen opens, data(),
+//             count(), group() / setGroup(id) (the chip kept on this phone); emits 'trending' once the file is read
+//           app.schedule -> the itinerary kept in the app (ui/schedule.js initSchedule): rows(), version(date), saveDay(payload), resetDay(payload),
+//             addPlace(place, date), api; every loadTripData call passes app.schedule.rows(); emits 'schedule' when the rows change. The 今天 page edits it
+//             (ui/schedule-editor.js) and the place card's 「加入行程」 adds a place to a day (ui/day-picker.js)
 // Start: once the person is picked, the 今天 view opens over the map (openStartView; not for an Android share, which opens the add form).
 // Update: ui/update-bar.js shows 「新版本好了」 + 「更新」 above the tab bar when a new service worker takes over an already controlled page.
 // Sync: startPolling(app.cfg, applySnapshot) runs from boot; a place saved here stays on the map until a snapshot has it.
@@ -53,6 +59,7 @@ import { buildToday } from './today.js';
 import { currentDate, currentNightDate, loadTripData, stopName, todayView } from './today-view.js';
 import { initAddPlace } from './ui/add-place.js';
 import { cardPlaceId, cardVisibleHeight, closeCard, openCard } from './ui/card.js';
+import { openDayPicker } from './ui/day-picker.js';
 import { append, clear, famStyle, h, icon } from './ui/dom.js';
 import { initHotel } from './ui/hotel-card.js';
 import { initLists } from './ui/lists.js';
@@ -62,8 +69,10 @@ import { initPacking } from './ui/packing.js';
 import { closeView, currentView, onViewChange } from './ui/panel.js';
 import { pickPerson, showMeButton } from './ui/person.js';
 import { showSetup } from './ui/setup.js';
+import { initSchedule } from './ui/schedule.js';
 import { initShopping } from './ui/shopping.js';
 import { initTabbar } from './ui/tabbar.js';
+import { initTrending } from './ui/trending.js';
 import { initToday } from './ui/today-panel.js';
 import { initUnmapped } from './ui/unmapped.js';
 import { initUpdateBar } from './ui/update-bar.js';
@@ -140,6 +149,7 @@ export const app = {
   toggleDone: toggleDoneAndAnnounce,
   switchPerson: () => switchPerson(),
   showToast,
+  revealMap,
   currentView,
   closeView,
   closeCard,
@@ -158,12 +168,27 @@ export const app = {
 // ---- small UI pieces ----------------------------------------------------------------------------------------
 
 let toastTimer = 0;
-function showToast(text, ms = 3200) {
+/** `action` ({label, onClick}) puts a button in the toast (「已加到 11/7」 + 「去看看」); a press runs it and puts the toast away. */
+function showToast(text, ms = 3200, action = null) {
   const el = $('toast');
   el.textContent = text;
+  if (action) {
+    el.append(h('button', { class: 'toast-act', type: 'button', onclick: () => { el.classList.remove('is-on'); clearTimeout(toastTimer); action.onClick(); } }, action.label));
+  }
   el.classList.add('is-on');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('is-on'), ms);
+}
+
+/**
+ * While the 今天 page's place picker has the add form open (「地圖上沒有？新增地點」), the form's 「在地圖上點」 needs the map: the full-height view and the screens of the
+ * editor step aside (html.map-reveal, css/app.css) and the MAP answers taps again; `false` puts everything back as it was. Only the map: the 下一站 strip, the chips
+ * and 定位 stay out of reach (a tap on the strip would open a card, or the 今天 page, under the editor). A pin tap is ignored while the add form is open (app.mapMode).
+ */
+function revealMap(on) {
+  document.documentElement.classList.toggle('map-reveal', on);
+  if (on) $('map').inert = false;
+  else setMapInert(currentView());
 }
 
 function showFatal(title, message, { retry = true } = {}) {
@@ -303,7 +328,7 @@ function firstView() {
   let hotel = null;
   try { next = describeNext(app)?.place ?? null; } catch { /* no today's stops: the hotel, then the busiest area */ }
   try {
-    const stay = app.snapshot ? buildToday(loadTripData(app.snapshot.tabs), app.me, app.currentNightDate()).hotel : null;
+    const stay = app.snapshot ? buildToday(loadTripData(app.snapshot.tabs, app.schedule?.rows()), app.me, app.currentNightDate()).hotel : null;
     hotel = stay ? findHotelPlace(stay.name, app.places) : null;
   } catch { /* no hotel for tonight */ }
   return chooseFirstView({ places: app.places, next, hotel });
@@ -323,10 +348,10 @@ function refreshGinkgo() {
 function todayStops() {
   if (!app.snapshot || !app.me) return [];
   try {
-    const trip = loadTripData(app.snapshot.tabs);
+    const trip = loadTripData(app.snapshot.tabs, app.schedule?.rows());
     if (!trip.ok) return [];
     const today = app.currentDate();
-    const view = todayView(trip, app.me, today, { places: app.places, translations: app.translations, today, night: app.currentNightDate() });
+    const view = todayView(trip, app.me, today, { places: app.places, translations: app.translations, today, night: app.currentNightDate(), named: app.julyPlaces });
     return view.status === 'in' ? myItems(view.items, app.me) : [];
   } catch {
     return [];
@@ -364,6 +389,9 @@ function cardContext(place) {
     here: () => app.map?.lastLocation() ?? null, // my position, when the phone has given one (the distance row only shows then)
     openStop(id) { // the strip's previous / next stop: its card, or the 今天 page when it has no pin
       if (!openPlace(id)) app.actions.today();
+    },
+    addToSchedule(p, trigger) { // 「加入行程」: the day picker over the card (the card and the tab bar go inert while it is open)
+      openDayPicker(app, p, { trigger, behind: [document.querySelector('.sheet'), $('tabbar')] });
     },
     toggleStar(id) {
       const on = toggleStar(app.stars, id, app.storage);
@@ -458,6 +486,7 @@ function applySnapshot({ snapshot, fromCache, fetchedAt, placesKept }) {
   app.translations = isObject(snapshot.translations) ? snapshot.translations : {};
   app.config = isObject(snapshot.config) ? snapshot.config : {};
   try { app.purchases = parsePurchase(snapshot.tabs?.['Purchase list'] ?? []); } catch { app.purchases = []; }
+  app.schedule?.sync(); // the days kept in the app, before the pins and the first view are made (firstView asks for tonight's / today's stops), as app.places is
   refreshGinkgo();
   app.loading = false;
   renderChips();
@@ -527,7 +556,9 @@ async function boot() {
   initUnmapped(app); // app.openUnmapped, app.unmappedCount
   initPacking(app); // app.packing: what is ticked on the 行李清單 (the 今天 page's card on the first and last trip day)
   initShopping(app); // app.shopping: the 代購清單 items (snapshot.shopping + what this phone saved) and the calls that write them
-  initLists(app); // app.openLists: the 清單 tab's view (代購清單, 行李清單, 未上地圖)
+  initSchedule(app); // app.schedule: the rows of the itinerary kept in the app (snapshot.schedule + what this phone saved) and the calls that write them
+  initTrending(app); // app.trending: the 熱門必買 file (read when its screen first opens) and the group chip kept on this phone
+  initLists(app); // app.openLists: the 清單 tab's view (代購清單, 行李清單, 未上地圖, 熱門必買)
   initToday(app); // replaces app.actions.today
   initHotel(app); // replaces app.actions.hotel
   initTabbar(app); // the bottom tab bar calls the hooks above

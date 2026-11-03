@@ -800,39 +800,44 @@ body:has(.update-bar) .board-scroll, body:has(.update-bar) .panel-body { padding
 .pc-ko { font-family: var(--kr); font-weight: 700; font-size: calc(min(100vw, 600px) * var(--pc-k, .12)); line-height: 1.25; margin-top: auto; overflow-wrap: anywhere; word-break: keep-all; }
 .pc-zh { font: 800 clamp(24px, 7vw, 36px)/1.3 var(--sans); }
 .pc-rr { margin-bottom: auto; font: 600 clamp(17px, 4.6vw, 22px)/1.35 var(--sans); color: var(--ink-2); }
+.pc--item .pc-zh { font: 700 clamp(18px, 5vw, 24px)/1.35 var(--sans); color: var(--ink-2); }   /* the Chinese name of a thing to buy: the Korean stays the big one */
+.pc--item .pc-photo { flex: none; margin-top: auto; height: 40vh; }   /* a photo of the thing, above the Korean name: a box 40% of the screen high from the start (the text does not jump when it loads), the photo contained in it */
+.pc--item .pc-photo img { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 6px; }
+.pc--item .pc-photo + .pc-ko { margin-top: 0; }
+.pc--item .pc-zh:last-child { margin-bottom: auto; }   /* the card of a thing to buy has no romanization line (熱門必買's 給店員看) and still sits in the middle */
 
 /* 行李清單 (ui/packing.js): a card on the 今天 page on the first and the last trip day, and the screen it opens over the page (above the
    tab bar like .pc, z-index 30). The screen is cream with paper sheets; the ticks are ink circles, a full group's count turns ginkgo. */
-.pk-card, .sp-card, .up-card { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin: 8px 0 4px; padding: 8px 14px 8px 10px; border-radius: 30px; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); text-align: left; }
-.pk-card:active, .sp-card:active, .up-card:active { background: var(--ginkgo-pale); }
-.pk-card > .ico, .sp-card > .ico, .up-card > .ico { width: 20px; height: 20px; }
-.pk-card-main, .sp-card-main, .up-card-main { flex: 1; min-width: 0; display: grid; gap: 2px; }
-.pk-card-title, .sp-card-title, .up-card-title { font: 800 15.5px/1.2 var(--sans); }
+.pk-card, .sp-card, .up-card, .hb-card { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin: 8px 0 4px; padding: 8px 14px 8px 10px; border-radius: 30px; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); text-align: left; }
+.pk-card:active, .sp-card:active, .up-card:active, .hb-card:active { background: var(--ginkgo-pale); }
+.pk-card > .ico, .sp-card > .ico, .up-card > .ico, .hb-card > .ico { width: 20px; height: 20px; }
+.pk-card-main, .sp-card-main, .up-card-main, .hb-card-main { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.pk-card-title, .sp-card-title, .up-card-title, .hb-card-title { font: 800 15.5px/1.2 var(--sans); }
 .pk-card-title .num { font-weight: 900; }
-.pk-card-line, .sp-card-line, .up-card-line { font: 600 13px/1.35 var(--sans); color: var(--ink-2); }
+.pk-card-line, .sp-card-line, .up-card-line, .hb-card-line { font: 600 13px/1.35 var(--sans); color: var(--ink-2); }
 
-/* 清單 (ui/lists.js): the 5th tab's view, three of those cards one under the other (.up-card is the 未上地圖 one); 「← 清單」 heads the 未上地圖 view opened from it */
+/* 清單 (ui/lists.js): the 5th tab's view, four of those cards one under the other (.up-card is the 未上地圖 one, .hb-card the 熱門必買 one); 「← 清單」 heads the 未上地圖 view opened from it */
 .ls-rows { display: grid; gap: 12px; }
 .ls-rows > * { margin: 0; }
 .ls-back { flex: none; min-width: 44px; min-height: 44px; padding: 0 16px; border-radius: 22px; background: var(--cream); box-shadow: inset 0 0 0 2px var(--ink); font: 800 15px/1 var(--sans); white-space: nowrap; }
 .ls-back:active { background: var(--ginkgo-pale); }
 
-.pk, .sp {
+.pk, .sp, .hb {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; width: 100%; max-width: 600px; margin: 0 auto;
   display: flex; flex-direction: column; padding-top: var(--safe-top);
   background: var(--cream); color: var(--ink); animation: pc-in .28s var(--ease);
 }
-.pk:focus, .sp:focus { outline: none; }
-.pk-head, .sp-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px calc(12px + var(--safe-right)) 6px calc(20px + var(--safe-left)); }
-.pk-title, .sp-title { min-width: 0; font: 900 clamp(28px, 8.6vw, 34px)/1 var(--sans); letter-spacing: -.025em; }
-.pk-close, .sp-close { flex: none; width: 48px; height: 48px; }
-.pk-scroll, .sp-scroll {
+.pk:focus, .sp:focus, .hb:focus { outline: none; }
+.pk-head, .sp-head, .hb-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px calc(12px + var(--safe-right)) 6px calc(20px + var(--safe-left)); }
+.pk-title, .sp-title, .hb-title { min-width: 0; font: 900 clamp(28px, 8.6vw, 34px)/1 var(--sans); letter-spacing: -.025em; }
+.pk-close, .sp-close, .hb-close { flex: none; width: 48px; height: 48px; }
+.pk-scroll, .sp-scroll, .hb-scroll {
   flex: 1; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
   padding: 6px calc(20px + var(--safe-right)) calc(56px + var(--safe-bottom)) calc(20px + var(--safe-left));   /* 20px gutters: the tape on a sheet's corners reaches ~16px outside it */
 }
 .pk-lead { font: 600 15px/1.45 var(--sans); }
 .pk a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
-.pk-paper, .sp-paper { position: relative; padding: 14px 16px; background: var(--paper); border-radius: 2px; box-shadow: var(--paper-sh); --tw: 40px; --th: 13px; }
+.pk-paper, .sp-paper, .hb-paper { position: relative; padding: 14px 16px; background: var(--paper); border-radius: 2px; box-shadow: var(--paper-sh); --tw: 40px; --th: 13px; }
 .pk-small { font: 500 12.5px/1.55 var(--sans); color: var(--ink-2); }
 .pk-small b { font-weight: 800; color: var(--ink); }
 
@@ -986,6 +991,67 @@ body:has(.update-bar) .board-scroll, body:has(.update-bar) .panel-body { padding
 .sp-crow { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 .sp-crow .btn { flex: 1 1 120px; width: auto; margin-top: 0; }
 
+/* 熱門必買 (ui/trending.js): its row is the 清單 view's fourth card (grouped above); the screen is the 代購 screen's cream sheet with paper (.hb shares the
+   .sp shell rules). Chips and a search box on top, then group > sub headings and, under each sub, one taped sheet of items: the name, brand · where, the
+   price, why it is talked about, the tags (討論度高 is ginkgo, 討論度中 outline only), then 給店員看 / 來源 and the ginkgo 「加到我的代購」. */
+.hb-body { padding-top: 6px; }
+.hb-lead { font: 600 14px/1.45 var(--sans); color: var(--ink-2); }
+.hb-slot { margin-top: 14px; }
+.hb-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.hb-chip { min-height: 44px; max-width: 100%; padding: 0 12px; border-radius: 22px; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); font: 800 15px/1.2 var(--sans); }
+.hb-chip .num { font-size: 13px; font-weight: 900; }
+.hb-chip[aria-pressed="true"] { background: var(--ink); color: var(--cream); }
+.hb-search { margin-top: 12px; -webkit-appearance: none; appearance: none; }
+.hb-found { margin-top: 10px; font: 700 13px/1.35 var(--sans); color: var(--ink-2); }
+.hb-status, .hb-empty { margin: 28px 0; color: var(--ink-2); text-align: center; font-weight: 700; }
+.hb-fail { margin-top: 10px; padding: 14px; border: 2px dashed var(--ink); border-radius: 16px; background: var(--ginkgo-pale); }
+.hb-msg { font: 700 15px/1.4 var(--sans); }
+.hb-retry { width: auto; min-height: 48px; margin-top: 12px; }
+.hb-grp { margin-top: 30px; }
+.hb-h2 { padding-bottom: 6px; border-bottom: 3px solid var(--ink); font: 900 22px/1.2 var(--sans); letter-spacing: -.01em; }
+.hb-sub { margin-top: 20px; }
+.hb-h3 { font: 800 15.5px/1.2 var(--sans); color: var(--ink-2); }
+.hb-items { margin-top: 14px; padding: 2px 16px; }   /* the rows run edge to edge; no overflow: hidden, the tape sticks out of the corners */
+.hb-item { display: grid; gap: 4px; padding: 14px 0; }
+.hb-item + .hb-item { border-top: 1px solid var(--tape-edge); }
+.hb-row { display: flex; align-items: flex-start; gap: 12px; }
+.hb-main { flex: 1; min-width: 0; display: grid; gap: 4px; }
+/* the thumbnail: a 72 px box of its own size (nothing moves when the photo arrives), the group's mark in it when there is no photo or it does not load */
+.hb-pic-col { flex: none; width: 72px; display: grid; justify-items: center; gap: 3px; }
+.hb-pic { display: grid; place-items: center; width: 72px; height: 72px; overflow: hidden; border-radius: 10px; background: var(--paper); box-shadow: 0 0 0 1.5px var(--ink); }
+.hb-pic img { display: block; width: 72px; height: 72px; object-fit: cover; }
+.hb-pic .fdot { width: 40px; height: 40px; }
+.hb-pic .fdot .ico { width: 22px; height: 22px; }
+.hb-pic-btn { display: block; width: 72px; height: 72px; border-radius: 10px; }
+.hb-pic-btn:active .hb-pic { background: var(--ginkgo-pale); }
+.hb-pic-cap { font: 700 11px/1.2 var(--sans); color: var(--ink-2); text-align: center; }
+.hb-name { font: 800 17px/1.3 var(--sans); overflow-wrap: anywhere; }
+.hb-meta { font: 500 13px/1.3 var(--sans); color: var(--ink-2); overflow-wrap: anywhere; }
+.hb-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1px 8px; font-variant-numeric: tabular-nums; }
+.hb-price b { font: 900 17px/1.2 "Archivo", var(--sans); }
+.hb-price.is-unknown b { font: 700 14px/1.3 var(--sans); color: var(--ink-3); }
+.hb-price i { flex-basis: 100%; font: 500 12.5px/1.35 var(--sans); font-style: normal; color: var(--ink-2); overflow-wrap: anywhere; }
+.hb-why { margin-top: 2px; font: 500 14.5px/1.45 var(--sans); overflow-wrap: anywhere; }
+.hb-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.hb-tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 12px; box-shadow: inset 0 0 0 1.5px var(--ink); font: 800 12px/1.5 var(--sans); overflow-wrap: anywhere; }
+.hb-tag--high { background: var(--ginkgo); }
+.hb-tag--mid { color: var(--ink-2); box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+.hb-tag--limited { background: var(--ginkgo-pale); }
+.hb-tag--have { background: var(--ink); color: var(--cream); }
+.hb-tag .ico { width: 12px; height: 12px; stroke-width: 3; }
+.hb-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.hb-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border-radius: 22px; background: var(--white); box-shadow: inset 0 0 0 1.5px var(--ink); font: 800 14px/1.2 var(--sans); }
+.hb-btn:active { background: var(--ginkgo-pale); }
+.hb-btn--add { width: 100%; min-height: 48px; margin-top: 6px; border-radius: 24px; background: var(--ginkgo); box-shadow: none; font-size: 15px; }
+.hb-btn--add:active { background: var(--ginkgo-pale); }
+.hb-btn--again { background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); }
+.hb-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 22px; background: var(--white); box-shadow: inset 0 0 0 1.5px var(--ink); text-decoration: none; font: 800 14px/1.2 var(--sans); }
+.hb-link-s { font-weight: 600; font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }
+.hb-link .ico { width: 14px; height: 14px; }
+@media (hover: hover) {
+  .hb-chip:hover:not([aria-pressed="true"]), .hb-btn:hover, .hb-link:hover { filter: brightness(.94); }
+}
+
 /* 未上地圖: names in the plan tabs that have no pin yet */
 .up-hint { margin: 0 4px; color: var(--ink-2); font: 600 14px/1.45 var(--sans); }
 .up-group { margin-top: 4px; }
@@ -997,6 +1063,109 @@ body:has(.update-bar) .board-scroll, body:has(.update-bar) .panel-body { padding
 .up-where { color: var(--ink-2); font: 600 13px/1.3 var(--sans); }
 .up-add { width: 40px; height: 40px; padding: 10px; border-radius: 50%; background: var(--ink); color: var(--cream); stroke-width: 2.4; }
 .up-empty { margin: 28px 0; color: var(--ink-2); text-align: center; font-weight: 700; }
+
+/* 編輯行程 (ui/schedule-editor.js, ui/day-picker.js): 「編輯」 in the meta row of a day page turns the board into the edit list (rows of ≥ 56 px: the text, the note in
+   small type, 「↑」 「↓」 and a drag handle); the stop form and the place picker are cream screens over it (z-index 30 like the 代購 screen); the card's 「加入行程」
+   opens a drawer of the add form's look with the 11 days. A day kept in the app has the 「app 版」 tag, and a muted line says when the Sheet's lines of it changed. */
+.t-edit { flex: none; min-height: 44px; padding: 0 14px; border-radius: 22px; background: var(--cream); box-shadow: inset 0 0 0 2px var(--ink); font: 800 14.5px/1 var(--sans); white-space: nowrap; }
+.t-edit:active { background: var(--ginkgo-pale); }
+.t-days[inert] { opacity: .5; }   /* the day strip while a day is edited: out of reach */
+.bh .ver-tag { flex: none; align-self: center; padding: 2px 9px; border-radius: 11px; background: var(--ginkgo-pale); box-shadow: inset 0 0 0 1.5px var(--ink); font: 800 12.5px/1.3 var(--sans); }
+.sch-wait { margin: 8px 0 4px; padding: 8px 14px 2px; border-radius: 18px; background: var(--cream); box-shadow: inset 0 0 0 1.5px rgba(44, 46, 42, .4); }
+.sch-wait-line { font: 600 13px/1.4 var(--sans); color: var(--ink-2); }
+.sch-wait-toggle { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; margin-left: -4px; padding: 0 10px 0 4px; font: 800 13.5px/1 var(--sans); }
+.sch-wait-toggle .ico { width: 18px; height: 18px; transition: transform .2s var(--ease); }
+.sch-wait-toggle[aria-expanded="true"] .ico { transform: rotate(180deg); }
+.sch-wait-list { display: grid; gap: 4px; margin: 0 0 8px; padding: 8px 0 0; border-top: 1.5px dashed rgba(44, 46, 42, .3); }
+.sch-wait-list li { font: 600 13.5px/1.45 var(--sans); overflow-wrap: anywhere; }
+
+.sch-edit { padding-bottom: 8px; }
+.sch-edit:focus { outline: none; }
+.sch-top { position: sticky; top: -4px; z-index: 4; margin: 0 -18px; padding: 8px 18px 8px; background: var(--paper); box-shadow: 0 1.5px 0 rgba(44, 46, 42, .16); }   /* -4px: the board's own 4px of padding above it is covered too, so no row shows over the bar */   /* 取消 / 完成, the message and the question stay in view while the list scrolls under them */
+.sch-bar { display: flex; gap: 10px; }
+.nav[inert] { opacity: .55; }   /* the tab bar while a day is edited (ui/schedule-editor.js): out of reach */
+.sch-bar .btn { flex: 1; width: auto; min-height: 46px; margin-top: 0; }
+.sch-msg { margin: 8px 0 0; font: 700 14px/1.4 var(--sans); color: var(--danger); }
+.sch-msg.is-note { color: var(--ink); }
+.sch-ask { margin-top: 10px; padding: 12px; border: 2px dashed var(--ink); border-radius: 16px; background: var(--ginkgo-pale); }
+.sch-ask p { font: 700 14.5px/1.35 var(--sans); overflow-wrap: anywhere; }
+.sch-crow { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.sch-crow .btn { flex: 1 1 120px; width: auto; margin-top: 0; }
+.sch-list { position: relative; margin: 6px 0 0; }
+.sch-row { position: relative; display: flex; align-items: stretch; min-height: 56px; background: var(--paper); transition: transform .15s var(--ease); }
+.sch-row + .sch-row { border-top: 1.5px dashed rgba(44, 46, 42, .3); }
+.sch-open { flex: 1; min-width: 0; display: grid; align-content: center; gap: 2px; padding: 8px 6px 8px 0; text-align: left; }
+.sch-open:active { background: rgba(243, 193, 10, .18); }
+.sch-open:focus-visible { outline-offset: -3px; }
+.sch-first { font: 800 16px/1.35 var(--sans); overflow-wrap: anywhere; }
+.sch-first[lang="ko"] { font-family: var(--kr); font-weight: 700; }
+.sch-kr { font: 500 12px/1.35 var(--kr); color: var(--ink-2); overflow-wrap: anywhere; }
+.sch-note { font: 600 12.5px/1.4 var(--sans); color: var(--ink-2); white-space: pre-line; overflow-wrap: anywhere; }
+.sch-acts { flex: none; display: flex; align-items: center; }
+.sch-mv { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; font: 900 21px/1 var(--sans); }
+.sch-mv:active { background: var(--ginkgo-pale); }
+.sch-mv[disabled] { opacity: .3; cursor: default; }
+.sch-grip { flex: none; width: 44px; min-height: 56px; display: grid; place-items: center; color: var(--ink-2); touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }   /* only the handle is out of the browser's hands: the rest of a row still scrolls the list */
+.sch-grip .ico { width: 22px; height: 22px; stroke-width: 3.4; }
+.sch-list.is-dragging { user-select: none; -webkit-user-select: none; }
+.sch-row.is-dragging { z-index: 3; transition: none; border-radius: 12px; background: var(--white); box-shadow: var(--paper-sh); }
+.sch-slot { position: absolute; left: 0; right: 0; top: 0; z-index: 0; border: 2px dashed var(--ink-3); border-radius: 12px; background: var(--ginkgo-pale); opacity: .7; pointer-events: none; transition: transform .15s var(--ease); }
+.sch-empty { margin: 18px 0 4px; color: var(--ink-2); text-align: center; font-weight: 700; }
+.sch-add { margin-top: 14px; }
+.sch-resetbox { margin-top: 26px; text-align: center; }
+.sch-reset { min-height: 44px; padding: 0 12px; font: 700 13px/1.2 var(--sans); color: var(--ink-3); text-decoration: underline; text-underline-offset: 3px; }
+
+.sch-layer {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; width: 100%; max-width: 600px; margin: 0 auto;
+  display: flex; flex-direction: column; padding-top: var(--safe-top);
+  background: var(--cream); color: var(--ink); animation: pc-in .28s var(--ease);
+}
+.sch-layer:focus { outline: none; }
+.sch-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px calc(12px + var(--safe-right)) 6px calc(20px + var(--safe-left)); }
+.sch-title { min-width: 0; font: 900 clamp(26px, 8vw, 32px)/1 var(--sans); letter-spacing: -.025em; }
+.sch-close { flex: none; width: 48px; height: 48px; }
+.sch-scroll {
+  flex: 1; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  padding: 6px calc(20px + var(--safe-right)) calc(40px + var(--safe-bottom)) calc(20px + var(--safe-left));
+}
+.sch-textarea { min-height: 96px; padding: 12px 16px; border-radius: 20px; resize: vertical; line-height: 1.4; }
+.sch-textarea--note { min-height: 64px; }
+.sch-place { margin-top: 14px; }
+.sch-place-line { font: 800 16px/1.4 var(--sans); overflow-wrap: anywhere; }
+.sch-place-btns { display: flex; gap: 10px; margin-top: 6px; }
+.sch-place-btns .btn { flex: 1; width: auto; margin-top: 0; }
+.sch-ok { margin-top: 20px; }
+.sch-del { color: var(--danger); box-shadow: inset 0 0 0 2px var(--danger); }
+.sch-pick-list { display: grid; gap: 8px; margin-top: 12px; }
+.sch-pick-row { display: grid; align-content: center; gap: 3px; width: 100%; min-height: 56px; padding: 10px 16px; border-radius: 22px; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); font: 800 15.5px/1.35 var(--sans); text-align: left; }
+.sch-pick-row:active { background: var(--ginkgo-pale); }
+.sch-pick-row--free { background: var(--ginkgo); box-shadow: none; }
+.sch-pick-row--new { background: transparent; box-shadow: none; border: 2px dashed var(--ink); }
+.sch-pick-name { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.sch-hint { margin-top: 12px; color: var(--ink-2); font: 600 13.5px/1.45 var(--sans); }
+
+.sch-days-hint { font: 700 14.5px/1.4 var(--sans); color: var(--ink-2); overflow-wrap: anywhere; }
+.sch-days-list { display: grid; gap: 8px; }
+.sch-day { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; width: 100%; min-height: 56px; padding: 8px 16px; border-radius: 22px; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); font: 800 15.5px/1.3 var(--sans); font-variant-numeric: tabular-nums; text-align: left; }
+.sch-day:active { background: var(--ginkgo-pale); }
+.sch-day.is-today { background: var(--ginkgo-pale); }
+.sch-day-label { flex: 1 1 auto; }
+.sch-day .sch-day-tag { background: var(--white); box-shadow: inset 0 0 0 1.5px var(--ink); }   /* 今天 / 已在行程: a white pill with an ink ring, so it reads on the pale 今天 row too */
+.sch-days-list[aria-busy="true"] .sch-day { opacity: .55; pointer-events: none; }
+.nav-add { width: 100%; height: 48px; margin-top: 8px; justify-content: center; gap: 8px; background: var(--white); box-shadow: inset 0 0 0 2px var(--ink); font-size: 15px; }
+.nav-add .ico { width: 18px; height: 18px; stroke-width: 2.6; }
+.nav-add:active { background: var(--ginkgo-pale); }
+
+/* the toast with a button (「已加到 11/7」 + 「去看看」): only the button takes taps, and only while the toast is showing */
+.toast:has(.toast-act) { display: flex; align-items: center; padding-top: 2px; padding-bottom: 2px; }
+.toast .toast-act { flex: none; min-height: 44px; margin-left: 10px; padding: 0 6px; color: var(--ginkgo); font: 900 14px/1 var(--sans); text-decoration: underline; text-underline-offset: 3px; pointer-events: none; }
+.toast.is-on .toast-act { pointer-events: auto; }
+
+/* the place picker opened the add form: the page and the editor's screens step aside so that the map is there to tap (main.js revealMap) */
+html.map-reveal .panel, html.map-reveal .sch-layer { visibility: hidden; }
+@media (prefers-reduced-motion: reduce) {
+  .sch-row, .sch-slot { transition: none; }
+}
 
 /* ---- who-am-I picker -------------------------------------------------------------------------------------------- */
 .picker { width: min(340px, calc(100vw - 32px)); padding: 22px; border: 0; border-radius: 28px; background: var(--cream); color: var(--ink); box-shadow: 0 0 0 2px var(--ink), 0 20px 50px rgba(44, 46, 42, .35); }

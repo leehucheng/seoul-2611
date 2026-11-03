@@ -26,12 +26,17 @@
 // open under it). Every page ends with a small muted 「版本 <build>」 once the service worker has said which build runs (app.getVersion()).
 // On the 全程總覽 (after the packing card) and on every day page (in the same place, under the banner / flight reminder) a 「代購清單」 card with
 // 「我的 N 項・已買 M」 opens the shopping screen over this page the same way (ui/shopping.js).
+// Every trip-day page has 「編輯」 in the meta row: it turns the board into the edit list of that day (ui/schedule-editor.js: every stop of the day, drag to
+// reorder, add, change, delete; nothing is sent before 「完成」), with the day arrows and the strip out of reach until it ends. A day kept in the app
+// (App_Schedule) shows a small 「app 版」 tag next to its title; when the Sheet's lines of such a day changed since the app copy was made, a muted line under
+// the banner / flight reminder says so (+added −removed ～changed) with 「看改了什麼」; it writes nothing (Claude imports the changes from a terminal).
 //
 // initToday(app) sets app.actions.today and app.openToday(dateISO?). Text from the Sheet only goes in through dom.js (textContent).
-import { hasHan, hasHangul } from '../i18n.js';
+import { hasHangul } from '../i18n.js';
 import { FAMILIES } from '../colors.js';
 import { isMyItem, myItems, nextStop, stripTime, untilText } from '../next-stop.js';
 import { categoryOf, hoursCard, menuHours } from '../place-view.js';
+import { lineTexts, ownsDay, sheetChangeSummary, startingList } from '../schedule-ui.js';
 import {
   OVERVIEW, TRIP_FIRST, TRIP_LAST, dayStrip, dayTitle, formatMD, isISODate, loadTripData, startPage, stopState, todayView, tripCountdown, tripDates,
 } from '../today-view.js';
@@ -40,6 +45,7 @@ import { append, clear, famStyle, h, icon, leaf } from './dom.js';
 import { openPacking, packingCard } from './packing.js';
 import { createPanel, textWithZh } from './panel.js';
 import { showMeButton } from './person.js';
+import { createDayEditor } from './schedule-editor.js';
 import { openShopping, shoppingCard } from './shopping.js';
 
 const clean = (v) => String(v ?? '').trim();
@@ -49,10 +55,11 @@ const DAY_MS = 86400000;
 /** The marker of a stop that has no pin on the map: a grey one with the list icon. */
 const NO_PIN = Object.freeze({ icon: 'i-list', color: FAMILIES.other.color, on: FAMILIES.other.on });
 
-/** What a poll can change on this panel: the three tabs, the people, the places the items point to, the translations. */
+/** What a poll can change on this panel: the three tabs, the days kept in the app, the people, the places the items point to, the translations. */
 const signatureOf = (app) => JSON.stringify([
-  Boolean(app.snapshot), app.me, app.snapshot?.tabs?.Schedule, app.snapshot?.tabs?.Flight, app.snapshot?.tabs?.Hotel, app.translations, [...app.ginkgo],
+  Boolean(app.snapshot), app.me, app.snapshot?.tabs?.Schedule, app.schedule?.rows(), app.snapshot?.tabs?.Flight, app.snapshot?.tabs?.Hotel, app.translations, [...app.ginkgo],
   app.places.map((p) => [p.id, p.category, p.name_zh, p.name_kr, p.name_en, p.aliases, p.hidden, p.lat, p.lng, p.verified, p.hours_json, p.source]),
+  (app.julyPlaces ?? []).map((p) => [p.id, p.category, p.name_zh, p.name_kr, p.hidden]), // a stop can point to one of them by its id
 ]);
 
 /**
@@ -69,24 +76,7 @@ export const viewSignature = (date, today, dataSig, m) => JSON.stringify([
 /** 1 for the first day of the trip; null outside it. */
 const tripDay = (iso) => (iso >= TRIP_FIRST && iso <= TRIP_LAST ? Math.round((Date.parse(`${iso}T00:00:00Z`) - Date.parse(`${TRIP_FIRST}T00:00:00Z`)) / DAY_MS) + 1 : null);
 
-/**
- * The two lines of a stop: Chinese first. A Korean line with a Chinese translation puts the translation first; a pin's Korean name goes
- * under the Chinese text. The Korean second line only shows under a first line that has a Han character (never beside a name that is
- * only Latin or Korean).
- */
-export function lineTexts(view, place) {
-  const text = stripTime(clean(view.text)); // a time written at its start or end is the price on the right
-  let first = text;
-  let second = '';
-  if (hasHangul(text) && view.zh) {
-    first = clean(view.zh);
-    second = text;
-  } else {
-    const kr = clean(place?.name_kr);
-    if (kr && hasHangul(kr) && !text.includes(kr)) second = kr;
-  }
-  return { first, second: hasHan(first) ? second : '' };
-}
+export { lineTexts }; // the two lines of a stop (schedule-ui.js: the edit list draws its rows with the same rule)
 
 /**
  * The rows of the 全程總覽: one per trip day, 11/5 first. `title` is 「11/5（四）」; `hotel` the night's stay the day page shows for that date
@@ -132,7 +122,7 @@ export function initToday(app) {
     app.closeCard();
 
     // no snapshot yet (the app opens this view as soon as the person is picked): the page says 「正在讀行程…」 and fills itself when it arrives
-    const state = { date: isISODate(dateArg) ? dateArg : startPage(app.currentDate()), expanded: new Set(), viewSig: '', stripDate: '' };
+    const state = { date: isISODate(dateArg) ? dateArg : startPage(app.currentDate()), expanded: new Set(), waitOpen: new Set(), viewSig: '', stripDate: '', edit: null, editBtn: null };
     const meta = h('div', { class: 't-meta' });
     const days = h('div', { class: 't-days', role: 'group', 'aria-label': '選哪一天' });
     const lines = h('ol', { class: 'lines' });
@@ -146,7 +136,12 @@ export function initToday(app) {
     let closed = false;
     let version = null; // the build this page runs, once the service worker has said (app.getVersion)
     const versionLine = h('p', { class: 't-ver' });
-    const panel = createPanel({ cls: 'panel--today', label: '今天', view: 'today', onClose: () => { closed = true; offs.forEach((off) => off()); packingScreen?.close(); shoppingScreen?.close(); } });
+    const panel = createPanel({
+      cls: 'panel--today', label: '今天', view: 'today',
+      // Esc (and a browser's close request) leave the edit mode, asking first when something changed, instead of closing the page; the phone's Back reaches the editor's own entry first
+      onBack: () => { if (state.edit) state.edit.requestCancel(); else panel.close(); },
+      onClose: () => { closed = true; offs.forEach((off) => off()); state.edit?.dispose(); packingScreen?.close(); shoppingScreen?.close(); },
+    });
     append(panel.dialog, [meta, days, board]);
     const packing = packingCard(app, (trigger) => { // built once: a redraw of the page puts the same button back, so focus can return to it
       packingScreen?.close();
@@ -160,7 +155,7 @@ export function initToday(app) {
     offs.push(app.on('shopping', shopping.paint));
 
     const go = (date) => {
-      if (!date) return;
+      if (!date || state.edit) return; // the day being edited stays: 「取消」 or 「完成」 first
       state.date = date;
       state.expanded.clear();
       render(false);
@@ -171,21 +166,41 @@ export function initToday(app) {
       app.openPlace(id, { focus: true });
     };
 
-    /** The switcher row. `v` is a day's view, or {date: OVERVIEW} (no arrows: the day switcher stays inside the trip). */
+    /** The switcher row. `v` is a day's view, or {date: OVERVIEW} (no arrows: the day switcher stays inside the trip). 「編輯」 is on a trip day that can be edited. */
     function renderMeta(v, stopCount) {
-      const step =(label, iconId, date) => h('button', { class: 'round tp-step', type: 'button', 'aria-label': label, disabled: !date, onclick: () => go(date) }, icon(iconId));
+      const editing = Boolean(state.edit);
+      const step =(label, iconId, date) => h('button', { class: 'round tp-step', type: 'button', 'aria-label': label, disabled: !date || editing, onclick: () => go(date) }, icon(iconId));
       const day = tripDay(v.date);
       const me = h('button', { class: 'me', type: 'button', onclick: () => app.switchPerson() });
       if (app.me) showMeButton(me, app.me);
       const label = v.date === OVERVIEW ? '全程總覽'
         : [day ? `第 ${day} 天` : '不在行程內', app.snapshot ? [' ・ ', stopCount > 0 ? `${stopCount} 站` : '沒有行程'] : null]; // no stop count before the data is in
+      const canEdit = !editing && day !== null && v.date !== OVERVIEW && Boolean(app.schedule) && Boolean(app.snapshot) && startingList(app.snapshot.tabs, app.schedule.rows(), v.date).ok;
+      state.editBtn = canEdit ? h('button', { class: 't-edit', type: 'button', 'aria-label': '編輯這天的行程', onclick: () => startEdit() }, '編輯') : null;
       clear(meta);
       append(meta, [
         step('前一天', 'i-chevron-left', v.prev),
         h('p', { class: 't-day', 'aria-live': 'polite' }, leaf(), h('span', null, label)),
         step('後一天', 'i-chevron-right', v.next),
+        state.editBtn,
         me,
       ]);
+    }
+
+    /** 「編輯」: the board becomes the edit list of the shown day (ui/schedule-editor.js); the page under it stops redrawing until the editor is done. */
+    function startEdit() {
+      if (state.edit || state.date === OVERVIEW || tripDay(state.date) === null || !app.schedule || !app.snapshot) return;
+      const editor = createDayEditor(app, {
+        date: state.date, scroll, behind: [panel.dialog], lock: [document.getElementById('tabbar')],
+        onExit: () => {
+          state.edit = null;
+          render(false);
+          state.editBtn?.focus?.({ preventScroll: true });
+        },
+      });
+      if (!editor) return;
+      state.edit = editor;
+      renderEditing(true);
     }
 
     /** The edge fade of the day strip, like the filter row: an edge fades while there are chips beyond it. */
@@ -204,6 +219,7 @@ export function initToday(app) {
      * changes (and on open). `v.date` is a trip day or OVERVIEW.
      */
     function renderStrip(trip, v) {
+      days.inert = Boolean(state.edit); // the day being edited stays: the chips are out of reach until 「取消」 or 「完成」
       let all = chips.get(OVERVIEW);
       if (!all) {
         all = h('button', { class: 'dchip', type: 'button', 'aria-label': '全程總覽', onclick: () => go(OVERVIEW) }, h('b', { class: 'dd' }, '總覽'));
@@ -235,10 +251,42 @@ export function initToday(app) {
 
     function renderHead(v) {
       const m = /^(\d+\/\d+)/.exec(v.title); // the weekday ('（四）') is on the day strip's chip, so it is not repeated here
+      const kept = Boolean(app.schedule) && ownsDay(app.schedule.rows(), v.date); // this day is the app's copy, not the Sheet's lines
       clear(bh);
       bh.append(h('h1', null,
-        h('span', { class: 'ttl' }, h('span', null, v.isToday ? '今日菜單' : '行程菜單'), underline()),
-        h('span', { class: 'date' }, m ? m[1] : v.title)));
+        h('span', { class: 'ttl' }, h('span', null, state.edit ? '編輯行程' : v.isToday ? '今日菜單' : '行程菜單'), underline()),
+        h('span', { class: 'date' }, m ? m[1] : v.title),
+        kept ? h('span', { class: 'ver-tag', 'aria-label': 'app 版：這天顯示的是 app 裡的版本，不是 Sheet 上的原樣' }, 'app 版') : null));
+    }
+
+    /** The muted line under the banner of an app-owned day whose Sheet lines changed since the copy was made: the counts, and 「看改了什麼」 for the list. Writes nothing. */
+    function renderWaiting(date, w) {
+      const id = `sch-wait-${date}`;
+      const open = state.waitOpen.has(date);
+      const list = h('ul', { class: 'sch-wait-list', id, hidden: !open }, w.lines.map((line) => h('li', null, line)));
+      const toggle = h('button', { class: 'sch-wait-toggle', type: 'button', 'aria-expanded': String(open), 'aria-controls': id }, '看改了什麼', icon('i-chevron-down'));
+      toggle.addEventListener('click', () => {
+        const now = toggle.getAttribute('aria-expanded') !== 'true';
+        if (now) state.waitOpen.add(date); else state.waitOpen.delete(date);
+        toggle.setAttribute('aria-expanded', String(now));
+        list.hidden = !now;
+      });
+      return h('div', { class: 'sch-wait' }, h('p', { class: 'sch-wait-line' }, w.text), toggle, list);
+    }
+
+    /** What the board shows while a day is edited: the head (「編輯行程」), the meta row and the strip made unreachable, and the editor's list in the board. */
+    function renderEditing(mount) {
+      const m = build(new Date());
+      renderMeta(m.v, m.mine.length);
+      renderStrip(m.trip, m.v);
+      renderHead(m.v);
+      board.setAttribute('aria-label', `${app.me ?? ''} 編輯 ${m.v.title}`.trim());
+      if (mount) {
+        clear(scroll);
+        append(scroll, [state.edit.element]);
+        scroll.scrollTop = 0;
+        state.edit.element.focus?.({ preventScroll: true });
+      }
     }
 
     /** One stop as a menu line. r = {view, place, cat, mine, done, byTime, isNext, price, ginkgo, next}. */
@@ -326,13 +374,13 @@ export function initToday(app) {
 
     /** Everything the page shows for the clock `at`: the day's view, my lines, which are done / next, the pen's place (the 全程總覽: its rows). */
     function build(at) {
-      const trip = loadTripData(app.snapshot?.tabs);
+      const trip = loadTripData(app.snapshot?.tabs, app.schedule?.rows());
       if (state.date === OVERVIEW) {
         const today = app.currentDate();
         const rows = app.snapshot && trip.ok ? overviewRows(trip, app.me, { places: app.places, translations: app.translations, today, night: app.currentNightDate() }) : [];
         return { overview: true, at, trip, today, rows };
       }
-      const v = todayView(trip, app.me, state.date, { places: app.places, translations: app.translations, today: app.currentDate(), night: app.currentNightDate() });
+      const v = todayView(trip, app.me, state.date, { places: app.places, translations: app.translations, today: app.currentDate(), night: app.currentNightDate(), named: app.julyPlaces });
       const mine = myItems(v.items, app.me); // the lines that are mine: the only ones that can be the next stop, count as done, or give the pen's place
       const ticked = app.doneSet(state.date);
       const live = v.isToday && v.status === 'in'; // the same rule as the strip (main.js todayStops): only while I am in Korea today
@@ -403,6 +451,7 @@ export function initToday(app) {
     }
 
     function render(keepScroll, built) {
+      if (state.edit) { renderEditing(false); return; } // the editor owns the board until it is done
       const top = scroll.scrollTop;
       const m = built ?? build(new Date());
       if (m.overview) {
@@ -427,6 +476,8 @@ export function initToday(app) {
         parts.push(h('div', { class: 'td-flight' }, icon('i-plane'),
           h('p', { class: 'td-flight-text' }, h('span', { class: 'td-when' }, v.flight.when), ' ', v.flight.text)));
       }
+      const waiting = app.schedule ? sheetChangeSummary(app.snapshot?.tabs, app.schedule.rows(), v.date) : null; // under the banner / flight reminder
+      if (waiting) parts.push(renderWaiting(v.date, waiting));
       if (packing.sync(v.date)) parts.push(packing.element); // only on TRIP_FIRST and TRIP_LAST
       shopping.paint();
       parts.push(shopping.element); // on every day page, under the packing card's place
@@ -470,6 +521,7 @@ export function initToday(app) {
 
     /** A refresh without a rebuild unless something the page shows changed; the clock's minute is only patched in (see viewSig). */
     function tick() {
+      if (state.edit) return; // the editor holds the board; a poll must not replace it (the list is made again from the fresh data only after a 「stale」)
       const m = build(new Date());
       if (viewSig(m) !== state.viewSig) { render(true, m); return; }
       if (m.overview) return; // nothing on it follows the clock's minute
@@ -489,6 +541,7 @@ export function initToday(app) {
     }, () => {});
     // a poll that changed something this page shows redraws it in place (same day, same scroll position, same open details)
     offs.push(app.on('snapshot', tick));
+    offs.push(app.on('schedule', tick)); // a day saved from this phone (or reset) shows at once
     offs.push(app.on('me', () => render(false)));
     offs.push(app.on('done', () => render(true)));
     const timer = setInterval(() => { if (!document.hidden) tick(); }, REFRESH_MS); // the pen circle and the next stop follow the clock

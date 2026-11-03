@@ -30,6 +30,7 @@ export function parseSchedule(rows) {
   if (headerIdx < 0) return [];
   const header = rows[headerIdx];
   const detailsCol = colOf(header, 'Details');
+  if (detailsCol < 0) return []; // the layout changed (the Details column was renamed or moved): no lines at all, like a missing tab, never days with no lines
   const timeNoteCol = detailsCol + 1; // unnamed column right after Details, e.g. "日落 17:20"
   const transportCol = colOf(header, 'Transportation / Notes 1');
 

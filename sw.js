@@ -40,7 +40,7 @@
 // tests/sw-precache.test.mjs fails while PRECACHE or the BUILD stamp is out of date.
 'use strict';
 
-const BUILD = '1b492ec76e'; // written by tools/stamp-sw.mjs: a hash of every precached app file (this file excluded)
+const BUILD = 'bf45fd5666'; // written by tools/stamp-sw.mjs: a hash of every precached app file (this file excluded)
 const SHELL_CACHE = `seoul-shell-${BUILD}`; // activate removes every other seoul-shell-* cache
 const TILE_CACHE = 'seoul-tiles-v1'; // not tied to BUILD: viewed tiles survive an app update
 const TILE_LIMIT = 300;
@@ -76,6 +76,7 @@ const PRECACHE = [
   'index.html',
   'manifest.webmanifest',
   'map-style.json',
+  'data/trending.json',
   'css/app.css',
   'icons/apple-touch-icon.png',
   'icons/icon-192.png',
@@ -114,6 +115,8 @@ const PRECACHE = [
   'js/place-view.js',
   'js/plan-names.js',
   'js/register-sw.js',
+  'js/schedule-edit.js',
+  'js/schedule-ui.js',
   'js/sheet-parse.js',
   'js/shopping.js',
   'js/stars.js',
@@ -122,9 +125,12 @@ const PRECACHE = [
   'js/sync.js',
   'js/today-view.js',
   'js/today.js',
+  'js/trending.js',
+  'js/trip-dates.js',
   'js/ui/add-place.js',
   'js/ui/basemap-layer.js',
   'js/ui/card.js',
+  'js/ui/day-picker.js',
   'js/ui/dom.js',
   'js/ui/hotel-card.js',
   'js/ui/lists.js',
@@ -137,11 +143,14 @@ const PRECACHE = [
   'js/ui/person.js',
   'js/ui/phrase-cards.js',
   'js/ui/preview-pin.js',
+  'js/ui/schedule-editor.js',
+  'js/ui/schedule.js',
   'js/ui/setup.js',
   'js/ui/shopping.js',
   'js/ui/station-badges.js',
   'js/ui/tabbar.js',
   'js/ui/today-panel.js',
+  'js/ui/trending.js',
   'js/ui/unmapped.js',
   'js/ui/update-bar.js',
   `${LEAFLET}leaflet.min.css`,

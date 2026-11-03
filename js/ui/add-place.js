@@ -9,11 +9,14 @@
 // Nothing is guessed: a place without a chosen position is not sent (a wrong pin is worse than a missing one).
 //
 // const openAddPlace = initAddPlace(app);
-// openAddPlace({mode: 'gps'|'tap', presetName, presetQuery, presetAlias, presetText})
+// openAddPlace({mode: 'gps'|'tap', presetName, presetQuery, presetAlias, presetText, onAdded, onClose})
 //   mode         which position button is emphasised (it never fills a position by itself)
 //   presetText   goes into the search box and is resolved / searched at once (share target)
 //   presetName   suggested 店名 (kept even when a result is picked); presetQuery the text to search (default presetName)
 //   presetAlias  string | string[] stored in `aliases`, so the Sheet's own wording finds the new pin
+//   onAdded      onAdded(place) when the place has been saved here (the pin is on the map by then); the form closes right after. The 今天 page's place picker
+//                makes a stop of the day (or sets a stop's link) from it. Not called when the form is closed without saving.
+//   onClose      onClose() once, when the form closes by any route (saved or not)
 import { addPlace, resolveLink, searchPlace } from '../api.js';
 import {
   MSG, buildAliases, buildPayload, errorMessage, findSavedDuplicate, nameFromPick, noResultsMessage, searchResultView,
@@ -353,6 +356,7 @@ function createForm(app, preview, opts, onClosed) {
     const name = clean(place?.name_zh) || st.lastPayload.name_zh;
     app.addPlaceLocal(place); // pin first, even if a poll that started earlier is still on its way
     if (!reloaded) app.reload().catch(() => {});
+    try { opts.onAdded?.(place); } catch (e) { console.error(e); }
     close();
     app.showToast(`已新增「${name}」，其他人一分鐘內會看到`, 4500);
     app.map?.focus(place.id);
@@ -444,6 +448,7 @@ function createForm(app, preview, opts, onClosed) {
       root().classList.remove('sheet-tall', 'sheet-open');
     }
     onClosed();
+    try { opts.onClose?.(); } catch (e) { console.error(e); }
   }
 
   searchForm.addEventListener('submit', (e) => { e.preventDefault(); runSearch(); });

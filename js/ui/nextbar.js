@@ -6,7 +6,7 @@
 // Tapping it opens the pin's card (a stop with no pin on the map opens the 今天 page). With no stop left it is hidden. The map is told
 // which place it is (map.setNextStop), so that pin's name capsule ranks just below the selected pin's.
 //
-// initNextBar(app, el): reads app.todayStops(), app.doneSet(date), app.placeById, app.translations; refreshes on snapshot / me / done
+// initNextBar(app, el): reads app.todayStops(), app.doneSet(date), app.placeById, app.translations; refreshes on snapshot / me / done / schedule
 // and every 30 seconds while the page is visible.
 import { FAMILIES } from '../colors.js';
 import { nextStop, shortDuration, untilText } from '../next-stop.js';
@@ -65,7 +65,7 @@ export function initNextBar(app, el = document.getElementById('nextbar')) {
     app.actions.today();
   });
 
-  for (const ev of ['snapshot', 'me', 'done']) app.on(ev, render);
+  for (const ev of ['snapshot', 'me', 'done', 'schedule']) app.on(ev, render);
   setInterval(() => { if (!document.hidden) render(); }, REFRESH_MS);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
   render();

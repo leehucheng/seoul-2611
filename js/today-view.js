@@ -9,25 +9,18 @@ import { matchPlace } from './match.js';
 import { isPastByTime, isStopDone, itemTime, myItems, stripTime } from './next-stop.js';
 import { placeName } from './pin-labels.js';
 import { isHidden } from './place-view.js';
+import { mergeDays } from './schedule-edit.js';
 import { parseFlights, parseHotels, parseSchedule } from './sheet-parse.js';
 import { buildToday, nightDateISO, todayISO } from './today.js';
+import { TRIP_FIRST, TRIP_LAST, isISODate } from './trip-dates.js';
 
-export const TRIP_FIRST = '2026-11-05'; // the day switcher stays inside the trip
-export const TRIP_LAST = '2026-11-15';
+export { TRIP_FIRST, TRIP_LAST, isISODate }; // they live in trip-dates.js (schedule-edit.js needs them too, and must not import this file)
 
 const clean = (v) => String(v ?? '').trim();
 const ISO = /^(\d{4})-(\d{2})-(\d{2})$/;
 const DAY_MS = 86400000;
 
 // ---- dates ------------------------------------------------------------------------------------------------
-
-/** A real calendar date written 'YYYY-MM-DD' ('2026-02-30' is not one). */
-export function isISODate(s) {
-  const m = ISO.exec(String(s ?? ''));
-  if (!m) return false;
-  const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
-  return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3];
-}
 
 /** `?debug=1&date=YYYY-MM-DD` -> that date (for testing only); anything else, a bad date, or no `debug=1` -> null. */
 export function debugDate(search) {
@@ -157,9 +150,14 @@ export function bannerFor({ status, hotel }, flights, person) {
 
 const guarded = (fn, rows) => { try { return fn(Array.isArray(rows) ? rows : []); } catch { return null; } };
 
-/** Parse the three tabs of the snapshot. `ok` is false when the Schedule tab gave no days (missing tab, changed layout). */
-export function loadTripData(tabs) {
-  const days = guarded(parseSchedule, tabs?.Schedule) ?? [];
+/**
+ * Parse the three tabs of the snapshot. `scheduleRows` are the rows of App_Schedule (app.schedule.rows(): snapshot.schedule with what this phone
+ * saved laid over it): a date that has rows there shows the app's stops instead of the Sheet's lines (schedule-edit.js mergeDays); with none the
+ * result is exactly the Sheet's. `ok` is false when there are no days at all (missing Schedule tab, changed layout, and no day kept in the app).
+ */
+export function loadTripData(tabs, scheduleRows) {
+  const sheetDays = guarded(parseSchedule, tabs?.Schedule) ?? [];
+  const days = Array.isArray(scheduleRows) && scheduleRows.length > 0 ? mergeDays(sheetDays, scheduleRows) : sheetDays;
   const flights = guarded(parseFlights, tabs?.Flight) ?? [];
   const hotels = guarded(parseHotels, tabs?.Hotel)?.hotels ?? [];
   return { days, flights, hotels, ok: days.length > 0 };
@@ -173,13 +171,18 @@ const zhFor = (s, translations) => (hasHangul(s) ? zhOf(s, translations) : null)
  * The note is two Sheet cells joined with '；' by the parser, so it is translated part by part.
  * `time` is the explicit 'HH:MM' written in the text, not one end of a range (null when there is none: most lines have none); `key`
  * is the item's done.js key: its text + which of the identical lines of the day it is.
+ * A stop kept in the app (schedule-edit.js mergeDays) can name its pin: an item with a `placeId` that is one of the visible places uses it
+ * instead of matching the text. Such a stop's view also carries `stopId` (its App_Schedule id) and `sheetText`; a Sheet line's view has neither.
+ * `named` (the places of the 7 月 layer) are known only to a stop that names one by its placeId: no text is ever matched against them.
  */
-export function itemViews(items, places, translations) {
+export function itemViews(items, places, translations, named = []) {
   const visible = (places ?? []).filter((p) => !isHidden(p));
+  const nameable = [...visible, ...(named ?? []).filter((p) => !isHidden(p))];
   const keys = doneKeys(items);
   return (items ?? []).map((it, i) => {
     const text = clean(it.text);
     const note = clean(it.note);
+    const placeId = clean(it.placeId);
     return {
       text,
       key: keys[i],
@@ -188,7 +191,8 @@ export function itemViews(items, places, translations) {
       note,
       noteZh: note.split('；').map((part) => zhFor(clean(part), translations)).filter(Boolean),
       detail: clean(it.detail).split(/\r?\n/).map(clean).filter(Boolean).map((line) => ({ text: line, zh: zhFor(line, translations) })),
-      placeId: matchPlace(text, visible),
+      placeId: placeId !== '' && nameable.some((p) => p.id === placeId) ? placeId : matchPlace(text, visible),
+      ...(it.stopId ? { stopId: it.stopId, sheetText: clean(it.sheetText) } : {}),
     };
   });
 }
@@ -203,9 +207,9 @@ export const stopName = (view, place, translations) => (place ? placeName(place,
 /**
  * Everything the panel draws for `person` on `dateISO`. `today` is the app's current date (marks the "今天" tag); `night` is
  * currentNightDate(). On the day that is `today` the hotel row is the one for `night` (before 06:00 that is still last night's
- * hotel); any other day looks up its own date. `hotelDate` is the date the hotel row (and the card it opens) is for.
+ * hotel); any other day looks up its own date. `hotelDate` is the date the hotel row (and the card it opens) is for. `named`: itemViews'.
  */
-export function todayView(trip, person, dateISO, { places = [], translations = {}, today = '', night = today } = {}) {
+export function todayView(trip, person, dateISO, { places = [], translations = {}, today = '', night = today, named = [] } = {}) {
   const hotelDate = dateISO === today && isISODate(night) ? night : dateISO;
   const t = buildToday(trip, person, dateISO, { hotelDate });
   const { prev, next } = dayNeighbours(dateISO);
@@ -218,7 +222,7 @@ export function todayView(trip, person, dateISO, { places = [], translations = {
     banner: bannerFor(t, trip.flights, person),
     flight: flightView(t.flight, today),
     hotel: t.hotel ? hotelRow(t.hotel, places, translations) : null,
-    items: itemViews(t.items, places, translations),
+    items: itemViews(t.items, places, translations, named),
     prev,
     next,
   };
