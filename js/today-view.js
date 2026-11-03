@@ -39,15 +39,26 @@ export function debugDate(search) {
 /** The date the app treats as today: the debug date when the address has one, else the date in Seoul right now. */
 export const currentDate = (now, search) => debugDate(search) ?? todayISO(now);
 
-/** A date pulled into the trip: before 11/5 -> 11/5, after 11/15 -> 11/15, inside it unchanged. */
-export const clampToTrip = (iso) => (iso < TRIP_FIRST ? TRIP_FIRST : iso > TRIP_LAST ? TRIP_LAST : iso);
+/** The page of the 今天 view that is not a day: the 全程總覽 (the trip's 11 days on one page). */
+export const OVERVIEW = 'overview';
 
 /**
- * The day the 今天 panel opens on: today when today is a trip day, else the nearest end of the trip (before it the page would be an empty
- * 「不在行程內」), and `?debug=1&date=` still wins, even outside the trip. Only the panel's first page: what is "today" (the 今日菜單 title,
- * the next stop, ticks by time, the hotel of the night) stays currentDate() / currentNightDate().
+ * The page the 今天 view opens on, for `today` (the app's current date: Seoul's date, or the `?debug=1&date=` one): today's page when
+ * today is a trip day, else the 全程總覽 (before the trip it would be an empty 「不在行程內」 page, after it too). Only the first page: what is
+ * "today" (the 今日菜單 title, the next stop, ticks by time, the hotel of the night) stays currentDate() / currentNightDate().
  */
-export const panelStartDate = (now, search) => debugDate(search) ?? clampToTrip(todayISO(now));
+export const startPage = (today) => (today >= TRIP_FIRST && today <= TRIP_LAST ? today : OVERVIEW);
+
+/**
+ * The line under the 全程總覽 title: 「還有 N 天出發」 (N whole Seoul days from `today` to the first trip day; 1 -> 「明天出發」) before the trip,
+ * 「旅程結束了」 after it, '' inside it.
+ */
+export function tripCountdown(today) {
+  if (today > TRIP_LAST) return '旅程結束了';
+  const n = Math.round((Date.parse(`${TRIP_FIRST}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / DAY_MS);
+  if (!(n >= 1)) return '';
+  return n === 1 ? '明天出發' : `還有 ${n} 天出發`;
+}
 
 /**
  * The night the app treats as tonight, for the hotel lookup: the debug date when the address has one (an explicit date is never

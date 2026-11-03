@@ -5,27 +5,35 @@
 //   the circle in front of a line   ticks the stop off on this phone (done.js; nothing is sent anywhere). A done stop is struck out
 //                                   and gets an ink check mark; so is a stop whose own time is more than 30 minutes past.
 //   a yellow-pen circle             the current time, between the done stops and the next one (today only)
-//   the next stop                   the first stop that is not done (next-stop.js): a 下一站 tag, 「N 分後」, and a Naver button
+//   the next stop                   the first stop that is not done (next-stop.js): a 下一站 tag, 「N 分後」, and a 「Naver」 button that opens
+//                                   the place's own page in Naver Map (not a route)
 //   a line that has a pin           tap it: the 今天 page closes and the map flies to the pin
 //   a line for other people         (next-stop.js myItems: it names people and not me) stays on the page, dimmed; it is never the next
 //                                   stop, never done, never the pen's place and has no circle to tick. A stop that is done only
 //                                   because its own time is past shows its check mark in a circle that is not a button.
 //   last line                       tonight's hotel, and 「給司機看韓文地址」 (the hotel card)
 // Above the board: the day switcher (the ‹ › buttons), how many stops, and who I am; under it the day strip, the trip's 11 days as chips
-// (the date, the weekday, my number of stops; today has a yellow dot; a tap shows that day). The page opens on today when today is a trip
-// day, else on the nearest end of the trip (today-view.js panelStartDate). Time only matters on today: on any other day a stop is done only
-// when ticked for that day, and nothing is the next stop. Before the trip and after the flight home the banner and the flight reminder of
-// the Sheet show first. Every Korean string has a smaller Chinese line.
-// On the first and the last trip day a 「行李清單 N/46」 card sits under the banner / flight reminder, above the board's lines; a tap opens the
-// packing screen over this page (ui/packing.js: it holds its own back-stack entry, this page stays open under it).
+// (the date, the weekday, my number of stops; today has a yellow dot; a tap shows that day), and in front of them 「總覽」. The page opens on
+// today when today is a trip day, else on the 全程總覽 (today-view.js startPage); 「總覽」 opens it on any day. Time only matters on today: on
+// any other day a stop is done only when ticked for that day, and nothing is the next stop. Before the trip and after the flight home the
+// banner and the flight reminder of the Sheet show first. Every Korean string has a smaller Chinese line.
+// 全程總覽: the same panel with the title 「首爾 11/5–11/15」, a line under it (「還有 N 天出發」 / 「明天出發」 before the trip, 「旅程結束了」
+// after it), before the trip the 行李清單 card, then one button per trip day (the date, that night's hotel if the Sheet has one, the first
+// 3 stop names as the day page lists them and 「+N」, or 「還沒排行程」) that opens that day. Without the snapshot, a page shows 「正在讀行程…」
+// and fills itself when it arrives.
+// On the first and the last trip day (and on the 全程總覽 before the trip) a 「行李清單 N/46」 card sits under the banner / flight reminder,
+// above the board's lines; a tap opens the packing screen over this page (ui/packing.js: it holds its own back-stack entry, this page stays
+// open under it). Every page ends with a small muted 「版本 <build>」 once the service worker has said which build runs (app.getVersion()).
 //
 // initToday(app) sets app.actions.today and app.openToday(dateISO?). Text from the Sheet only goes in through dom.js (textContent).
 import { hasHan, hasHangul } from '../i18n.js';
 import { FAMILIES } from '../colors.js';
 import { isMyItem, myItems, nextStop, stripTime, untilText } from '../next-stop.js';
 import { categoryOf, hoursCard, menuHours } from '../place-view.js';
-import { TRIP_FIRST, TRIP_LAST, dayStrip, isISODate, loadTripData, panelStartDate, stopState, todayView } from '../today-view.js';
-import { naverLink } from './card.js';
+import {
+  OVERVIEW, TRIP_FIRST, TRIP_LAST, dayStrip, dayTitle, formatMD, isISODate, loadTripData, startPage, stopState, todayView, tripCountdown, tripDates,
+} from '../today-view.js';
+import { naverShopLink } from './card.js';
 import { append, clear, famStyle, h, icon, leaf } from './dom.js';
 import { openPacking, packingCard } from './packing.js';
 import { createPanel, textWithZh } from './panel.js';
@@ -40,7 +48,7 @@ const NO_PIN = Object.freeze({ icon: 'i-list', color: FAMILIES.other.color, on: 
 
 /** What a poll can change on this panel: the three tabs, the people, the places the items point to, the translations. */
 const signatureOf = (app) => JSON.stringify([
-  app.me, app.snapshot?.tabs?.Schedule, app.snapshot?.tabs?.Flight, app.snapshot?.tabs?.Hotel, app.translations, [...app.ginkgo],
+  Boolean(app.snapshot), app.me, app.snapshot?.tabs?.Schedule, app.snapshot?.tabs?.Flight, app.snapshot?.tabs?.Hotel, app.translations, [...app.ginkgo],
   app.places.map((p) => [p.id, p.category, p.name_zh, p.name_kr, p.name_en, p.aliases, p.hidden, p.lat, p.lng, p.verified, p.hours_json, p.source]),
 ]);
 
@@ -77,6 +85,20 @@ export function lineTexts(view, place) {
   return { first, second: hasHan(first) ? second : '' };
 }
 
+/**
+ * The rows of the 全程總覽: one per trip day, 11/5 first. `title` is 「11/5（四）」; `hotel` the night's stay the day page shows for that date
+ * (todayView's, null when the Sheet has none); `names` the first 3 stop names as the day page lists them (the same first line of every line of
+ * the day, other people's included, in the same order); `more` how many stops come after those; `empty` when the day has no stops at all.
+ * `ctx` is todayView's {places, translations, today, night}.
+ */
+export function overviewRows(trip, person, ctx) {
+  return tripDates().map((date) => {
+    const v = todayView(trip, person, date, ctx);
+    const names = v.items.map((view) => lineTexts(view, null).first);
+    return { date, title: dayTitle(date), hotel: v.hotel, names: names.slice(0, 3), more: Math.max(0, names.length - 3), empty: names.length === 0 };
+  });
+}
+
 /** A line may wrap after a slash that separates names ("Name1/Name2/Name3 - TPE ..."): a zero-width break opportunity, so a long name list is not cut through the middle of a name. */
 export const breakAtSlashes = (text) => String(text ?? '').replace(/\/(?=[^\s/])/g, '/​');
 
@@ -104,13 +126,10 @@ const underline = () => {
 
 export function initToday(app) {
   function openToday(dateArg) {
-    if (!app.snapshot) {
-      app.showToast('資料還沒載入好，等一下再按一次');
-      return null;
-    }
     app.closeCard();
 
-    const state = { date: isISODate(dateArg) ? dateArg : panelStartDate(new Date(), window.location.search), expanded: new Set(), viewSig: '', stripDate: '' };
+    // no snapshot yet (the app opens this view as soon as the person is picked): the page says 「正在讀行程…」 and fills itself when it arrives
+    const state = { date: isISODate(dateArg) ? dateArg : startPage(app.currentDate()), expanded: new Set(), viewSig: '', stripDate: '' };
     const meta = h('div', { class: 't-meta' });
     const days = h('div', { class: 't-days', role: 'group', 'aria-label': '選哪一天' });
     const lines = h('ol', { class: 'lines' });
@@ -120,7 +139,10 @@ export function initToday(app) {
       h('span', { class: 'tape tl' }), h('span', { class: 'tape tr' }), h('span', { class: 'tape bl' }), h('span', { class: 'tape br' }), bh, scroll);
     const offs = [];
     let packingScreen = null; // the packing screen that is open over this page, if any
-    const panel = createPanel({ cls: 'panel--today', label: '今天', view: 'today', onClose: () => { offs.forEach((off) => off()); packingScreen?.close(); } });
+    let closed = false;
+    let version = null; // the build this page runs, once the service worker has said (app.getVersion)
+    const versionLine = h('p', { class: 't-ver' });
+    const panel = createPanel({ cls: 'panel--today', label: '今天', view: 'today', onClose: () => { closed = true; offs.forEach((off) => off()); packingScreen?.close(); } });
     append(panel.dialog, [meta, days, board]);
     const packing = packingCard(app, (trigger) => { // built once: a redraw of the page puts the same button back, so focus can return to it
       packingScreen?.close();
@@ -140,15 +162,18 @@ export function initToday(app) {
       app.openPlace(id, { focus: true });
     };
 
+    /** The switcher row. `v` is a day's view, or {date: OVERVIEW} (no arrows: the day switcher stays inside the trip). */
     function renderMeta(v, stopCount) {
       const step =(label, iconId, date) => h('button', { class: 'round tp-step', type: 'button', 'aria-label': label, disabled: !date, onclick: () => go(date) }, icon(iconId));
       const day = tripDay(v.date);
       const me = h('button', { class: 'me', type: 'button', onclick: () => app.switchPerson() });
       if (app.me) showMeButton(me, app.me);
+      const label = v.date === OVERVIEW ? '全程總覽'
+        : [day ? `第 ${day} 天` : '不在行程內', app.snapshot ? [' ・ ', stopCount > 0 ? `${stopCount} 站` : '沒有行程'] : null]; // no stop count before the data is in
       clear(meta);
       append(meta, [
         step('前一天', 'i-chevron-left', v.prev),
-        h('p', { class: 't-day', 'aria-live': 'polite' }, leaf(), h('span', null, day ? `第 ${day} 天` : '不在行程內', ' ・ ', stopCount > 0 ? `${stopCount} 站` : '沒有行程')),
+        h('p', { class: 't-day', 'aria-live': 'polite' }, leaf(), h('span', null, label)),
         step('後一天', 'i-chevron-right', v.next),
         me,
       ]);
@@ -165,8 +190,18 @@ export function initToday(app) {
 
     const chips = new Map(); // date -> its button; made once, then updated in place, so a tapped chip keeps its focus and the strip its scroll
 
-    /** The day strip: one chip per trip day (today-view.js dayStrip). The chip of the shown day is centred when the day changes (and on open). */
+    /**
+     * The day strip: 「總覽」 first, then one chip per trip day (today-view.js dayStrip). The chip of the shown page is centred when the page
+     * changes (and on open). `v.date` is a trip day or OVERVIEW.
+     */
     function renderStrip(trip, v) {
+      let all = chips.get(OVERVIEW);
+      if (!all) {
+        all = h('button', { class: 'dchip', type: 'button', 'aria-label': '全程總覽', onclick: () => go(OVERVIEW) }, h('b', { class: 'dd' }, '總覽'));
+        chips.set(OVERVIEW, all);
+        days.append(all);
+      }
+      all.setAttribute('aria-pressed', String(v.date === OVERVIEW));
       for (const d of dayStrip(trip, app.me, { selected: v.date, today: app.currentDate() })) {
         let chip = chips.get(d.date);
         if (!chip) {
@@ -242,8 +277,9 @@ export function initToday(app) {
       const li = h('li', { class: `li${r.done ? ' past' : ''}${r.isNext ? ' nx' : ''}${r.mine ? '' : ' other'}` }, h('div', { class: 'li-row' }, chk, body));
 
       if (r.isNext && place) {
-        li.append(naverLink(place, {}, 'go-btn', 'Naver 步行', h('span', { class: 'chip-ink' }, icon('i-arrow'))));
-        li.lastChild.setAttribute('aria-label', `用 Naver 步行到 ${first}`);
+        const go = naverShopLink(place, {}, 'go-btn', 'Naver', h('span', { class: 'chip-ink' }, icon('i-arrow')));
+        go.setAttribute('aria-label', `在 Naver 看 ${first}`);
+        li.append(go);
       }
 
       const noteLines = [
@@ -279,9 +315,14 @@ export function initToday(app) {
 
     const clockLabel = (at) => new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(at);
 
-    /** Everything the page shows for the clock `at`: the day's view, my lines, which are done / next, the pen's place. */
+    /** Everything the page shows for the clock `at`: the day's view, my lines, which are done / next, the pen's place (the 全程總覽: its rows). */
     function build(at) {
       const trip = loadTripData(app.snapshot?.tabs);
+      if (state.date === OVERVIEW) {
+        const today = app.currentDate();
+        const rows = app.snapshot && trip.ok ? overviewRows(trip, app.me, { places: app.places, translations: app.translations, today, night: app.currentNightDate() }) : [];
+        return { overview: true, at, trip, today, rows };
+      }
       const v = todayView(trip, app.me, state.date, { places: app.places, translations: app.translations, today: app.currentDate(), night: app.currentNightDate() });
       const mine = myItems(v.items, app.me); // the lines that are mine: the only ones that can be the next stop, count as done, or give the pen's place
       const ticked = app.doneSet(state.date);
@@ -305,11 +346,60 @@ export function initToday(app) {
       return { at, trip, v, mine, ticked, live, next, rows, nowAt };
     }
 
-    const viewSig = (m) => viewSignature(state.date, app.currentDate(), signatureOf(app), m);
+    const viewSig = (m) => (m.overview ? JSON.stringify([OVERVIEW, m.today, signatureOf(app)]) : viewSignature(state.date, app.currentDate(), signatureOf(app), m));
+
+    /** The one muted line at the end of a page, once the build is known (nothing before: no worker, or one that did not answer). */
+    const versionParts = () => (version ? [versionLine] : []);
+
+    /** One day of the 全程總覽 as a button that opens that day: the date, that night's hotel when the Sheet has one, the first stop names. */
+    function renderOverviewRow(row) {
+      const stay = row.hotel
+        ? h('span', { class: 'ov-stay' }, famStyle(h('span', { class: 'mk' }, icon('i-bed')), categoryOf('hotel')), h('span', { class: 'sr' }, '住：'),
+          h('b', { lang: row.hotel.zh ? undefined : 'ko' }, row.hotel.zh || row.hotel.name))
+        : null;
+      const stops = row.empty
+        ? h('span', { class: 'ov-none' }, '還沒排行程')
+        : h('span', { class: 'ov-stops' },
+          row.names.map((name) => h('span', { class: 'ov-stop', lang: hasHangul(name) ? 'ko' : undefined }, name)),
+          row.more > 0 ? h('b', { class: 'ov-more' }, `+${row.more}`) : null);
+      return h('li', { class: 'ov-li' },
+        h('button', { class: 'ov-day', type: 'button', onclick: () => go(row.date) },
+          h('span', { class: 'ov-head' }, h('b', { class: 'ov-date' }, row.title), icon('i-chevron-right')),
+          stay, stops));
+    }
+
+    /** The 全程總覽 in the same panel: the meta row without arrows, the strip, the title and its line, then the packing card (before the trip) and the 11 days. */
+    function renderOverview({ trip, today, rows }) {
+      renderMeta({ date: OVERVIEW }, 0);
+      renderStrip(trip, { date: OVERVIEW });
+      const range = `${formatMD(TRIP_FIRST)}–${formatMD(TRIP_LAST)}`;
+      const countdown = tripCountdown(today);
+      clear(bh);
+      append(bh, [
+        h('h1', null, h('span', { class: 'ttl' }, h('span', null, '首爾'), underline()), ' ', h('span', { class: 'date' }, range)),
+        countdown ? h('p', { class: 'ov-sub' }, countdown) : null,
+      ]);
+      board.setAttribute('aria-label', `${app.me ?? ''} 的全程總覽 首爾 ${range}`.trim());
+
+      const parts = [];
+      if (today < TRIP_FIRST && packing.sync(TRIP_FIRST)) parts.push(packing.element); // the same card, count and screen as on the first day; before the trip only
+      if (!app.snapshot) parts.push(h('p', { class: 'td-empty' }, '正在讀行程…'));
+      else if (!trip.ok) parts.push(h('p', { class: 'td-empty' }, '行程表讀不到。確認有網路，或到表上看看分頁有沒有被改名。'));
+      else parts.push(h('ol', { class: 'ov-days' }, rows.map(renderOverviewRow)));
+      parts.push(versionParts());
+      clear(scroll);
+      append(scroll, parts);
+    }
 
     function render(keepScroll, built) {
       const top = scroll.scrollTop;
       const m = built ?? build(new Date());
+      if (m.overview) {
+        renderOverview(m);
+        scroll.scrollTop = keepScroll ? top : 0;
+        state.viewSig = viewSig(m);
+        return;
+      }
       const { at, trip, v, mine, live, next, rows, nowAt } = m;
       renderMeta(v, mine.length);
       renderStrip(trip, v);
@@ -336,7 +426,8 @@ export function initToday(app) {
       if (nowAt === rows.length && rows.length > 0) lines.append(renderNow(at));
 
       let body;
-      if (!trip.ok) body = h('p', { class: 'td-empty' }, '行程表讀不到。確認有網路，或到表上看看分頁有沒有被改名。');
+      if (!app.snapshot) body = h('p', { class: 'td-empty' }, '正在讀行程…');
+      else if (!trip.ok) body = h('p', { class: 'td-empty' }, '行程表讀不到。確認有網路，或到表上看看分頁有沒有被改名。');
       else if (v.items.length === 0) body = h('p', { class: 'td-empty' }, '這天表上沒有行程。');
       else body = lines;
 
@@ -356,6 +447,7 @@ export function initToday(app) {
                     v.hotel.zh ? h('span', { class: 'kr2', lang: 'ko' }, v.hotel.name) : null)))),
             h('button', { class: 'addr', type: 'button', onclick: () => app.actions.hotel(v.hotelDate) }, icon('i-id'), '給司機看韓文地址')))); // the night the row shows (before 06:00 on today: yesterday's), so the card agrees
       }
+      parts.push(versionParts());
 
       clear(scroll);
       append(scroll, parts);
@@ -367,6 +459,7 @@ export function initToday(app) {
     function tick() {
       const m = build(new Date());
       if (viewSig(m) !== state.viewSig) { render(true, m); return; }
+      if (m.overview) return; // nothing on it follows the clock's minute
       const label = clockLabel(m.at);
       const t = scroll.querySelector('.nowl .t');
       if (t?.firstChild && t.firstChild.nodeValue !== label) { t.firstChild.nodeValue = label; t.parentElement.setAttribute('aria-label', `現在 ${label}`); }
@@ -375,6 +468,12 @@ export function initToday(app) {
     }
 
     render(false);
+    Promise.resolve(app.getVersion?.()).then((build) => { // the build line shows up a moment after the page, if a worker answers
+      if (closed || typeof build !== 'string' || build === '') return;
+      version = build;
+      versionLine.textContent = `版本 ${build}`;
+      render(true);
+    }, () => {});
     // a poll that changed something this page shows redraws it in place (same day, same scroll position, same open details)
     offs.push(app.on('snapshot', tick));
     offs.push(app.on('me', () => render(false)));

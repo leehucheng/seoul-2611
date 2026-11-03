@@ -22,6 +22,9 @@
 //             emits 'done' (the 下一站 strip, the 今天 page and the card follow); app.ginkgo -> Set of the places on the 銀杏 tab;
 //             app.switchPerson() opens the who-am-I picker
 //             app.packing -> the 行李清單 ticks of this phone (packing-ticks.js createPacking: count(), toggle(id), reset()); emits 'packing'
+//           app.getVersion() -> Promise of the running build (sw.js BUILD), null without a worker or an answer; the 今天 page shows it
+// Start: once the person is picked, the 今天 view opens over the map (openStartView; not for an Android share, which opens the add form).
+// Update: ui/update-bar.js shows 「新版本好了」 + 「更新」 above the tab bar when a new service worker takes over an already controlled page.
 // Sync: startPolling(app.cfg, applySnapshot) runs from boot; a place saved here stays on the map until a snapshot has it.
 import { fetchSnapshot, startPolling } from './api.js';
 import { parseShareParams } from './add-place-logic.js';
@@ -37,6 +40,7 @@ import { GINKGO_FILTER, categoryOf, hasCoords, isHidden, matchesFilter } from '.
 import { registerServiceWorker } from './register-sw.js';
 import { parsePurchase } from './sheet-parse.js';
 import { loadStars, toggleStar } from './stars.js';
+import { askVersion } from './sw-version.js';
 import { cardSignature, createRefreshGate, isTextEntry, mergePending, statusLine } from './sync.js';
 import { buildToday } from './today.js';
 import { currentDate, currentNightDate, loadTripData, stopName, todayView } from './today-view.js';
@@ -53,6 +57,7 @@ import { showSetup } from './ui/setup.js';
 import { initTabbar } from './ui/tabbar.js';
 import { initToday } from './ui/today-panel.js';
 import { initUnmapped } from './ui/unmapped.js';
+import { initUpdateBar } from './ui/update-bar.js';
 
 const $ = (id) => document.getElementById(id);
 const isObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -71,6 +76,7 @@ function safeStorage() {
 }
 
 const listeners = new Map();
+const versionAsked = askVersion(); // asked once, as the page loads: which build the service worker that controls this page runs (null: none / no answer)
 
 export const app = {
   storage: null,
@@ -96,6 +102,8 @@ export const app = {
   currentDate: () => currentDate(new Date(), window.location.search),
   /** The night the hotel lookup uses: the Seoul date of (now - 6 h), so 00:00-06:00 is still last night; the debug date is never shifted. */
   currentNightDate: () => currentNightDate(new Date(), window.location.search),
+  /** The build this page runs (sw.js BUILD) as a Promise: a string, or null with no worker or no answer within 2 s. The 今天 page shows it. */
+  getVersion: () => versionAsked,
 
   on(event, fn) {
     if (!listeners.has(event)) listeners.set(event, new Set());
@@ -486,6 +494,7 @@ async function boot() {
 
   app.me = await pickPerson(storage);
   showMeButton($('me-btn'), app.me);
+  openStartView(); // before the snapshot is awaited: the 今天 view says 「正在讀行程…」 and fills itself when it arrives
 
   let first;
   try {
@@ -499,6 +508,16 @@ async function boot() {
   applySnapshot(first);
   app.stopPolling = startPolling(cfg, applySnapshot); // every 45 s while the page is visible, and when it becomes visible again
   openSharedPlace();
+}
+
+/**
+ * What the app opens on, once the person is picked: the 今天 view (today's page inside the trip, the 全程總覽 outside it; ui/today-panel.js).
+ * The map has been set up behind it as always and is what the 地圖 tab shows. An Android share goes to the add form instead (openSharedPlace),
+ * so with share parameters in the address the 今天 view is not opened.
+ */
+function openStartView() {
+  if (parseShareParams(window.location.search).hadShare) return;
+  app.actions.today();
 }
 
 /** Android share target: `?share_text=` / `share_url=` / `share_title=` -> the add form with that text resolved. Then the address is cleaned. */
@@ -518,6 +537,7 @@ function start() {
 
 window.seoulApp = app;
 start();
+initUpdateBar(); // 「新版本好了」 when a new worker takes over a page that had one at load; before the registration below, so the load-time controller is seen
 // Offline support (sw.js). After the page has loaded, so the worker's downloads do not compete with the first draw.
 if (document.readyState === 'complete') registerServiceWorker();
 else window.addEventListener('load', () => registerServiceWorker(), { once: true });

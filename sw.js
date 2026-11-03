@@ -3,8 +3,10 @@
 //   app files      precached on install (PRECACHE below) into a cache named after BUILD, and served cache-first from it, so
 //                  one open page never mixes files of two versions. An update is a new worker: tools/stamp-sw.mjs puts a
 //                  hash of all the files into BUILD, so any changed file changes this script, the browser installs the new
-//                  worker, it fills seoul-shell-<new BUILD> completely, takes over, and deletes the old cache. The new
-//                  version shows on the next open. A file that is not listed but sits under the app folder is cached
+//                  worker, it fills seoul-shell-<new BUILD> completely, takes over, and deletes the old cache. The open page
+//                  is told (js/ui/update-bar.js shows 「新版本好了」, a button reloads it); the new version shows on the next
+//                  open anyway. A page can ask which build it runs: {type: 'version'} is answered with BUILD (see the message
+//                  listener below; js/sw-version.js). A file that is not listed but sits under the app folder is cached
 //                  when first fetched and refreshed in the background (stale-while-revalidate).
 //   Leaflet (CDN)  precached; the version is in its URL, so the cached copy is used as is.
 //   map-style.json precached with the app files: the style of our own vector map (js/basemap.js).
@@ -38,7 +40,7 @@
 // tests/sw-precache.test.mjs fails while PRECACHE or the BUILD stamp is out of date.
 'use strict';
 
-const BUILD = 'a1355e53f7'; // written by tools/stamp-sw.mjs: a hash of every precached app file (this file excluded)
+const BUILD = '4a668a9379'; // written by tools/stamp-sw.mjs: a hash of every precached app file (this file excluded)
 const SHELL_CACHE = `seoul-shell-${BUILD}`; // activate removes every other seoul-shell-* cache
 const TILE_CACHE = 'seoul-tiles-v1'; // not tied to BUILD: viewed tiles survive an app update
 const TILE_LIMIT = 300;
@@ -114,6 +116,7 @@ const PRECACHE = [
   'js/sheet-parse.js',
   'js/stars.js',
   'js/stations.js',
+  'js/sw-version.js',
   'js/sync.js',
   'js/today-view.js',
   'js/today.js',
@@ -136,6 +139,7 @@ const PRECACHE = [
   'js/ui/tabbar.js',
   'js/ui/today-panel.js',
   'js/ui/unmapped.js',
+  'js/ui/update-bar.js',
   `${LEAFLET}leaflet.min.css`,
   `${LEAFLET}leaflet.min.js`,
 ];
@@ -354,6 +358,15 @@ self.addEventListener('activate', (event) => {
     await self.clients.claim();
     prefetchLibs(); // not awaited: activation never waits for 800 KB of optional files (prefetchLibs never rejects)
   })());
+});
+
+// A page asks which build it runs ({type: 'version'}, js/sw-version.js); the answer goes to the private port the page sent along, else to the page.
+self.addEventListener('message', (event) => {
+  if (event.data?.type !== 'version') return;
+  const answer = { type: 'version', build: BUILD };
+  const port = event.ports?.[0];
+  if (port) port.postMessage(answer);
+  else event.source?.postMessage(answer);
 });
 
 self.addEventListener('fetch', (event) => {

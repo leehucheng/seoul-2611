@@ -4,7 +4,7 @@ import { CATEGORIES } from './categories.js';
 import { FAMILIES } from './colors.js';
 import { formatHoursBadge, hoursToday } from './hours.js';
 import { hasHan, hasHangul, zhOf } from './i18n.js';
-import { googleDirUrl, naverLinks, naverShopLinks } from './links.js';
+import { naverShopLinks, placeSearchQuery } from './links.js';
 import { itemsForPlace } from './match.js';
 import { nameOf } from './people.js';
 
@@ -196,31 +196,19 @@ export function detectPlatform({ userAgent = '', platform = '', maxTouchPoints =
   return 'desktop';
 }
 
-const mapsQuery = (place) => clean(place?.name_kr) || clean(place?.name_zh) || clean(place?.name_en);
-
-/** Google Maps: directions by coordinates, or a name search when the place has no coordinates (never an empty `dir`). */
-export function googleUrl(place) {
-  if (hasCoords(place)) return googleDirUrl({ lat: place.lat, lng: place.lng });
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery(place))}`;
-}
-
 /**
- * Naver Map target per platform. kind 'web' opens in a new tab; 'intent' (Android) carries its own web
- * fallback; 'app' (iOS custom scheme) needs the caller to fall back to `fallback` if the page stays visible.
- * Without coordinates there is nothing to route to, so every platform gets the search-by-name page.
+ * Google Maps: the search for the place's name (placeSearchQuery, links.js), which lands on the place's own page. Never a route, with or
+ * without coordinates. `areaKr`: the Korean name of the place's area (area-lobes.js areaKoreanName), for a very short Korean name.
  */
-export function naverTarget(place, platform) {
-  const named = { ...place, name_kr: mapsQuery(place), name_zh: '' };
-  const links = naverLinks(named, NAVER_APPNAME);
-  if (!hasCoords(place) || platform === 'desktop') return { kind: 'web', href: links.web };
-  if (platform === 'android') return { kind: 'intent', href: links.intent, fallback: links.web };
-  return { kind: 'app', href: links.app, fallback: links.web };
+export function googleUrl(place, areaKr = '') {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeSearchQuery(place, areaKr))}`;
 }
 
 /**
- * Naver Map target that opens the shop's own page (a search for its name, naverShopQuery) instead of walking directions; same kinds as
- * naverTarget. `areaKr`: the Korean name of the place's area (area-lobes.js areaKoreanName), for a very short Korean name.
- * Without coordinates the page is the search-by-name page on every platform, as for naverTarget.
+ * Naver Map target per platform that opens the place's own page (a search for its name, placeSearchQuery). kind 'web' opens in a new
+ * tab; 'intent' (Android) carries its own web fallback; 'app' (iOS custom scheme) needs the caller to fall back to `fallback` if the
+ * page stays visible. `areaKr`: the Korean name of the place's area (area-lobes.js areaKoreanName), for a very short Korean name.
+ * Without coordinates every platform gets the search-by-name page.
  */
 export function naverShopTarget(place, platform, areaKr = '') {
   const links = naverShopLinks(place, NAVER_APPNAME, areaKr);

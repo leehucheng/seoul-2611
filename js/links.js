@@ -1,33 +1,14 @@
-// lat/lng arrive from the Sheet as strings (or numbers when built in code); String() covers both.
-const coord = (v) => String(v).trim();
-
-export function googleDirUrl({ lat, lng }) {
-  return `https://www.google.com/maps/dir/?api=1&destination=${coord(lat)},${coord(lng)}&travelmode=transit`;
-}
-
-// Naver Map: `app` (iOS custom scheme), `intent` (Android, falls back to `web`), `web` (search page).
-export function naverLinks(place, appname) {
-  const name = place.name_kr || place.name_zh || '';
-  const dname = encodeURIComponent(name);
-  const query = `dlat=${coord(place.lat)}&dlng=${coord(place.lng)}&dname=${dname}&appname=${encodeURIComponent(appname)}`;
-  const web = `https://map.naver.com/p/search/${dname}`;
-  return {
-    app: `nmap://route/walk?${query}`,
-    intent: `intent://route/walk?${query}#Intent;scheme=nmap;package=com.nhn.android.nmap;S.browser_fallback_url=${encodeURIComponent(web)};end`,
-    web,
-  };
-}
-
+// No button of the app starts a route: both map buttons search for the place's name, which lands on the place's own page.
 const text = (v) => String(v ?? '').trim();
 const HANGUL_SYLLABLE = /[가-힣]/g;
 const SHORT_NAME_SYLLABLES = 2; // a Korean name this short ("핑") finds too many shops alone, so the area's Korean name follows it
 
 /**
- * What to search Naver Map for to land on a shop's own page: its Korean name; a name of SHORT_NAME_SYLLABLES Hangul syllables or fewer
- * gets the area's Korean name after it (`areaKr`, '' when the area has none). No Korean name: the Korean address, else the Chinese
- * name, else the English one.
+ * What to search a map for to land on a place's own page (Naver Map and Google Maps both use it): its Korean name; a name of
+ * SHORT_NAME_SYLLABLES Hangul syllables or fewer gets the area's Korean name after it (`areaKr`, '' when the area has none). No Korean
+ * name: the Korean address, else the Chinese name, else the English one.
  */
-export function naverShopQuery(place, areaKr = '') {
+export function placeSearchQuery(place, areaKr = '') {
   const kr = text(place?.name_kr);
   if (kr) {
     const area = text(areaKr);
@@ -36,9 +17,10 @@ export function naverShopQuery(place, areaKr = '') {
   return text(place?.address_kr) || text(place?.name_zh) || text(place?.name_en);
 }
 
-// Naver Map's search for the shop (its own page: hours, photos, reviews, Naver's 길찾기 button): same three forms as naverLinks().
+// Naver Map's search for the place (its own page: hours, photos, reviews, Naver's 길찾기 button): `app` (iOS custom scheme), `intent`
+// (Android, falls back to `web`), `web` (search page).
 export function naverShopLinks(place, appname, areaKr = '') {
-  const q = encodeURIComponent(naverShopQuery(place, areaKr));
+  const q = encodeURIComponent(placeSearchQuery(place, areaKr));
   const web = `https://map.naver.com/p/search/${q}`;
   const query = `query=${q}&appname=${encodeURIComponent(appname)}`;
   return {
